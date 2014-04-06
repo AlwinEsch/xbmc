@@ -63,10 +63,10 @@
 #define AE_DSP_STREAM_MAX_MODES                 32
 
 /* current Audio DSP API version */
-#define XBMC_AE_DSP_API_VERSION                 "0.1.1"
+#define XBMC_AE_DSP_API_VERSION                 "0.1.2"
 
 /* min. Audio DSP API version */
-#define XBMC_AE_DSP_MIN_API_VERSION             "0.1.1"
+#define XBMC_AE_DSP_MIN_API_VERSION             "0.1.2"
 
 #ifdef __cplusplus
 extern "C" {
@@ -457,6 +457,7 @@ extern "C" {
     AE_DSP_ERROR (__cdecl* MasterProcessSetMode)                 (AE_DSP_STREAM_ID, AE_DSP_STREAMTYPE, unsigned int, int);
     unsigned int (__cdecl* MasterProcessNeededSamplesize)        (AE_DSP_STREAM_ID);
     float        (__cdecl* MasterProcessGetDelay)                (AE_DSP_STREAM_ID);
+    int          (__cdecl* MasterProcessGetOutChannels)          (AE_DSP_STREAM_ID, unsigned long&);
     unsigned int (__cdecl* MasterProcess)                        (AE_DSP_STREAM_ID, float**, float**, unsigned int);
     const char*  (__cdecl* MasterProcessGetStreamInfoString)     (AE_DSP_STREAM_ID);
 

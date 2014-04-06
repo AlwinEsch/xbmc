@@ -270,13 +270,22 @@ extern "C"
   unsigned int MasterProcessNeededSamplesize(AE_DSP_STREAM_ID id);
 
   /*!
-   * Returns the time in seconds that it will take
+   * @brief Returns the time in seconds that it will take
    * for the next added packet to be heard from the speakers.
    * @param id The stream id
    * @return the delay in seconds
    * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetAddonCapabilities
    */
   float MasterProcessGetDelay(AE_DSP_STREAM_ID id);
+
+  /*!
+   * @brief Returns the from selected master mode performed channel alignment
+   * @param id The stream id
+   * @retval out_channel_present_flags the exact channel present flags after performed up-/downmix
+   * @return the amount channels
+   * @remarks Optional. Must be used and set if a channel up- or downmix is processed from the active master mode
+   */
+  int MasterProcessGetOutChannels(AE_DSP_STREAM_ID id, unsigned long &out_channel_present_flags);
 
   /*!
    * @brief Master processing becomes performed with it
@@ -416,6 +425,7 @@ extern "C"
     pDSP->MasterProcessSetMode                  = MasterProcessSetMode;
     pDSP->MasterProcessNeededSamplesize         = MasterProcessNeededSamplesize;
     pDSP->MasterProcessGetDelay                 = MasterProcessGetDelay;
+    pDSP->MasterProcessGetOutChannels           = MasterProcessGetOutChannels;
     pDSP->MasterProcess                         = MasterProcess;
     pDSP->MasterProcessGetStreamInfoString      = MasterProcessGetStreamInfoString;
 
