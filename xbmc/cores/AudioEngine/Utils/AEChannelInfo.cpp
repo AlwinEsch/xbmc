@@ -289,6 +289,14 @@ bool CAEChannelInfo::HasChannel(const enum AEChannel ch) const
   return false;
 }
 
+int CAEChannelInfo::GetChannelIndex(const enum AEChannel ch) const
+{
+  for (unsigned int i = 0; i < m_channelCount; ++i)
+    if (m_channels[i] == ch)
+      return i;
+  return -1;
+}
+
 bool CAEChannelInfo::ContainsChannels(CAEChannelInfo& rhs) const
 {
   for (unsigned int i = 0; i < rhs.m_channelCount; ++i)
