@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include "DllAvUtil.h"
+#include "DllSwResample.h"
 #include "ActiveAEDSP.h"
 
 namespace ActiveAE
@@ -248,6 +250,7 @@ namespace ActiveAE
        * Helper functions
        */
       bool CreateStreamProfile();
+      bool InitFallbackDownmix();
       void ResetStreamFunctionsSelection();
       AE_DSP_STREAMTYPE DetectStreamType(const CFileItem *item);
       const char *GetStreamTypeName(AE_DSP_STREAMTYPE iStreamType);
@@ -277,6 +280,13 @@ namespace ActiveAE
       int                               m_NewMasterMode;            /*!< if master mode is changed it set here and handled by Process function */
       AE_DSP_STREAMTYPE                 m_NewStreamType;            /*!< if stream type is changed it set here and handled by Process function */
 
+      DllAvUtil                         m_dllAvUtil;
+      DllSwResample                     m_dllSwResample;
+      bool                              m_dllSwResampleNeedUsage;
+      bool                              m_dllSwResampleLoaded;
+      SwrContext                       *m_dllSwResampleContext;
+      int                               m_dllSwResampleChannelMap[SWR_CH_MAX];
+
       CCriticalSection                  m_critSection;
       CCriticalSection                  m_restartSection;
 
@@ -304,6 +314,8 @@ namespace ActiveAE
       std::vector <sDSPProcessHandle>   m_Addons_PreProc;           /*!< Input stream preprocessing function calls set and aligned from dsp settings stored inside database */
       std::vector <sDSPProcessHandle>   m_Addons_MasterProc;        /*!< The current from user selected master processing function on addon */
       int                               m_ActiveMode;               /*!< the current used master mode, is a pointer to m_Addons_MasterProc */
+      int                               m_ActiveModeOutChannels;
+      unsigned long                     m_ActiveModeOutChannelsPresent;
       std::vector <sDSPProcessHandle>   m_Addons_PostProc;          /*!< Output stream postprocessing function calls set and aligned from dsp settings stored inside database */
       sDSPProcessHandle                 m_Addon_OutputResample;     /*!< Output stream resampling over one on settings enabled output resample function only on one addon */
 
