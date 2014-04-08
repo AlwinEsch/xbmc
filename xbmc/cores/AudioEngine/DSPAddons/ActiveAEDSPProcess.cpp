@@ -207,7 +207,7 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
    * present here.
    * Possible channel alignment fault from multichannel source and need to check!
    */
-  if (m_idx_in[AE_CH_SL] >= 0 && m_idx_in[AE_CH_SR] >= 0 && m_idx_in[AE_CH_BL] < 0 && m_idx_in[AE_CH_BR] < 0)
+  if (m_AddonSettings.iOutChannels <= 2 && m_idx_in[AE_CH_SL] >= 0 && m_idx_in[AE_CH_SR] >= 0 && m_idx_in[AE_CH_BL] < 0 && m_idx_in[AE_CH_BR] < 0)
   {
     m_idx_in[AE_CH_BL] = m_idx_in[AE_CH_SL];
     m_idx_in[AE_CH_BR] = m_idx_in[AE_CH_SR];
