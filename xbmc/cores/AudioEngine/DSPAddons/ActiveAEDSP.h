@@ -251,6 +251,13 @@ namespace ActiveAE
   /*! @name Current processing streams control function methods */
   //@{
     /*!>
+     * Get the channel position defination for given channel layout
+     * @param stdLayout The layout identifier
+     * @return the from given identifier set channel information class
+     */
+    CAEChannelInfo GetDSPChannelLayout(AEStdChLayout stdLayout);
+
+    /*!>
      * Create the dsp processing with check of all addons about the used input and output audio format.
      * @param streamId The id of this stream
      * @param inputFormat The used audio stream input format

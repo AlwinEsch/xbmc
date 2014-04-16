@@ -347,6 +347,47 @@ int CActiveAEDSP::GetAudioDSPAddonId(const AddonPtr addon) const
 
 /*! @name Current processing streams control function methods */
 //@{
+CAEChannelInfo CActiveAEDSP::GetDSPChannelLayout(AEStdChLayout stdLayout)
+{
+  uint64_t channelLayoutOut;
+  std::vector<enum AEChannel> channelList;
+  switch (stdLayout)
+  {
+    default:
+    case AE_CH_LAYOUT_2_0:
+      channelLayoutOut = AV_CH_LAYOUT_STEREO;
+      break;
+    case AE_CH_LAYOUT_2_1:
+      channelLayoutOut = AV_CH_LAYOUT_2POINT1;
+      break;
+    case AE_CH_LAYOUT_3_0:
+      channelLayoutOut = AV_CH_LAYOUT_SURROUND;
+      break;
+    case AE_CH_LAYOUT_3_1:
+      channelLayoutOut = AV_CH_LAYOUT_3POINT1;
+      break;
+    case AE_CH_LAYOUT_4_0:
+      channelLayoutOut = AV_CH_LAYOUT_2_2;
+      break;
+    case AE_CH_LAYOUT_4_1:
+      channelLayoutOut = AV_CH_LAYOUT_2_2|AV_CH_LOW_FREQUENCY;
+      break;
+    case AE_CH_LAYOUT_5_0:
+      channelLayoutOut = AV_CH_LAYOUT_5POINT0;
+      break;
+    case AE_CH_LAYOUT_5_1:
+      channelLayoutOut = AV_CH_LAYOUT_5POINT1;
+      break;
+    case AE_CH_LAYOUT_7_0:
+      channelLayoutOut = AV_CH_LAYOUT_7POINT0;
+      break;
+    case AE_CH_LAYOUT_7_1:
+      channelLayoutOut = AV_CH_LAYOUT_7POINT1;
+      break;
+  }
+  return CActiveAEResample::GetAEChannelLayout(channelLayoutOut);
+}
+
 bool CActiveAEDSP::CreateDSPs(unsigned int &streamId, CActiveAEDSPProcessPtr &process, AEAudioFormat inputFormat, AEAudioFormat outputFormat, bool upmix, AEQuality quality, bool wasActive)
 {
   if (inputFormat.m_dataFormat != AE_FMT_FLOAT)

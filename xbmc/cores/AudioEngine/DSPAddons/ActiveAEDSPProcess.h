@@ -21,8 +21,6 @@
 
 #include <vector>
 
-#include "DllAvUtil.h"
-#include "DllSwResample.h"
 #include "ActiveAEDSP.h"
 
 namespace ActiveAE
@@ -249,8 +247,8 @@ namespace ActiveAE
       /*!
        * Helper functions
        */
+      void InitFallbackMixer();
       bool CreateStreamProfile();
-      bool InitFallbackDownmix();
       void ResetStreamFunctionsSelection();
       AE_DSP_STREAMTYPE DetectStreamType(const CFileItem *item);
       const char *GetStreamTypeName(AE_DSP_STREAMTYPE iStreamType);
@@ -258,6 +256,7 @@ namespace ActiveAE
       bool MasterModeChange(int iModeID, AE_DSP_STREAMTYPE iStreamType = AE_DSP_ASTREAM_INVALID);
       AE_DSP_BASETYPE GetBaseType(AE_DSP_STREAM_PROPERTIES *props);
       bool ReallocProcessArray(unsigned int requestSize);
+      void SetFFMpegChannelMixerArray(float **array_in, float **array_out);
     //@}
     //@{
       /*!
@@ -280,13 +279,6 @@ namespace ActiveAE
       int                               m_NewMasterMode;            /*!< if master mode is changed it set here and handled by Process function */
       AE_DSP_STREAMTYPE                 m_NewStreamType;            /*!< if stream type is changed it set here and handled by Process function */
 
-      DllAvUtil                         m_dllAvUtil;
-      DllSwResample                     m_dllSwResample;
-      bool                              m_dllSwResampleNeedUsage;
-      bool                              m_dllSwResampleLoaded;
-      SwrContext                       *m_dllSwResampleContext;
-      int                               m_dllSwResampleChannelMap[SWR_CH_MAX];
-
       CCriticalSection                  m_critSection;
       CCriticalSection                  m_restartSection;
 
@@ -306,16 +298,16 @@ namespace ActiveAE
         CActiveAEDSPModePtr pMode;                                  /*!< Processing mode information data */
         AudioDSP*           pFunctions;                             /*!< The Addon function table, separeted from pAddon to safe several calls on process chain */
         AE_DSP_ADDON        pAddon;                                 /*!< Addon control class */
-        uint64_t            iLastUsage;
-        uint64_t            iLastTime;
+        uint64_t            iLastUsage;                             /*!< the last usage time stamp of the mode */
+        uint64_t            iLastTime;                              /*!< last processing time of the mode */
       };
       std::vector <AudioDSP*>           m_Addons_InputProc;         /*!< Input processing list, called to all enabled dsp addons with the basic unchanged input stream, is read only. */
       sDSPProcessHandle                 m_Addon_InputResample;      /*!< Input stream resampling over one on settings enabled input resample function only on one addon */
       std::vector <sDSPProcessHandle>   m_Addons_PreProc;           /*!< Input stream preprocessing function calls set and aligned from dsp settings stored inside database */
       std::vector <sDSPProcessHandle>   m_Addons_MasterProc;        /*!< The current from user selected master processing function on addon */
       int                               m_ActiveMode;               /*!< the current used master mode, is a pointer to m_Addons_MasterProc */
-      int                               m_ActiveModeOutChannels;
-      unsigned long                     m_ActiveModeOutChannelsPresent;
+      int                               m_ActiveModeOutChannels;    /*!< Amount of channels given from active master mode or -1 if unhandled */
+      unsigned long                     m_ActiveModeOutChannelsPresent; /*! The exact present flags of output processing channels from active master mode */
       std::vector <sDSPProcessHandle>   m_Addons_PostProc;          /*!< Output stream postprocessing function calls set and aligned from dsp settings stored inside database */
       sDSPProcessHandle                 m_Addon_OutputResample;     /*!< Output stream resampling over one on settings enabled output resample function only on one addon */
 
@@ -327,6 +319,14 @@ namespace ActiveAE
       uint64_t                          m_iLastProcessTime;
       uint64_t                          m_iLastProcessUsage;
       float                             m_fLastProcessUsage;
+
+      /*!>
+       * Internal ffmpeg process data
+       */
+      #define FFMPEG_PROC_ARRAY_IN  0
+      #define FFMPEG_PROC_ARRAY_OUT 1
+      CActiveAEResample                *m_FFMpegChannelMixer;       /*!< ffmpeg resampler usage for down mix of input stream to required output channel alignment */
+      float                            *m_FFMpegProcessArray[2][AE_DSP_CH_MAX]; /*!< the process array memory pointers for ffmpeg. No own memory only addresses taken from m_ProcessArray in correct ffmpeg channel alignment */
 
       /*!>
        * Index pointers for interleaved audio streams to detect correct channel alignment

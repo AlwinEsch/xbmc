@@ -46,9 +46,7 @@ CActiveAEDSPProcess::CActiveAEDSPProcess(AE_DSP_STREAM_ID streamId)
   m_NewStreamType           = AE_DSP_ASTREAM_INVALID;
   m_NewMasterMode           = AE_DSP_MASTER_MODE_ID_INVALID;
   m_ForceInit               = false;
-  m_dllSwResampleLoaded     = false;
-  m_dllSwResampleNeedUsage  = false;
-  m_dllSwResampleContext    = NULL;
+  m_FFMpegChannelMixer      = NULL;
 
   m_Addon_InputResample.Clear();
   m_Addon_OutputResample.Clear();
@@ -70,6 +68,9 @@ CActiveAEDSPProcess::CActiveAEDSPProcess(AE_DSP_STREAM_ID streamId)
 CActiveAEDSPProcess::~CActiveAEDSPProcess()
 {
   ResetStreamFunctionsSelection();
+
+  if (m_FFMpegChannelMixer)
+    delete m_FFMpegChannelMixer;
 
   /* Clear the buffer arrays */
   for (int i = 0; i < AE_DSP_CH_MAX; i++)
@@ -179,63 +180,26 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
   m_AddonSettings.bInputResamplingActive  = false;
   m_AddonSettings.iQualityLevel           = quality;
 
-  /*! Detect interleaved input stream channel positions (-1 = not present) */
-  m_idx_in[AE_CH_FL]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_FL);
-  m_idx_in[AE_CH_FR]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_FR);
-  m_idx_in[AE_CH_FC]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_FC);
-  m_idx_in[AE_CH_LFE]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_LFE);
-  m_idx_in[AE_CH_BL]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_BL);
-  m_idx_in[AE_CH_BR]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_BR);
-  m_idx_in[AE_CH_FLOC]  = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_FLOC);
-  m_idx_in[AE_CH_FROC]  = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_FROC);
-  m_idx_in[AE_CH_BC]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_BC);
-  m_idx_in[AE_CH_SL]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_SL);
-  m_idx_in[AE_CH_SR]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_SR);
-  m_idx_in[AE_CH_TC]    = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TC);
-  m_idx_in[AE_CH_TFL]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TFL);
-  m_idx_in[AE_CH_TFC]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TFC);
-  m_idx_in[AE_CH_TFR]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TFR);
-  m_idx_in[AE_CH_TBL]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TBL);
-  m_idx_in[AE_CH_TBC]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TBC);
-  m_idx_in[AE_CH_TBR]   = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_TBR);
-  m_idx_in[AE_CH_BLOC]  = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_BLOC);
-  m_idx_in[AE_CH_BROC]  = m_InputFormat.m_channelLayout.GetChannelIndex(AE_CH_BROC);
-
-  /**
-   * Fix channel alignment on 5.1 surround sound, is send on side left/right, but ffmpeg resampler need it on back left/right
-   * for downmix, problem is not visible on interleaved buffer type to ffmpeg (side and back alone on same position), but becomes 
-   * present here.
-   * Possible channel alignment fault from multichannel source and need to check!
-   */
-  if (m_AddonSettings.iOutChannels <= 2 && m_idx_in[AE_CH_SL] >= 0 && m_idx_in[AE_CH_SR] >= 0 && m_idx_in[AE_CH_BL] < 0 && m_idx_in[AE_CH_BR] < 0)
-  {
-    m_idx_in[AE_CH_BL] = m_idx_in[AE_CH_SL];
-    m_idx_in[AE_CH_BR] = m_idx_in[AE_CH_SR];
-    m_idx_in[AE_CH_SL] = -1;
-    m_idx_in[AE_CH_SR] = -1;
-  }
-  
-  /*! Set input channel present flags for addon function calls */
-  if (m_idx_in[AE_CH_FL] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FL;
-  if (m_idx_in[AE_CH_FR] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FR;
-  if (m_idx_in[AE_CH_FC] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FC;
-  if (m_idx_in[AE_CH_LFE] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_LFE;
-  if (m_idx_in[AE_CH_BL] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BL;
-  if (m_idx_in[AE_CH_BR] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BR;
-  if (m_idx_in[AE_CH_FLOC] >= 0) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FLOC;
-  if (m_idx_in[AE_CH_FROC] >= 0) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FROC;
-  if (m_idx_in[AE_CH_BC] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BC;
-  if (m_idx_in[AE_CH_SL] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SL;
-  if (m_idx_in[AE_CH_SR] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SR;
-  if (m_idx_in[AE_CH_TFL] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFL;
-  if (m_idx_in[AE_CH_TFR] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFR;
-  if (m_idx_in[AE_CH_TFC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFC;
-  if (m_idx_in[AE_CH_TC] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TC;
-  if (m_idx_in[AE_CH_TBL] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBL;
-  if (m_idx_in[AE_CH_TBR] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBR;
-  if (m_idx_in[AE_CH_TBC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBC;
-  if (m_idx_in[AE_CH_BLOC] >= 0) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BLOC;
-  if (m_idx_in[AE_CH_BROC] >= 0) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BROC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_FL))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FL;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_FR))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FR;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_FC))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_LFE))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_LFE;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_BL))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BL;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_BR))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BR;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_FLOC)) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FLOC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_FROC)) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FROC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_BC))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_SL))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SL;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_SR))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SR;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TFL))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFL;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TFR))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFR;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TFC))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TC))   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TBL))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBL;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TBR))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBR;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_TBC))  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_BLOC)) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BLOC;
+  if (m_InputFormat.m_channelLayout.HasChannel(AE_CH_BROC)) m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BROC;
 
   if (m_OutputFormat.m_channelLayout.HasChannel(AE_CH_FL))   m_AddonSettings.lOutChannelPresentFlags |= AE_DSP_PRSNT_CH_FL;
   if (m_OutputFormat.m_channelLayout.HasChannel(AE_CH_FR))   m_AddonSettings.lOutChannelPresentFlags |= AE_DSP_PRSNT_CH_FR;
@@ -539,13 +503,9 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
   }
 
   /*!
-   * if the amount of input channels is higher as output and the active master mode gives more channels out
-   * a forced channel downmix becomes enabled.
+   * Initialize fallback matrix mixer
    */
-  if (m_AddonSettings.iInChannels > m_AddonSettings.iOutChannels && (m_ActiveModeOutChannels <= 0 || m_ActiveModeOutChannels > m_AddonSettings.iOutChannels))
-    m_dllSwResampleNeedUsage = InitFallbackDownmix();
-  else
-    m_dllSwResampleNeedUsage = false;
+  InitFallbackMixer();
 
   if (CLog::GetLogLevel() == LOGDEBUG) // Speed improve
   {
@@ -575,6 +535,7 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
     CLog::Log(LOGDEBUG, "  ----  Process format ----");
     CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonSettings.iProcessSamplerate);
     CLog::Log(LOGDEBUG, "  | Frames               : %d", m_AddonSettings.iProcessFrames);
+    CLog::Log(LOGDEBUG, "  | Fallback mixer       : %s", m_FFMpegChannelMixer ? "yes" : "no");
     CLog::Log(LOGDEBUG, "  ----  Output format ----");
     CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonSettings.iOutSamplerate);
     CLog::Log(LOGDEBUG, "  | Sample Format        : %s", CAEUtil::DataFormatToStr(m_OutputFormat.m_dataFormat));
@@ -589,89 +550,41 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
   return true;
 }
 
-bool CActiveAEDSPProcess::InitFallbackDownmix()
+void CActiveAEDSPProcess::InitFallbackMixer()
 {
-  if (!m_dllSwResampleLoaded)
-  {
-    if (m_dllAvUtil.Load() && m_dllSwResample.Load())
-      m_dllSwResampleLoaded = true;
-    else
-      return false;
-  }
-
-  m_dllSwResampleContext = m_dllSwResample.swr_alloc_set_opts(m_dllSwResampleContext,
-                                                              CActiveAEResample::GetAVChannelLayout(m_OutputFormat.m_channelLayout), AV_SAMPLE_FMT_FLTP, m_AddonSettings.iProcessSamplerate,
-                                                              CActiveAEResample::GetAVChannelLayout(m_InputFormat.m_channelLayout), AV_SAMPLE_FMT_FLTP, m_AddonSettings.iProcessSamplerate,
-                                                             0, NULL);
-  if (!m_dllSwResampleContext)
-  {
-    CLog::Log(LOGERROR, "ActiveAE DSP - %s - create channel fallback matrix context failed", __FUNCTION__);
-    return false;
-  }
-
-  m_dllAvUtil.av_opt_set_double(m_dllSwResampleContext, "rematrix_maxval", 1.0, 0);
+  /*!
+   * If ffmpeg resampler is already present delete it first to create it from new
+   */
+  if (m_FFMpegChannelMixer)
+    delete m_FFMpegChannelMixer;
+  m_FFMpegChannelMixer = NULL;
 
   /*!
-   * Defination taken from ffmpeg lib/ffmpeg/libswresample/rematrix.c
+   * if the amount of input channels is higher as output and the active master mode gives more channels out or if it is not set of it
+   * a forced channel downmix becomes enabled.
    */
-  #define FRONT_LEFT             0
-  #define FRONT_RIGHT            1
-  #define FRONT_CENTER           2
-  #define LOW_FREQUENCY          3
-  #define BACK_LEFT              4
-  #define BACK_RIGHT             5
-  #define FRONT_LEFT_OF_CENTER   6
-  #define FRONT_RIGHT_OF_CENTER  7
-  #define BACK_CENTER            8
-  #define SIDE_LEFT              9
-  #define SIDE_RIGHT             10
-  #define TOP_CENTER             11
-  #define TOP_FRONT_LEFT         12
-  #define TOP_FRONT_CENTER       13
-  #define TOP_FRONT_RIGHT        14
-  #define TOP_BACK_LEFT          15
-  #define TOP_BACK_CENTER        16
-  #define TOP_BACK_RIGHT         17
-
-  /*!
-   * Set correct input channel positions from planar dsp stream data array to resampler
-   */
-  m_dllSwResampleChannelMap[FRONT_LEFT]             = m_idx_in[AE_CH_FL]   >= 0 ? AE_DSP_CH_FL    : -1;
-  m_dllSwResampleChannelMap[FRONT_RIGHT]            = m_idx_in[AE_CH_FR]   >= 0 ? AE_DSP_CH_FR    : -1;
-  m_dllSwResampleChannelMap[FRONT_CENTER]           = m_idx_in[AE_CH_FC]   >= 0 ? AE_DSP_CH_FC    : -1;
-  m_dllSwResampleChannelMap[LOW_FREQUENCY]          = m_idx_in[AE_CH_LFE]  >= 0 ? AE_DSP_CH_LFE   : -1;
-  m_dllSwResampleChannelMap[SIDE_LEFT]              = m_idx_in[AE_CH_SL]   >= 0 ? AE_DSP_CH_SL    : -1;
-  m_dllSwResampleChannelMap[SIDE_RIGHT]             = m_idx_in[AE_CH_SR]   >= 0 ? AE_DSP_CH_SR    : -1;
-  m_dllSwResampleChannelMap[BACK_LEFT]              = m_idx_in[AE_CH_BL]   >= 0 ? AE_DSP_CH_BL    : -1;
-  m_dllSwResampleChannelMap[BACK_RIGHT]             = m_idx_in[AE_CH_BR]   >= 0 ? AE_DSP_CH_BR    : -1;
-  m_dllSwResampleChannelMap[FRONT_LEFT_OF_CENTER]   = m_idx_in[AE_CH_FLOC] >= 0 ? AE_DSP_CH_FLOC  : -1;
-  m_dllSwResampleChannelMap[FRONT_RIGHT_OF_CENTER]  = m_idx_in[AE_CH_FROC] >= 0 ? AE_DSP_CH_FROC  : -1;
-  m_dllSwResampleChannelMap[BACK_CENTER]            = m_idx_in[AE_CH_BC]   >= 0 ? AE_DSP_CH_BC    : -1;
-  m_dllSwResampleChannelMap[TOP_CENTER]             = m_idx_in[AE_CH_TC]   >= 0 ? AE_DSP_CH_TC    : -1;
-  m_dllSwResampleChannelMap[TOP_FRONT_LEFT]         = m_idx_in[AE_CH_TFL]  >= 0 ? AE_DSP_CH_TFL   : -1;
-  m_dllSwResampleChannelMap[TOP_FRONT_CENTER]       = m_idx_in[AE_CH_TFC]  >= 0 ? AE_DSP_CH_TFC   : -1;
-  m_dllSwResampleChannelMap[TOP_FRONT_RIGHT]        = m_idx_in[AE_CH_TFR]  >= 0 ? AE_DSP_CH_TFR   : -1;
-  m_dllSwResampleChannelMap[TOP_BACK_LEFT]          = m_idx_in[AE_CH_TBL]  >= 0 ? AE_DSP_CH_TBL   : -1;
-  m_dllSwResampleChannelMap[TOP_BACK_CENTER]        = m_idx_in[AE_CH_TBC]  >= 0 ? AE_DSP_CH_TBC   : -1;
-  m_dllSwResampleChannelMap[TOP_BACK_RIGHT]         = m_idx_in[AE_CH_TBR]  >= 0 ? AE_DSP_CH_TBR   : -1;
-
-  if(m_dllSwResample.swr_set_channel_mapping(m_dllSwResampleContext, m_dllSwResampleChannelMap) < 0)
+  if (m_AddonSettings.iInChannels > m_AddonSettings.iOutChannels && (m_ActiveModeOutChannels <= 0 || m_ActiveModeOutChannels > m_AddonSettings.iOutChannels))
   {
-    CLog::Log(LOGERROR, "ActiveAE DSP - %s - init channel fallback matrix mapping failed", __FUNCTION__);
-    m_dllSwResample.swr_free(&m_dllSwResampleContext);
-    m_dllSwResampleContext = NULL;
-    return false;
-  }
+    m_FFMpegChannelMixer = new CActiveAEResample();
+    if (!m_FFMpegChannelMixer->Init(CActiveAEResample::GetAVChannelLayout(m_OutputFormat.m_channelLayout),
+                                m_OutputFormat.m_channelLayout.Count(),
+                                m_AddonSettings.iProcessSamplerate,
+                                AV_SAMPLE_FMT_FLTP, sizeof(float) << 3,
+                                CActiveAEResample::GetAVChannelLayout(m_InputFormat.m_channelLayout),
+                                m_InputFormat.m_channelLayout.Count(),
+                                m_AddonSettings.iProcessSamplerate,
+                                AV_SAMPLE_FMT_FLTP, sizeof(float) << 3,
+                                false,
+                                true,
+                                NULL,
+                                m_ResampleQuality))
+    {
+      delete m_FFMpegChannelMixer;
+      m_FFMpegChannelMixer = NULL;
 
-  if(m_dllSwResample.swr_init(m_dllSwResampleContext) < 0)
-  {
-    CLog::Log(LOGERROR, "ActiveAE DSP - %s - init channel fallback matrix failed", __FUNCTION__);
-    m_dllSwResample.swr_free(&m_dllSwResampleContext);
-    m_dllSwResampleContext = NULL;
-    return false;
+      CLog::Log(LOGERROR, "ActiveAE DSP - %s - Initialize of ffmpeg channel mixer failed", __FUNCTION__);
+    }
   }
-
-  return true;
 }
 
 bool CActiveAEDSPProcess::CreateStreamProfile()
@@ -685,19 +598,6 @@ void CActiveAEDSPProcess::Destroy()
 
   if (!CActiveAEDSP::Get().IsActivated())
     return;
-
-  if (m_dllSwResampleLoaded)
-  {
-    if (m_dllSwResampleContext)
-      m_dllSwResample.swr_free(&m_dllSwResampleContext);
-    m_dllSwResampleContext = NULL;
-
-    m_dllAvUtil.Unload();
-    m_dllSwResample.Unload();
-
-    m_dllSwResampleLoaded = false;
-    m_dllSwResampleNeedUsage = false;
-  }
 
   for (AE_DSP_ADDONMAP_ITR itr = m_usedMap.begin(); itr != m_usedMap.end(); itr++)
   {
@@ -973,13 +873,9 @@ bool CActiveAEDSPProcess::MasterModeChange(int iModeID, AE_DSP_STREAMTYPE iStrea
   }
 
   /*!
-   * if the amount of input channels is higher as output and the active master mode gives more channels out or if it is not set of it
-   * a forced channel downmix becomes enabled.
+   * Initialize fallback matrix mixer
    */
-  if (m_AddonSettings.iInChannels > m_AddonSettings.iOutChannels && (m_ActiveModeOutChannels <= 0 || m_ActiveModeOutChannels > m_AddonSettings.iOutChannels))
-    m_dllSwResampleNeedUsage = InitFallbackDownmix();
-  else
-    m_dllSwResampleNeedUsage = false;
+  InitFallbackMixer();
 
   return bReturn;
 }
@@ -1003,6 +899,35 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out, CActive
   CThread *processThread    = CThread::GetCurrentThread();
   unsigned int iTime        = XbmcThreads::SystemClockMillis() * 10000;
   int64_t hostFrequency     = CurrentHostFrequency();
+
+  /* Detect interleaved input stream channel positions if unknown or changed */
+  if (m_ChannelLayoutIn != in->pkt->config.channel_layout)
+  {
+    m_ChannelLayoutIn = in->pkt->config.channel_layout;
+
+    m_idx_in[AE_CH_FL]    = resampler->GetAVChannelIndex(AE_CH_FL,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_FR]    = resampler->GetAVChannelIndex(AE_CH_FR,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_FC]    = resampler->GetAVChannelIndex(AE_CH_FC,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_LFE]   = resampler->GetAVChannelIndex(AE_CH_LFE,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_BL]    = resampler->GetAVChannelIndex(AE_CH_BL,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_BR]    = resampler->GetAVChannelIndex(AE_CH_BR,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_FLOC]  = resampler->GetAVChannelIndex(AE_CH_FLOC, m_ChannelLayoutIn);
+    m_idx_in[AE_CH_FROC]  = resampler->GetAVChannelIndex(AE_CH_FROC, m_ChannelLayoutIn);
+    m_idx_in[AE_CH_BC]    = resampler->GetAVChannelIndex(AE_CH_BC,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_SL]    = resampler->GetAVChannelIndex(AE_CH_SL,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_SR]    = resampler->GetAVChannelIndex(AE_CH_SR,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TC]    = resampler->GetAVChannelIndex(AE_CH_TC,   m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TFL]   = resampler->GetAVChannelIndex(AE_CH_TFL,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TFC]   = resampler->GetAVChannelIndex(AE_CH_TFC,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TFR]   = resampler->GetAVChannelIndex(AE_CH_TFR,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TBL]   = resampler->GetAVChannelIndex(AE_CH_TBL,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TBC]   = resampler->GetAVChannelIndex(AE_CH_TBC,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_TBR]   = resampler->GetAVChannelIndex(AE_CH_TBR,  m_ChannelLayoutIn);
+    m_idx_in[AE_CH_BLOC]  = resampler->GetAVChannelIndex(AE_CH_BLOC, m_ChannelLayoutIn);
+    m_idx_in[AE_CH_BROC]  = resampler->GetAVChannelIndex(AE_CH_BROC, m_ChannelLayoutIn);
+
+    needDSPAddonsReinit = true;
+  }
 
   /* Detect also interleaved output stream channel positions if unknown or changed */
   if (m_ChannelLayoutOut != out->pkt->config.channel_layout)
@@ -1035,6 +960,28 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out, CActive
 
   if (needDSPAddonsReinit)
   {
+    m_AddonSettings.lInChannelPresentFlags = 0;
+    if (m_idx_in[AE_CH_FL] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FL;
+    if (m_idx_in[AE_CH_FR] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FR;
+    if (m_idx_in[AE_CH_FC] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FC;
+    if (m_idx_in[AE_CH_LFE] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_LFE;
+    if (m_idx_in[AE_CH_BL] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BL;
+    if (m_idx_in[AE_CH_BR] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BR;
+    if (m_idx_in[AE_CH_FLOC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FLOC;
+    if (m_idx_in[AE_CH_FROC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_FROC;
+    if (m_idx_in[AE_CH_BC] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BC;
+    if (m_idx_in[AE_CH_SL] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SL;
+    if (m_idx_in[AE_CH_SR] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_SR;
+    if (m_idx_in[AE_CH_TFL] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFL;
+    if (m_idx_in[AE_CH_TFR] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFR;
+    if (m_idx_in[AE_CH_TFC] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TFC;
+    if (m_idx_in[AE_CH_TC] >= 0)    m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TC;
+    if (m_idx_in[AE_CH_TBL] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBL;
+    if (m_idx_in[AE_CH_TBR] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBR;
+    if (m_idx_in[AE_CH_TBC] >= 0)   m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_TBC;
+    if (m_idx_in[AE_CH_BLOC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BLOC;
+    if (m_idx_in[AE_CH_BROC] >= 0)  m_AddonSettings.lInChannelPresentFlags |= AE_DSP_PRSNT_CH_BROC;
+
     m_AddonSettings.lOutChannelPresentFlags = 0;
     if (m_idx_out[AE_CH_FL] >= 0)   m_AddonSettings.lOutChannelPresentFlags |= AE_DSP_PRSNT_CH_FL;
     if (m_idx_out[AE_CH_FR] >= 0)   m_AddonSettings.lOutChannelPresentFlags |= AE_DSP_PRSNT_CH_FR;
@@ -1083,7 +1030,6 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out, CActive
       }
     }
 
-    needDSPAddonsReinit = false;
     m_ForceInit         = false;
     m_iLastProcessTime  = XbmcThreads::SystemClockMillis() * 10000;
     m_iLastProcessUsage = 0;
@@ -1270,11 +1216,18 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out, CActive
     }
   }
 
-  if (m_dllSwResampleNeedUsage)
+  /**
+   * Perform fallback channel mixing if input channel alignment is different from
+   * output and not becomes processed by active master processing mode.
+   */
+  if (m_FFMpegChannelMixer)
   {
     startTime = CurrentHostCounter();
 
-    frames = m_dllSwResample.swr_convert(m_dllSwResampleContext, (uint8_t**)m_ProcessArray[togglePtr], frames, (const uint8_t**)lastOutArray, frames);
+    if (needDSPAddonsReinit)
+      SetFFMpegChannelMixerArray(lastOutArray, m_ProcessArray[togglePtr]);
+
+    frames = m_FFMpegChannelMixer->Resample((uint8_t**)m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT], frames, (uint8_t**)m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN], frames, 1.0);
     if (frames <= 0)
     {
       CLog::Log(LOGERROR, "CActiveAEResample::Resample - resample failed");
@@ -1464,6 +1417,140 @@ bool CActiveAEDSPProcess::ReallocProcessArray(unsigned int requestSize)
     }
   }
   return true;
+}
+
+void CActiveAEDSPProcess::SetFFMpegChannelMixerArray(float **array_in, float **array_out)
+{
+  /*!
+   * Setup ffmpeg resampler channel setup, this way is not my favorite but it works to become
+   * the correct channel alignment on the given input and output signal.
+   * The problem is, the process array of ffmpeg is not fixed and for every selected channel setup
+   * the positions are different. For this case a translation from the fixed dsp stream format to
+   * ffmpeg format must be performed. It use a separate process array table which becomes set by
+   * already present channel memory storage.
+   */
+
+  //! Initialize input channel alignmment for ffmpeg process array
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_FL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_FL]] = array_in[AE_DSP_CH_FL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_FR]] = array_in[AE_DSP_CH_FR];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_FC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_FC]] = array_in[AE_DSP_CH_FC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_LFE)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_LFE]] = array_in[AE_DSP_CH_LFE];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_BL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_BL]] = array_in[AE_DSP_CH_BL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_BR]] = array_in[AE_DSP_CH_BR];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_FLOC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_FLOC]] = array_in[AE_DSP_CH_FLOC];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_FROC]] = array_in[AE_DSP_CH_FROC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_BC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_BC]] = array_in[AE_DSP_CH_BC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_SL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_SL]] = array_in[AE_DSP_CH_SL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_SR]] = array_in[AE_DSP_CH_SR];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_TFL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TFL]] = array_in[AE_DSP_CH_TFL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TFR]] = array_in[AE_DSP_CH_TFR];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_TFC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TFC]] = array_in[AE_DSP_CH_TFC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_TC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TC]] = array_in[AE_DSP_CH_TC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_TBL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TBL]] = array_in[AE_DSP_CH_TBL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TBR]] = array_in[AE_DSP_CH_TBR];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_TBC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_TBC]] = array_in[AE_DSP_CH_TBC];
+  }
+  if (m_AddonSettings.lInChannelPresentFlags & AE_DSP_PRSNT_CH_BLOC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_BLOC]] = array_in[AE_DSP_CH_BLOC];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_IN][m_idx_in[AE_CH_BROC]] = array_in[AE_DSP_CH_BROC];
+  }
+
+  //! Initialize output channel alignmment for ffmpeg process array
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_FL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_FL]] = array_out[AE_DSP_CH_FL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_FR]] = array_out[AE_DSP_CH_FR];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_FC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_FC]] = array_out[AE_DSP_CH_FC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_LFE)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_LFE]] = array_out[AE_DSP_CH_LFE];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_BL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_BL]] = array_out[AE_DSP_CH_BL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_BR]] = array_out[AE_DSP_CH_BR];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_FLOC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_FLOC]] = array_out[AE_DSP_CH_FLOC];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_FROC]] = array_out[AE_DSP_CH_FROC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_BC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_BC]] = array_out[AE_DSP_CH_BC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_SL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_SL]] = array_out[AE_DSP_CH_SL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_SR]] = array_out[AE_DSP_CH_SR];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_TFL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TFL]] = array_out[AE_DSP_CH_TFL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TFR]] = array_out[AE_DSP_CH_TFR];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_TFC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TFC]] = array_out[AE_DSP_CH_TFC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_TC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TC]] = array_out[AE_DSP_CH_TC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_TBL)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TBL]] = array_out[AE_DSP_CH_TBL];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TBR]] = array_out[AE_DSP_CH_TBR];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_TBC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_TBC]] = array_out[AE_DSP_CH_TBC];
+  }
+  if (m_AddonSettings.lOutChannelPresentFlags & AE_DSP_PRSNT_CH_BLOC)
+  {
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_BLOC]] = array_out[AE_DSP_CH_BLOC];
+    m_FFMpegProcessArray[FFMPEG_PROC_ARRAY_OUT][m_idx_out[AE_CH_BROC]] = array_out[AE_DSP_CH_BROC];
+  }
 }
 
 float CActiveAEDSPProcess::GetDelay()
