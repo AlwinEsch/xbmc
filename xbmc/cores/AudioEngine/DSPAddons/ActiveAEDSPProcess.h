@@ -195,6 +195,12 @@ namespace ActiveAE
       int GetMasterModeID();
 
       /*!>
+       * Used to check for active modes of type on running stream id
+       * @param true if any of selected type is present
+       */
+      bool HasActiveModes(AE_DSP_MODE_TYPE type);
+
+      /*!>
        * Used to get all active modes of type on running stream id
        * @param modes The active modes in process chain list
        */

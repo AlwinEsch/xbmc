@@ -174,6 +174,7 @@ namespace INFO
 #define SYSTEM_HAS_PVR              186
 #define SYSTEM_STARTUP_WINDOW       187
 #define SYSTEM_STEREOSCOPIC_MODE    188
+#define SYSTEM_HAS_ADSP             189
 
 #define NETWORK_IP_ADDRESS          190
 #define NETWORK_MAC_ADDRESS         191
@@ -481,6 +482,23 @@ namespace INFO
 #define PVR_ACTUAL_STREAM_MUX       (PVR_STRINGS_START + 35)
 #define PVR_ACTUAL_STREAM_PROVIDER  (PVR_STRINGS_START + 36)
 #define PVR_STRINGS_END             PVR_ACTUAL_STREAM_PROVIDER
+
+#define ADSP_CONDITIONS_START       1300
+#define ADSP_IS_ACTIVE              (ADSP_CONDITIONS_START)
+#define ADSP_HAS_INPUT_RESPAMPLE    (ADSP_CONDITIONS_START + 1)
+#define ADSP_HAS_PRE_PROCESS        (ADSP_CONDITIONS_START + 2)
+#define ADSP_HAS_MASTER_PROCESS     (ADSP_CONDITIONS_START + 3)
+#define ADSP_HAS_POST_PROCESS       (ADSP_CONDITIONS_START + 4)
+#define ADSP_HAS_OUTPUT_RESAMPLE    (ADSP_CONDITIONS_START + 5)
+#define ADSP_MASTER_ACTIVE          (ADSP_CONDITIONS_START + 6)
+#define ADSP_CONDITIONS_END         ADSP_MASTER_ACTIVE
+
+#define ADSP_STRINGS_START          1350
+#define ADSP_MASTER_NAME            (ADSP_STRINGS_START + 7)
+#define ADSP_MASTER_INFO            (ADSP_STRINGS_START + 8)
+#define ADSP_MASTER_OWN_ICON        (ADSP_STRINGS_START + 9)
+#define ADSP_MASTER_OVERRIDE_ICON   (ADSP_STRINGS_START + 10)
+#define ADSP_STRINGS_END            ADSP_MASTER_OVERRIDE_ICON
 
 #define WINDOW_PROPERTY             9993
 #define WINDOW_IS_TOPMOST           9994
@@ -875,11 +893,11 @@ protected:
 
   /*! \brief Split an info string into it's constituent parts and parameters
    Format is:
-     
+
      info1(params1).info2(params2).info3(params3) ...
-   
+
    where the parameters are an optional comma separated parameter list.
-   
+
    \param infoString the original string
    \param info the resulting pairs of info and parameters.
    */

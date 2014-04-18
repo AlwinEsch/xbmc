@@ -1649,6 +1649,41 @@ int CActiveAEDSPProcess::GetMasterModeID()
   return m_ActiveMode < 0 ? AE_DSP_MASTER_MODE_ID_INVALID : m_Addons_MasterProc[m_ActiveMode].pMode->ModeID();
 }
 
+bool CActiveAEDSPProcess::HasActiveModes(AE_DSP_MODE_TYPE type)
+{
+  bool bReturn(false);
+
+  CSingleLock lock(m_critSection);
+
+  switch (type)
+  {
+  case AE_DSP_MODE_TYPE_INPUT_RESAMPLE:
+    if (m_Addon_InputResample.pFunctions != NULL)
+      bReturn = true;
+    break;
+  case AE_DSP_MODE_TYPE_PRE_PROCESS:
+    if (!m_Addons_PreProc.empty())
+      bReturn = true;
+    break;
+  case AE_DSP_MODE_TYPE_MASTER_PROCESS:
+    if (!m_Addons_MasterProc.empty())
+      bReturn = true;
+    break;
+  case AE_DSP_MODE_TYPE_POST_PROCESS:
+    if (!m_Addons_PostProc.empty())
+      bReturn = true;
+    break;
+  case AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE:
+    if (m_Addon_OutputResample.pFunctions != NULL)
+      bReturn = true;
+    break;
+  default:
+    break;
+  };
+
+  return bReturn;
+}
+
 void CActiveAEDSPProcess::GetActiveModes(std::vector<CActiveAEDSPModePtr> &modes)
 {
   CSingleLock lock(m_critSection);
