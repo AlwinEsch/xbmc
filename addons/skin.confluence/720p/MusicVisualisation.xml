@@ -128,8 +128,58 @@
 					<height>35</height>
 					<itemgap>5</itemgap>
 					<orientation>horizontal</orientation>
+					<visible>!system.getbool(audiooutput.dspaddonsenabled)</visible>
 					<control type="label">
 						<width min="10" max="700">auto</width>
+						<height>30</height>
+						<font>font30</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[Player.Title]</label>
+						<textcolor>orange</textcolor>
+						<scroll>true</scroll>
+					</control>
+					<control type="image">
+						<description>Audio Codec Image</description>
+						<width>80</width>
+						<height>35</height>
+						<aspectratio align="right">keep</aspectratio>
+						<texture>$INFO[MusicPlayer.Codec,flagging/audio/,.png]</texture>
+					</control>
+					<control type="group">
+						<description>Rating</description>
+						<width>110</width>
+						<height>35</height>
+						<control type="image">
+							<description>rating back</description>
+							<left>0</left>
+							<top>0</top>
+							<width>110</width>
+							<height>35</height>
+							<aspectratio align="left">stretch</aspectratio>
+							<texture border="5">flagging/blank.png</texture>
+						</control>
+						<control type="image">
+							<description>Rating</description>
+							<left>5</left>
+							<top>0</top>
+							<width>100</width>
+							<height>35</height>
+							<aspectratio align="center">keep</aspectratio>
+							<texture fallback="LeftRating/rating0.png">$INFO[Player.StarRating,LeftRating/]</texture>
+						</control>
+					</control>
+				</control>
+				<control type="grouplist">
+					<left>20</left>
+					<top>60</top>
+					<width>910</width>
+					<height>35</height>
+					<itemgap>5</itemgap>
+					<orientation>horizontal</orientation>
+					<visible>system.getbool(audiooutput.dspaddonsenabled)</visible>
+					<control type="label">
+						<width min="10" max="620">auto</width>
 						<height>30</height>
 						<font>font30</font>
 						<align>left</align>
@@ -150,7 +200,7 @@
 						<description>Audio Codec Image</description>
 						<width>80</width>
 						<height>35</height>
-						<aspectratio align="right">keep</aspectratio>
+						<aspectratio align="center">keep</aspectratio>
 						<visible>IsEmpty(ADSP.MasterOverrideIcon)</visible>
 						<texture>$INFO[MusicPlayer.Codec,flagging/audio/,.png]</texture>
 					</control>
@@ -158,7 +208,7 @@
 						<description>ADSP Audio Codec Override Image</description>
 						<width>80</width>
 						<height>35</height>
-						<aspectratio align="right">keep</aspectratio>
+						<aspectratio align="center">keep</aspectratio>
 						<visible>!IsEmpty(ADSP.MasterOverrideIcon)</visible>
 						<texture>$INFO[ADSP.MasterOverrideIcon]</texture>
 					</control>
