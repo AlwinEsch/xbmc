@@ -445,7 +445,6 @@ int CActiveAEDSP::TranslateIntInfo(DWORD dwInfo) const
 CAEChannelInfo CActiveAEDSP::GetDSPChannelLayout(AEStdChLayout stdLayout)
 {
   uint64_t channelLayoutOut;
-  std::vector<enum AEChannel> channelList;
   switch (stdLayout)
   {
     default:
