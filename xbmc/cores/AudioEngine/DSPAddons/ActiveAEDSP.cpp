@@ -289,7 +289,7 @@ void CActiveAEDSP::OnSettingAction(const CSetting *setting)
   }
   else if (settingId == "audiooutput.dspresetdb")
   {
-    if (CGUIDialogYesNo::ShowAndGetInput(19098, 36432, 750, 0))
+    if (CGUIDialogYesNo::ShowAndGetInput(19098, 36433, 750, 0))
     {
       CDateTime::ResetTimezoneBias();
       ResetDatabase();
