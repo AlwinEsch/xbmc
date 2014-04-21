@@ -897,7 +897,7 @@
     <ClCompile Include="..\..\xbmc\SectionLoader.cpp" />
     <ClCompile Include="..\..\xbmc\settings\AdvancedSettings.cpp" />
     <ClCompile Include="..\..\xbmc\settings\AudioDSPSettings.cpp" />
-    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp" />
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp" />
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioSettings.cpp" />
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogContentSettings.cpp" />
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogSettings.cpp" />
