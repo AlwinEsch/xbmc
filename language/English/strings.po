@@ -1286,7 +1286,9 @@ msgctxt "#306"
 msgid "Non-interleaved"
 msgstr ""
 
-#empty string with id 307
+msgctxt "#307"
+msgid "Audio & Subtitle"
+msgstr ""
 
 msgctxt "#308"
 msgid "Original stream's language"
