@@ -120,6 +120,7 @@ config.log
 /addons/visualization.fishbmc/fishbmc.vis
 /addons/script.module.pil/
 /addons/pvr.*
+/addons/adsp.*
 /addons/xbmc.json/addon.xml
 
 # /lib/
@@ -138,11 +139,14 @@ config.log
 
 # /lib/addons/
 /lib/addons/library.xbmc.addon/Makefile
+/lib/addons/library.xbmc.adsp/Makefile
 /lib/addons/library.xbmc.gui/Makefile
 /lib/addons/library.xbmc.pvr/Makefile
 /lib/addons/library.xbmc.codec/Makefile
 /lib/addons/library.xbmc.addon/project/VS2010Express/Release
 /lib/addons/library.xbmc.addon/project/VS2010Express/Debug
+/lib/addons/library.xbmc.adsp/project/VS2010Express/Release
+/lib/addons/library.xbmc.adsp/project/VS2010Express/Debug
 /lib/addons/library.xbmc.codec/project/VS2010Express/Release
 /lib/addons/library.xbmc.codec/project/VS2010Express/Debug
 /lib/addons/library.xbmc.gui/project/VS2010Express/Release
@@ -346,6 +350,7 @@ lib/cpluff/stamp-h1
 /project/Win32BuildSetup/XBMCSetup*.exe
 /project/Win32BuildSetup/languages.nsi
 /project/Win32BuildSetup/skins.nsi
+/project/Win32BuildSetup/xbmc-adsp-addons.nsi
 /project/Win32BuildSetup/xbmc-pvr-addons.nsi
 /project/Win32BuildSetup/bgprocess
 /project/Win32BuildSetup/makeclean
@@ -1257,6 +1262,8 @@ lib/cpluff/stamp-h1
 
 /addons/library.xbmc.addon/libXBMC_addon.dll
 /addons/library.xbmc.addon/libXBMC_addon.lib
+/addons/library.xbmc.adsp/libXBMC_adsp.dll
+/addons/library.xbmc.adsp/libXBMC_adsp.lib
 /addons/library.xbmc.codec/libXBMC_codec.dll
 /addons/library.xbmc.codec/libXBMC_codec.lib
 /addons/library.xbmc.gui/libXBMC_gui.dll
@@ -1265,3 +1272,4 @@ lib/cpluff/stamp-h1
 /addons/library.xbmc.pvr/libXBMC_pvr.lib
 
 /pvr-addons
+/adsp-addons
