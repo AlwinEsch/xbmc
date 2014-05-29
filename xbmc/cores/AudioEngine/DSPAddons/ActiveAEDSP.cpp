@@ -166,31 +166,21 @@ void CActiveAEDSP::TriggerModeUpdate(bool bAsync /* = true */)
    */
   if (m_usedProcessesCnt > 0)
   {
-    CLog::Log(LOGNOTICE, "ActiveAE DSP - restarting playback after settings change");
+    CLog::Log(LOGNOTICE, "ActiveAE DSP - restarting playback after disabled dsp system");
     CApplicationMessenger::Get().MediaRestart(false);
   }
 }
 
 void CActiveAEDSP::Deactivate(void)
 {
+  CSingleLock lock(m_critSection);
+
   /* check whether the audio dsp is loaded */
   if (!m_isActive)
     return;
 
   CLog::Log(LOGNOTICE, "ActiveAE DSP - stopping");
-
-  CSingleLock lock(m_critSection);
-
-  /*
-   * if any dsp processing is active restart playback with this dsp
-   * disabled (m_isActive = false).
-   */
-  if (m_usedProcessesCnt > 0)
-  {
-    CLog::Log(LOGNOTICE, "ActiveAE DSP - restarting playback without dsp");
-    CApplicationMessenger::Get().MediaRestart(true);
-  }
-
+  
   /* stop thread */
   StopThread();
 
@@ -265,21 +255,6 @@ void CActiveAEDSP::ResetDatabase(void)
 
 /*! @name Settings and action callback methods (OnAction currently unused */
 //@{
-void CActiveAEDSP::OnSettingChanged(const CSetting *setting)
-{
-  if (setting == NULL)
-    return;
-
-  const std::string &settingId = setting->GetId();
-  if (settingId == "audiooutput.dspaddonsenabled")
-  {
-    if (((CSettingBool *) setting)->GetValue())
-      CApplicationMessenger::Get().ExecBuiltIn("XBMC.StartAudioDSPEngine", false);
-    else
-      CApplicationMessenger::Get().ExecBuiltIn("XBMC.StopAudioDSPEngine", false);
-  }
-}
-
 void CActiveAEDSP::OnSettingAction(const CSetting *setting)
 {
   if (setting == NULL)

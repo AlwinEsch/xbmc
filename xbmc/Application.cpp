@@ -1707,6 +1707,21 @@ void CApplication::OnSettingChanged(const CSetting *setting)
   }
   else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
+    if (settingId == "audiooutput.dspaddonsenabled")
+    {
+      if (((CSettingBool *) setting)->GetValue())
+      {
+        CApplicationMessenger::Get().ExecBuiltIn("XBMC.StartAudioDSPEngine", false);
+      }
+      else
+      {
+        CAEFactory::OnSettingsChange(settingId);
+        CApplicationMessenger::Get().ExecBuiltIn("XBMC.StopAudioDSPEngine", false);
+      }
+      CApplicationMessenger::Get().MediaRestart(false);
+      return;
+    }
+
     // AE is master of audio settings and needs to be informed first
     CAEFactory::OnSettingsChange(settingId);
 
@@ -1718,16 +1733,6 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     // if this is changed, audio stream has to be reopened
     else if (settingId == "audiooutput.passthrough")
     {
-      CApplicationMessenger::Get().MediaRestart(false);
-    }
-    else if (settingId == "audiooutput.dspaddonsenabled" && !CActiveAEDSP::Get().IsProcessing())
-    {
-      /*!
-       * About restart of dsp, if the dsp becomes enabled the media restart can be done
-       * from this place. Where dsp is not processing anything.
-       * If dsp is enabled, it must make the media restart from his side to prevent
-       * memory faults.
-       */
       CApplicationMessenger::Get().MediaRestart(false);
     }
   }
