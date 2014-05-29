@@ -2307,19 +2307,15 @@ bool CActiveAE::IsSettingVisible(const std::string &settingId)
   }
   else if (settingId == "audiooutput.dspsettings")
   {
-    if (m_sink.GetDeviceType(CSettings::Get().GetString("audiooutput.audiodevice")) != AE_DEVTYPE_IEC958)
-    {
-      if (CSettings::Get().GetBool("audiooutput.dspaddonsenabled") && CActiveAEDSP::Get().HaveMenuHooks(AE_DSP_MENUHOOK_SETTING))
-        return true;
-    }
+    if (CSettings::Get().GetBool("audiooutput.dspaddonsenabled") &&
+        m_sink.GetDeviceType(CSettings::Get().GetString("audiooutput.audiodevice")) != AE_DEVTYPE_IEC958)
+      return true;
   }
   else if (settingId == "audiooutput.dspresetdb")
   {
-    if (m_sink.GetDeviceType(CSettings::Get().GetString("audiooutput.audiodevice")) != AE_DEVTYPE_IEC958)
-    {
-      if (CSettings::Get().GetBool("audiooutput.dspaddonsenabled"))
-        return true;
-    }
+    if (CSettings::Get().GetBool("audiooutput.dspaddonsenabled") &&
+        m_sink.GetDeviceType(CSettings::Get().GetString("audiooutput.audiodevice")) != AE_DEVTYPE_IEC958)
+      return true;
   }
   return false;
 }
