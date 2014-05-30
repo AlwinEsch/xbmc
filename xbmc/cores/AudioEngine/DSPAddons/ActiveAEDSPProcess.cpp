@@ -105,6 +105,7 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
   m_InputFormat       = inputFormat;                        /*!< Input format of processed stream */
   m_OutputFormat      = outputFormat;                       /*!< Output format of required stream (set from ADSP system on startup, to have ffmpeg compatible format */
   m_OutputSamplerate  = m_InputFormat.m_sampleRate;         /*!< If no resampler addon is present output samplerate is the same as input */
+  m_OutputFrames      = m_InputFormat.m_frames;
   m_StreamQuality     = quality;                            /*!< from XBMC on settings selected resample quality, also passed to addons to support different quality */
   m_dataFormat        = AE_FMT_FLOAT;                       /*!< the base stream format, hard set to float */
   m_ActiveMode        = AE_DSP_MASTER_MODE_ID_PASSOVER;     /*!< Reset the pointer for m_MasterModes about active master process, set here during mode selection */
@@ -284,8 +285,9 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
               CLog::Log(LOGDEBUG, "  | - %s with resampling from %i to %i", addon->GetAudioDSPName().c_str(), m_InputFormat.m_sampleRate, processSamplerate);
 
               m_OutputSamplerate                      = processSamplerate;                  /*!< overwrite output sample rate with the new rate */
-              m_AddonSettings.iProcessSamplerate      = processSamplerate;                  /*!< the processing sample rate required for all behind called processes */
-              m_AddonSettings.iProcessFrames          = (int) ceil((1.0 * m_AddonSettings.iProcessSamplerate) / m_AddonSettings.iInSamplerate * m_AddonSettings.iInFrames);
+              m_OutputFrames                          = (int) ceil((1.0 * processSamplerate) / m_AddonSettings.iInSamplerate * m_AddonSettings.iInFrames);
+              m_AddonSettings.iProcessSamplerate      = m_OutputSamplerate;                 /*!< the processing sample rate required for all behind called processes */
+              m_AddonSettings.iProcessFrames          = m_OutputFrames;
               m_AddonSettings.bInputResamplingActive  = true;
 
               m_Addon_InputResample.iAddonModeNumber  = pMode->AddonModeNumber();
@@ -483,7 +485,8 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
           {
             CLog::Log(LOGDEBUG, "  | - %s with resampling to %i", addon->GetAudioDSPName().c_str(), outSamplerate);
 
-            m_OutputSamplerate = outSamplerate;
+            m_OutputSamplerate                      = outSamplerate;
+            m_OutputFrames                          = (int) ceil((1.0 * outSamplerate) / m_AddonSettings.iProcessSamplerate * m_AddonSettings.iProcessFrames);
 
             m_Addon_OutputResample.iAddonModeNumber = pMode->AddonModeNumber();
             m_Addon_OutputResample.pMode            = pMode;
@@ -526,25 +529,21 @@ bool CActiveAEDSPProcess::Create(AEAudioFormat inputFormat, AEAudioFormat output
     CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonStreamProperties.iSampleRate);
     CLog::Log(LOGDEBUG, "  | Channels             : %d", m_AddonStreamProperties.iChannels);
     CLog::Log(LOGDEBUG, "  ----  Input format  ----");
-    CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_InputFormat.m_sampleRate);
+    CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonSettings.iInSamplerate);
     CLog::Log(LOGDEBUG, "  | Sample Format        : %s", CAEUtil::DataFormatToStr(m_InputFormat.m_dataFormat));
     CLog::Log(LOGDEBUG, "  | Channel Count        : %d", m_InputFormat.m_channelLayout.Count());
     CLog::Log(LOGDEBUG, "  | Channel Layout       : %s", ((std::string)m_InputFormat.m_channelLayout).c_str());
-    CLog::Log(LOGDEBUG, "  | Frames               : %d", m_InputFormat.m_frames);
-    CLog::Log(LOGDEBUG, "  | Frame Samples        : %d", m_InputFormat.m_frameSamples);
-    CLog::Log(LOGDEBUG, "  | Frame Size           : %d", m_InputFormat.m_frameSize);
+    CLog::Log(LOGDEBUG, "  | Frames               : %d", m_AddonSettings.iProcessFrames);
     CLog::Log(LOGDEBUG, "  ----  Process format ----");
     CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonSettings.iProcessSamplerate);
     CLog::Log(LOGDEBUG, "  | Frames               : %d", m_AddonSettings.iProcessFrames);
     CLog::Log(LOGDEBUG, "  | Internal processing  : %s", m_FFMpegDSPProcessor ? "yes" : "no");
     CLog::Log(LOGDEBUG, "  ----  Output format ----");
-    CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_AddonSettings.iOutSamplerate);
+    CLog::Log(LOGDEBUG, "  | Sample Rate          : %d", m_OutputSamplerate);
     CLog::Log(LOGDEBUG, "  | Sample Format        : %s", CAEUtil::DataFormatToStr(m_OutputFormat.m_dataFormat));
     CLog::Log(LOGDEBUG, "  | Channel Count        : %d", m_OutputFormat.m_channelLayout.Count());
     CLog::Log(LOGDEBUG, "  | Channel Layout       : %s", ((std::string)m_OutputFormat.m_channelLayout).c_str());
-    CLog::Log(LOGDEBUG, "  | Frames               : %d", m_OutputFormat.m_frames);
-    CLog::Log(LOGDEBUG, "  | Frame Samples        : %d", m_OutputFormat.m_frameSamples);
-    CLog::Log(LOGDEBUG, "  | Frame Size           : %d", m_OutputFormat.m_frameSize);
+    CLog::Log(LOGDEBUG, "  | Frames               : %d", m_OutputFrames);
   }
 
   m_ForceInit = true;
@@ -693,6 +692,11 @@ std::string CActiveAEDSPProcess::GetOutputChannelNames()
 unsigned int CActiveAEDSPProcess::GetOutputSamplerate()
 {
   return m_OutputSamplerate;
+}
+
+unsigned int CActiveAEDSPProcess::GetOutputFrames()
+{
+  return m_OutputFrames;
 }
 
 float CActiveAEDSPProcess::GetCPUUsage(void) const

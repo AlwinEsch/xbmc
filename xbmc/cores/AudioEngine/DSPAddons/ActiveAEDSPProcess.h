@@ -107,6 +107,11 @@ namespace ActiveAE
       unsigned int GetOutputSamplerate();
 
       /*!>
+       * Get the used output frames for this class
+       */
+      unsigned int GetOutputFrames();
+
+      /*!>
        * Get the amount of percent what the cpu need to process complete dsp stream
        * @return The current cpu usage
        */
@@ -262,6 +267,7 @@ namespace ActiveAE
       AEAudioFormat                     m_InputFormat;              /*!< the used input stream format */
       AEAudioFormat                     m_OutputFormat;             /*!< the from XBMX requested output format */
       unsigned int                      m_OutputSamplerate;         /*!< the currently active output samplerate can be become changed from addon resamplers */
+      unsigned int                      m_OutputFrames;             /*!< the maximum present output frames */
       AEQuality                         m_StreamQuality;            /*!< from XBMC requested stream quality, based also to addons */
       enum AEDataFormat                 m_dataFormat;               /*!< The inside addon system used data format, currently fixed to float */
       AE_DSP_SETTINGS                   m_AddonSettings;            /*!< the current stream's settings passed to dsp add-ons */
