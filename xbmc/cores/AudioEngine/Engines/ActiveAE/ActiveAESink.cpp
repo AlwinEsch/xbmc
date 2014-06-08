@@ -188,8 +188,8 @@ void CActiveAESink::StateMachine(int signal, Protocol *port, Message *msg)
           {
             SinkReply reply;
             reply.format = m_sinkFormat;
-            reply.cacheTotal = m_sink->GetCacheTotal();
-            reply.latency = m_sink->GetLatency();
+            reply.cacheTotal = (float)m_sink->GetCacheTotal();
+            reply.latency = (float)m_sink->GetLatency();
             reply.hasVolume = m_sink->HasVolume();
             m_state = S_TOP_CONFIGURED_IDLE;
             m_extTimeout = 10000;
@@ -853,7 +853,7 @@ unsigned int CActiveAESink::OutputSamples(CSampleBuffer* samples)
     sinkDelay = m_sink->GetDelay();
     m_stats->UpdateSinkDelay(sinkDelay, samples->pool ? written : 0);
   }
-  return sinkDelay*1000;
+  return (unsigned int)(sinkDelay*1000.0);
 }
 
 void CActiveAESink::ConvertInit(CSampleBuffer* samples)

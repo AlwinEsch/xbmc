@@ -226,7 +226,10 @@ bool CActiveAEDSPDatabase::UpdateMode(int modeType, bool active, int addonId, in
     if (NULL == m_pDS.get()) return false;
 
     CStdString strSQL = PrepareSQL("update modes set iPosition=%i,bIsEnabled='%i' WHERE modes.iAddonId='%i' AND modes.iAddonModeNumber='%i' AND modes.iType='%i'", listNumber, (active ? 1 : 0), addonId, addonModeNumber, modeType);
-    bReturn = m_pDS->exec(strSQL.c_str());
+	if(!m_pDS->exec(strSQL.c_str()))
+	{
+		bReturn = false;
+	}
   }
   catch (...)
   {
@@ -316,7 +319,10 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
         mode.AddonID(),
         mode.AddonModeNumber(),
         (mode.HasSettingsDialog() ? 1 : 0));
-      bReturn = m_pDS->exec(strSQL.c_str());
+	  if(!m_pDS->exec(strSQL.c_str()))
+	  {
+		bReturn = false;
+	  }
     }
   }
   catch (...)

@@ -1078,12 +1078,12 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
                                 , pPicture->iHeight
                                 , pPicture->iDisplayWidth
                                 , pPicture->iDisplayHeight
-                                , config_framerate
+                                , (float)config_framerate
                                 , flags
                                 , pPicture->format
                                 , pPicture->extended_format
                                 , m_hints.orientation
-                                , m_pVideoCodec->GetAllowedReferences()))
+                                , (int)m_pVideoCodec->GetAllowedReferences()))
     {
       CLog::Log(LOGERROR, "%s - failed to configure renderer", __FUNCTION__);
       return EOS_ABORT;
@@ -1263,10 +1263,10 @@ void CDVDPlayerVideo::AutoCrop(DVDVideoPicture *pPicture)
       crop.bottom = 0;
     }
 
-    m_crop.x1 += ((float)crop.left   - m_crop.x1) * 0.1;
-    m_crop.x2 += ((float)crop.right  - m_crop.x2) * 0.1;
-    m_crop.y1 += ((float)crop.top    - m_crop.y1) * 0.1;
-    m_crop.y2 += ((float)crop.bottom - m_crop.y2) * 0.1;
+    m_crop.x1 += ((float)crop.left   - m_crop.x1) * 0.1f;
+    m_crop.x2 += ((float)crop.right  - m_crop.x2) * 0.1f;
+    m_crop.y1 += ((float)crop.top    - m_crop.y1) * 0.1f;
+    m_crop.y2 += ((float)crop.bottom - m_crop.y2) * 0.1f;
 
     crop.left   = MathUtils::round_int(m_crop.x1);
     crop.right  = MathUtils::round_int(m_crop.x2);

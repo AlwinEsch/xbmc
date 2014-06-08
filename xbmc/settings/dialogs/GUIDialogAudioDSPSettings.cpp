@@ -412,7 +412,8 @@ void CGUIDialogAudioDSPSettings::OnInitWindow()
     m_CPUUsage = StringUtils::Format("%.02f %%", m_ActiveStreamProcess->GetCPUUsage());
     AddString(AUDIO_STREAM_INFO_CPU_USAGE, 15094, &m_CPUUsage);
 
-    bool foundPreProcess, foundPostProcess = false;
+    bool foundPreProcess = false;
+	bool foundPostProcess = false;
     for (unsigned int i = 0; i < m_ActiveModes.size(); i++)
     {
       AE_DSP_ADDON addon;

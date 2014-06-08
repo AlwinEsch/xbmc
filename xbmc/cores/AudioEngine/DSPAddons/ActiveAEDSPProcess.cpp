@@ -1072,24 +1072,24 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out)
   ptr = 0;
   for (unsigned int i = 0; i < frames; i++)
   {
-    lastOutArray[AE_DSP_CH_FL][i]   = m_idx_in[AE_CH_FL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FL]]   : 0.0;
-    lastOutArray[AE_DSP_CH_FR][i]   = m_idx_in[AE_CH_FR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FR]]   : 0.0;
-    lastOutArray[AE_DSP_CH_FC][i]   = m_idx_in[AE_CH_FC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FC]]   : 0.0;
-    lastOutArray[AE_DSP_CH_LFE][i]  = m_idx_in[AE_CH_LFE]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_LFE]]  : 0.0;
-    lastOutArray[AE_DSP_CH_BL][i]   = m_idx_in[AE_CH_BL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BL]]   : 0.0;
-    lastOutArray[AE_DSP_CH_BR][i]   = m_idx_in[AE_CH_BR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BR]]   : 0.0;
-    lastOutArray[AE_DSP_CH_FLOC][i] = m_idx_in[AE_CH_FLOC] >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FLOC]] : 0.0;
-    lastOutArray[AE_DSP_CH_FROC][i] = m_idx_in[AE_CH_FROC] >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FROC]] : 0.0;
-    lastOutArray[AE_DSP_CH_BC][i]   = m_idx_in[AE_CH_BC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BC]]   : 0.0;
-    lastOutArray[AE_DSP_CH_SL][i]   = m_idx_in[AE_CH_SL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_SL]]   : 0.0;
-    lastOutArray[AE_DSP_CH_SR][i]   = m_idx_in[AE_CH_SR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_SR]]   : 0.0;
-    lastOutArray[AE_DSP_CH_TC][i]   = m_idx_in[AE_CH_TC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TC]]   : 0.0;
-    lastOutArray[AE_DSP_CH_TFL][i]  = m_idx_in[AE_CH_TFL]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFL]]  : 0.0;
-    lastOutArray[AE_DSP_CH_TFC][i]  = m_idx_in[AE_CH_TFC]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFC]]  : 0.0;
-    lastOutArray[AE_DSP_CH_TFR][i]  = m_idx_in[AE_CH_TFR]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFR]]  : 0.0;
-    lastOutArray[AE_DSP_CH_TBL][i]  = m_idx_in[AE_CH_TBL]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBL]]  : 0.0;
-    lastOutArray[AE_DSP_CH_TBC][i]  = m_idx_in[AE_CH_TBC]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBC]]  : 0.0;
-    lastOutArray[AE_DSP_CH_TBR][i]  = m_idx_in[AE_CH_TBR]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBR]]  : 0.0;
+    lastOutArray[AE_DSP_CH_FL][i]   = m_idx_in[AE_CH_FL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FL]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_FR][i]   = m_idx_in[AE_CH_FR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FR]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_FC][i]   = m_idx_in[AE_CH_FC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FC]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_LFE][i]  = m_idx_in[AE_CH_LFE]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_LFE]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_BL][i]   = m_idx_in[AE_CH_BL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BL]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_BR][i]   = m_idx_in[AE_CH_BR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BR]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_FLOC][i] = m_idx_in[AE_CH_FLOC] >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FLOC]] : 0.0f;
+    lastOutArray[AE_DSP_CH_FROC][i] = m_idx_in[AE_CH_FROC] >= 0 ? DataIn[ptr+m_idx_in[AE_CH_FROC]] : 0.0f;
+    lastOutArray[AE_DSP_CH_BC][i]   = m_idx_in[AE_CH_BC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_BC]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_SL][i]   = m_idx_in[AE_CH_SL]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_SL]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_SR][i]   = m_idx_in[AE_CH_SR]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_SR]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_TC][i]   = m_idx_in[AE_CH_TC]   >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TC]]   : 0.0f;
+    lastOutArray[AE_DSP_CH_TFL][i]  = m_idx_in[AE_CH_TFL]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFL]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_TFC][i]  = m_idx_in[AE_CH_TFC]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFC]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_TFR][i]  = m_idx_in[AE_CH_TFR]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TFR]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_TBL][i]  = m_idx_in[AE_CH_TBL]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBL]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_TBC][i]  = m_idx_in[AE_CH_TBC]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBC]]  : 0.0f;
+    lastOutArray[AE_DSP_CH_TBR][i]  = m_idx_in[AE_CH_TBR]  >= 0 ? DataIn[ptr+m_idx_in[AE_CH_TBR]]  : 0.0f;
 
     ptr += channelsIn;
   }

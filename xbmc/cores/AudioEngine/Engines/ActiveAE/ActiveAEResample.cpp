@@ -181,7 +181,7 @@ int CActiveAEResample::Resample(uint8_t **dst_buffer, int dst_samples, uint8_t *
   if (ratio != 1.0)
   {
     if (swr_set_compensation(m_pContext,
-                                            (dst_samples*ratio-dst_samples)*m_dst_rate/m_src_rate,
+                                            (dst_samples*(int)ratio-dst_samples)*m_dst_rate/m_src_rate,
                                              dst_samples*m_dst_rate/m_src_rate) < 0)
     {
       CLog::Log(LOGERROR, "CActiveAEResample::Resample - set compensation failed");
@@ -205,13 +205,13 @@ int64_t CActiveAEResample::GetDelay(int64_t base)
 
 int CActiveAEResample::GetBufferedSamples()
 {
-  return av_rescale_rnd(swr_get_delay(m_pContext, m_src_rate),
-                                    m_dst_rate, m_src_rate, AV_ROUND_UP);
+  return av_rescale_rnd(swr_get_delay(m_pContext, (int64_t)m_src_rate),
+                                    (int64_t)m_dst_rate, (int64_t)m_src_rate, AV_ROUND_UP);
 }
 
 int CActiveAEResample::CalcDstSampleCount(int src_samples, int dst_rate, int src_rate)
 {
-  return av_rescale_rnd(src_samples, dst_rate, src_rate, AV_ROUND_UP);
+  return av_rescale_rnd((int64_t)src_samples, (int64_t)dst_rate, (int64_t)src_rate, AV_ROUND_UP);
 }
 
 int CActiveAEResample::GetSrcBufferSize(int samples)

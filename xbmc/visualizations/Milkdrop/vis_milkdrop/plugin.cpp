@@ -1153,9 +1153,9 @@ int CPlugin::AllocateMyDX8Stuff()
 */	    
 
 		// clip texsize by max. from caps
-	    if (m_nTexSize > GetCaps()->MaxTextureWidth && GetCaps()->MaxTextureWidth>0)
+	    if (m_nTexSize > (int)GetCaps()->MaxTextureWidth && GetCaps()->MaxTextureWidth>0)
 		    m_nTexSize = GetCaps()->MaxTextureWidth;
-	    if (m_nTexSize > GetCaps()->MaxTextureHeight && GetCaps()->MaxTextureHeight>0)
+	    if (m_nTexSize > (int)GetCaps()->MaxTextureHeight && GetCaps()->MaxTextureHeight>0)
 		    m_nTexSize = GetCaps()->MaxTextureHeight;
 
 	    // reallocate
@@ -1178,8 +1178,8 @@ int CPlugin::AllocateMyDX8Stuff()
         SafeRelease(tmpSurface);
         GetDevice()->GetViewport(&pVP);
 
-        UINT uiwidth=(pVP.Width>m_nTexSize) ? pVP.Width:m_nTexSize;
-        UINT uiheight=(pVP.Height>m_nTexSize) ? pVP.Height:m_nTexSize;
+        UINT uiwidth=(pVP.Width>m_nTexSize) ? (int)pVP.Width:m_nTexSize;
+        UINT uiheight=(pVP.Height>m_nTexSize) ? (int)pVP.Height:m_nTexSize;
         
         printf("CreateDepthStencilSurface with %u x %u", uiwidth, uiheight);
         if(GetDevice()->CreateDepthStencilSurface(uiwidth, uiheight, tmpDesc.Format, D3DMULTISAMPLE_NONE, 0, TRUE, &m_pZBuffer, NULL) != D3D_OK)
@@ -4629,7 +4629,7 @@ void CPlugin::RandomizeBlendPattern()
         // radial blend
         float band = 0.02f + 0.14f*FRAND + 0.34f*FRAND;
         float inv_band = 1.0f/band;
-        float dir = (rand()%2)*2 - 1;
+        float dir = (float)(rand()%2)*2.0f - 1.0f;
 
         int nVert = 0;
 	    for (int y=0; y<=m_nGridY; y++)

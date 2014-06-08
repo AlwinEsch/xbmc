@@ -940,8 +940,8 @@ void CWinRenderer::Stage1()
     pD3DDevice->GetRenderTarget(0, &oldRT);
     pD3DDevice->SetRenderTarget(0, newRT);
 
-    CRect srcRect(0.0f, 0.0f, m_sourceWidth, m_sourceHeight);
-    CRect rtRect(0.0f, 0.0f, m_sourceWidth, m_sourceHeight);
+    CRect srcRect(0.0f, 0.0f, (float)m_sourceWidth, (float)m_sourceHeight);
+    CRect rtRect(0.0f, 0.0f, (float)m_sourceWidth, (float)m_sourceHeight);
 
     m_colorShader->Render(srcRect, rtRect,
                           CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast,
@@ -970,9 +970,9 @@ void CWinRenderer::Stage2()
   if (m_renderMethod == RENDER_DXVA)
   {
     sourceRect.y1 = 0.0f;
-    sourceRect.y2 = m_sourceHeight;
+    sourceRect.y2 = (float)m_sourceHeight;
     sourceRect.x1 = 0.0f;
-    sourceRect.x2 = m_sourceWidth;
+    sourceRect.x2 = (float)m_sourceWidth;
   }
   else
     sourceRect = m_sourceRect;
@@ -989,9 +989,9 @@ void CWinRenderer::RenderProcessor(DWORD flags)
   if (m_bUseHQScaler)
   {
     destRect.y1 = 0.0f;
-    destRect.y2 = m_sourceHeight;
+    destRect.y2 = (float)m_sourceHeight;
     destRect.x1 = 0.0f;
-    destRect.x2 = m_sourceWidth;
+    destRect.x2 = (float)m_sourceWidth;
   }
   else
     destRect = g_graphicsContext.StereoCorrection(m_destRect);

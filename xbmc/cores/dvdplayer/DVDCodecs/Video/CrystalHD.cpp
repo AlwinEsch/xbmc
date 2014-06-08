@@ -1534,7 +1534,7 @@ bool CCrystalHD::AddInput(unsigned char *pData, size_t size, double dts, double 
   if (pData)
   {
     BCM::BC_STATUS ret;
-    uint64_t int_pts = pts * 1000;
+    uint64_t int_pts = (uint64_t)pts * 1000;
     int demuxer_bytes = size;
     uint8_t *demuxer_content = pData;
     bool free_demuxer_content  = false;
@@ -1678,14 +1678,14 @@ bool CCrystalHD::GetPicture(DVDVideoPicture *pDvdVideoPicture)
 
   pDvdVideoPicture->iRepeatPicture = 0;
   pDvdVideoPicture->iDuration = DVD_TIME_BASE / pBuffer->m_framerate;
-  m_wait_timeout = pDvdVideoPicture->iDuration/2000;
+  m_wait_timeout = (unsigned int)(pDvdVideoPicture->iDuration/2000.0);
   pDvdVideoPicture->color_range = pBuffer->m_color_range;
   pDvdVideoPicture->color_matrix = pBuffer->m_color_matrix;
   pDvdVideoPicture->iFlags = DVP_FLAG_ALLOCATED;
   pDvdVideoPicture->iFlags |= m_drop_state ? DVP_FLAG_DROPPED : 0;
   pDvdVideoPicture->format = pBuffer->m_format;
 
-  m_last_pict_num = pBuffer->m_PictureNumber;
+  m_last_pict_num = (int)pBuffer->m_PictureNumber;
   m_last_decoder_pts = pDvdVideoPicture->pts;
 
   while( m_BusyList.Count())

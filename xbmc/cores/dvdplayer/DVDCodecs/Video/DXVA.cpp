@@ -1547,10 +1547,10 @@ bool CProcessor::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFEREN
 
   D3DSURFACE_DESC desc;
   CHECK(target->GetDesc(&desc));
-  CRect rectTarget(0, 0, desc.Width, desc.Height);
+  CRect rectTarget(0, 0, (float)desc.Width, (float)desc.Height);
   CWIN32Util::CropSource(src, dst, rectTarget);
-  RECT sourceRECT = { src.x1, src.y1, src.x2, src.y2 };
-  RECT dstRECT    = { dst.x1, dst.y1, dst.x2, dst.y2 };
+  RECT sourceRECT = { (LONG)src.x1, (LONG)src.y1, (LONG)src.x2, (LONG)src.y2 };
+  RECT dstRECT    = { (LONG)dst.x1, (LONG)dst.y1, (LONG)dst.x2, (LONG)dst.y2 };
 
 
   // How to prepare the samples array for VideoProcessBlt
@@ -1623,9 +1623,9 @@ bool CProcessor::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFEREN
     blt.DestFormat.NominalRange          = DXVA2_NominalRange_0_255;
   blt.Alpha = DXVA2_Fixed32OpaqueAlpha();
 
-  blt.ProcAmpValues.Brightness = ConvertRange( m_brightness, CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness
+  blt.ProcAmpValues.Brightness = ConvertRange( m_brightness, (int)CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness
                                              , 0, 100, 50);
-  blt.ProcAmpValues.Contrast   = ConvertRange( m_contrast, CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast
+  blt.ProcAmpValues.Contrast   = ConvertRange( m_contrast, (int)CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast
                                              , 0, 100, 50);
   blt.ProcAmpValues.Hue        = m_hue.DefaultValue;
   blt.ProcAmpValues.Saturation = m_saturation.DefaultValue;

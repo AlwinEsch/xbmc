@@ -132,7 +132,7 @@ int rtv_get_guide_xml(unsigned char ** result, const char * address)
 		return 0;
 	}
 
-	*result = malloc(gsize * 1.5);
+	*result = (unsigned char*)malloc((size_t)((double)gsize * 1.5));
 	if (!*result)
 	{
 		if (lresult)
