@@ -6937,7 +6937,7 @@ msgstr ""
 
 #: xbmc/settings/dialogs/GUIDialogAudioDSPSettings.cpp
 msgctxt "#15039"
-msgid "Content:"
+msgid "Pre processing setup ..."
 msgstr ""
 
 #: xbmc/settings/dialogs/GUIDialogAudioDSPManager.cpp
