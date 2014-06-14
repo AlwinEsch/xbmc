@@ -421,11 +421,12 @@ int CActiveAEDSP::TranslateIntInfo(DWORD dwInfo) const
   if (!IsProcessing())
     return iReturn;
 
-  switch (dwInfo)
-  {
-  default:
-    break;
-  };
+  // not used?
+  //switch (dwInfo)
+  //{
+  //default:
+  //  break;
+  //};
 
   return iReturn;
 }

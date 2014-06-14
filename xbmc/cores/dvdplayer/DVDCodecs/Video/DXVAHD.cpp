@@ -466,7 +466,7 @@ REFERENCE_TIME CProcessorHD::Add(DVDVideoPicture* picture)
   context->Acquire();
 
   SFrame frame = {};
-  frame.index       = m_frame;
+  frame.index       = (unsigned int)m_frame;
   frame.pSurface    = surface; 
   frame.context     = context;
   frame.format      = DXVAHD_FRAME_FORMAT_PROGRESSIVE;
@@ -567,10 +567,10 @@ bool CProcessorHD::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFER
 
   D3DSURFACE_DESC desc;
   CHECK(target->GetDesc(&desc));
-  CRect rectTarget(0, 0, desc.Width, desc.Height);
+  CRect rectTarget(0, 0, (float)desc.Width, (float)desc.Height);
   CWIN32Util::CropSource(src, dst, rectTarget);
-  RECT sourceRECT = { src.x1, src.y1, src.x2, src.y2 };
-  RECT dstRECT    = { dst.x1, dst.y1, dst.x2, dst.y2 };
+  RECT sourceRECT = { (LONG)src.x1, (LONG)src.y1, (LONG)src.x2, (LONG)src.y2 };
+  RECT dstRECT    = { (LONG)dst.x1, (LONG)dst.y1, (LONG)dst.x2, (LONG)dst.y2 };
 
   // MinTime and MaxTime are now the first and last samples to feed the processor.
   minFrame = frame - m_VPCaps.PastFrames * 2;
@@ -632,7 +632,7 @@ bool CProcessorHD::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFER
   bool frameProgressive = dxvaFrameFormat == DXVAHD_FRAME_FORMAT_PROGRESSIVE;
 
   // Progressive or Interlaced video at normal rate.
-  stream_data.InputFrameOrField = frame + (flags & RENDER_FLAG_FIELD1 ? 1 : 0);
+  stream_data.InputFrameOrField = (UINT)(frame + (flags & RENDER_FLAG_FIELD1 ? 1 : 0));
   stream_data.OutputIndex = flags & RENDER_FLAG_FIELD1 && !frameProgressive ? 1 : 0;
 
   DXVAHD_STREAM_STATE_FRAME_FORMAT_DATA frame_format = { dxvaFrameFormat };
@@ -647,9 +647,9 @@ bool CProcessorHD::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFER
   LOGIFERROR( m_pDXVAVP->SetVideoProcessStreamState( 0, DXVAHD_STREAM_STATE_SOURCE_RECT
                                                    , sizeof(srcRect), &srcRect));
 
-  ApplyFilter( DXVAHD_FILTER_BRIGHTNESS, CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness
+  ApplyFilter( DXVAHD_FILTER_BRIGHTNESS, (int)CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness
                                              , 0, 100, 50);
-  ApplyFilter( DXVAHD_FILTER_CONTRAST, CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast
+  ApplyFilter( DXVAHD_FILTER_CONTRAST, (int)CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast
                                              , 0, 100, 50);
 
   unsigned int uiRange = g_Windowing.UseLimitedColor() ? 1 : 0;
@@ -668,7 +668,7 @@ bool CProcessorHD::Render(CRect src, CRect dst, IDirect3DSurface9* target, REFER
   LOGIFERROR( m_pDXVAVP->SetVideoProcessBltState( DXVAHD_BLT_STATE_TARGET_RECT
                                                 , sizeof(targetRect), &targetRect ) );
 
-  HRESULT hr = m_pDXVAVP->VideoProcessBltHD(target, frame, 1, &stream_data);
+  HRESULT hr = m_pDXVAVP->VideoProcessBltHD(target, (UINT)frame, 1, &stream_data);
   if(FAILED(hr))
   {
     CLog::Log(LOGERROR, __FUNCTION__" - failed executing VideoProcessBltHD with error %x", hr);

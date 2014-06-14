@@ -94,7 +94,7 @@ void CActiveAEStream::InitRemapper()
   for(unsigned int i=0; i<m_format.m_channelLayout.Count(); i++)
   {
     avLast = avCur;
-    avCur = CActiveAEResample::GetAVChannel(m_format.m_channelLayout[i]);
+    avCur = (unsigned int)CActiveAEResample::GetAVChannel(m_format.m_channelLayout[i]);
     if(avCur < avLast)
     {
       needRemap = true;
@@ -244,7 +244,7 @@ unsigned int CActiveAEStream::AddData(void *data, unsigned int size)
       {
         CSingleLock lock(*m_statsLock);
         m_currentBuffer->pkt->nb_samples += samples;
-        m_bufferedTime += (double)samples / m_currentBuffer->pkt->config.sample_rate;
+        m_bufferedTime += (float)samples / (float)m_currentBuffer->pkt->config.sample_rate;
       }
       if (buf != m_leftoverBuffer)
         copied += bytes;

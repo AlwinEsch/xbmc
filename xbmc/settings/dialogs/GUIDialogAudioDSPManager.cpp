@@ -447,11 +447,11 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
   if (button == CONTEXT_BUTTON_HELP)
   {
     AE_DSP_ADDON addon;
-    if (CActiveAEDSP::Get().GetAudioDSPAddon(pItem->GetProperty("AddonId").asInteger(), addon))
+    if (CActiveAEDSP::Get().GetAudioDSPAddon((int)pItem->GetProperty("AddonId").asInteger(), addon))
     {
       CGUIDialogTextViewer* pDlgInfo = (CGUIDialogTextViewer*)g_windowManager.GetWindow(WINDOW_DIALOG_TEXT_VIEWER);
       pDlgInfo->SetHeading(g_localizeStrings.Get(15062)+" - "+pItem->GetProperty("Name").c_str());
-      pDlgInfo->SetText(addon->GetString(pItem->GetProperty("Help").asInteger()));
+      pDlgInfo->SetText(addon->GetString((uint32_t)pItem->GetProperty("Help").asInteger()));
       pDlgInfo->DoModal();
     }
   }
@@ -530,18 +530,18 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
   }
   else if (button == CONTEXT_BUTTON_SETTINGS)
   {
-    int hookId = pItem->GetProperty("SettingsDialog").asInteger();
+    int hookId = (int)pItem->GetProperty("SettingsDialog").asInteger();
     if (hookId > 0)
     {
       AE_DSP_ADDON addon;
-      if (CActiveAEDSP::Get().GetAudioDSPAddon(pItem->GetProperty("AddonId").asInteger(), addon))
+      if (CActiveAEDSP::Get().GetAudioDSPAddon((int)pItem->GetProperty("AddonId").asInteger(), addon))
       {
         AE_DSP_MENUHOOK       hook;
         AE_DSP_MENUHOOK_DATA  hookData;
 
         hook.category           = AE_DSP_MENUHOOK_ALL;
         hook.iHookId            = hookId;
-        hook.iRelevantModeId    = pItem->GetProperty("AddonModeNumber").asInteger();
+		hook.iRelevantModeId    = (unsigned int)pItem->GetProperty("AddonModeNumber").asUnsignedInteger();
         hookData.category       = AE_DSP_MENUHOOK_ALL;
         hookData.data.iStreamId = -1;
 
@@ -814,9 +814,9 @@ void CGUIDialogAudioDSPManager::SaveList(void)
     CFileItemPtr pItem = m_Items[LIST_AVAILABLE]->Get(iListPtr);
     db.UpdateMode(m_iCurrentType,
                   pItem->GetProperty("ActiveMode").asBoolean(),
-                  pItem->GetProperty("AddonId").asInteger(),
-                  pItem->GetProperty("AddonModeNumber").asInteger(),
-                  pItem->GetProperty("Number").asInteger());
+                  (int)pItem->GetProperty("AddonId").asInteger(),
+                  (int)pItem->GetProperty("AddonModeNumber").asInteger(),
+                  (int)pItem->GetProperty("Number").asInteger());
 
     pDlgProgress->SetPercentage(iListPtr * 100 / m_Items[LIST_AVAILABLE]->Size());
   }
@@ -825,9 +825,9 @@ void CGUIDialogAudioDSPManager::SaveList(void)
     CFileItemPtr pItem = m_Items[LIST_ACTIVE]->Get(iListPtr);
     db.UpdateMode(m_iCurrentType,
                   pItem->GetProperty("ActiveMode").asBoolean(),
-                  pItem->GetProperty("AddonId").asInteger(),
-                  pItem->GetProperty("AddonModeNumber").asInteger(),
-                  pItem->GetProperty("Number").asInteger());
+                  (int)pItem->GetProperty("AddonId").asInteger(),
+                  (int)pItem->GetProperty("AddonModeNumber").asInteger(),
+                  (int)pItem->GetProperty("Number").asInteger());
 
     pDlgProgress->SetPercentage(iListPtr * 100 / m_Items[LIST_ACTIVE]->Size());
   }

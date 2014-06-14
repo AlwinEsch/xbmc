@@ -1844,8 +1844,8 @@ void CPluginShell::AnalyzeNewSound(unsigned char *pWaveL, unsigned char *pWaveR)
             //   bass:  0-1097          200-761
             //   mids:  1097-4705       761-2897
             //   treb:  4705-11025      2897-11025
-            int start = (int)(NUM_FREQUENCIES * min_freq*powf(mult, i  )/11025.0f);
-            int end   = (int)(NUM_FREQUENCIES * min_freq*powf(mult, i+1)/11025.0f);
+            int start = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)i)/11025.0f);
+            int end   = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)(i+1))/11025.0f);
             if (start < 0) start = 0;
             if (end > NUM_FREQUENCIES) end = NUM_FREQUENCIES;
 
@@ -1989,7 +1989,7 @@ void CPluginShell::PrepareFor2DDrawing_B(IDirect3DDevice9 *pDevice, int w, int h
         D3DXMATRIX Ortho2D;
         D3DXMATRIX Identity;
 
-        D3DXMatrixOrthoLH(&Ortho2D, w, h, 0.0f, 1.0f);
+        D3DXMatrixOrthoLH(&Ortho2D, (FLOAT)w, (FLOAT)h, 0.0f, 1.0f);
         D3DXMatrixIdentity(&Identity);
 
         pDevice->SetTransform(D3DTS_PROJECTION, &Ortho2D);
@@ -3215,7 +3215,7 @@ void CPluginShell::AlignWaves()
 
     #define MAX_OCTAVES 10
 
-    int octaves = floorf(logf(512-nSamples)/logf(2.0f));
+    int octaves = (int)(floorf(logf(512 - (float)nSamples)/logf(2.0f)));
     if (octaves < 4)
         return;
     if (octaves > MAX_OCTAVES)

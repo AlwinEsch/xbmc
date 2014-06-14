@@ -259,7 +259,7 @@ VOID InitTime()
 	qwAppTime.QuadPart        = 0;
 	qwElapsedTime.QuadPart    = 0;
 	qwElapsedAppTime.QuadPart = 0;
-	srand(qwTime.QuadPart);
+	srand((unsigned int)qwTime.QuadPart);
 
 }
 

@@ -353,7 +353,7 @@ unsigned int CActiveAEDSPAddon::InputResampleProcessNeededSamplesize(AE_DSP_STRE
   try { return m_pStruct->InputResampleProcessNeededSamplesize(id); }
   catch (exception &e) { LogException(e, __FUNCTION__); }
 
-  return 0.0f;
+  return 0;
 }
 
 unsigned int CActiveAEDSPAddon::InputResampleProcess(AE_DSP_STREAM_ID id, float **array_in, float **array_out, unsigned int samples)
@@ -492,7 +492,7 @@ unsigned int CActiveAEDSPAddon::OutputResampleProcessNeededSamplesize(AE_DSP_STR
   try { return m_pStruct->OutputResampleProcessNeededSamplesize(id); }
   catch (exception &e) { LogException(e, __FUNCTION__); }
 
-  return 0.0f;
+  return 0;
 }
 
 unsigned int CActiveAEDSPAddon::OutputResampleProcess(AE_DSP_STREAM_ID id, float **array_in, float **array_out, unsigned int samples)
