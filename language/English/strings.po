@@ -6950,7 +6950,12 @@ msgctxt "#15041"
 msgid "Unknown mode name"
 msgstr ""
 
-#empty strings from id 15042 to 15046
+#: addons/skin.confluence/720p/DialogAudioDSPSettings.xml
+msgctxt "#15042"
+msgid "Content:"
+msgstr ""
+
+#empty strings from id 15043 to 15046
 
 #: xbmc/pvr/windows/GUIWindowPVRChannels.cpp
 #: xbmc/music/windows/GUIWindowMusicBase.cpp
