@@ -249,6 +249,30 @@ namespace ActiveAE
     bool GetAudioDSPAddonName(int iAddonId, std::string &strName) const;
   //@}
 
+  /*! @name GUIInfoManager calls */
+  //@{
+    /*!
+     * @brief Get a GUIInfoManager character string.
+     * @param dwInfo The string to get.
+     * @return The requested string or an empty one if it wasn't found.
+     */
+    bool TranslateCharInfo(DWORD dwInfo, CStdString &strValue) const;
+
+    /*!
+     * @brief Get a GUIInfoManager integer.
+     * @param dwInfo The integer to get.
+     * @return The requested integer or 0 if it wasn't found.
+     */
+    int TranslateIntInfo(DWORD dwInfo) const;
+
+    /*!
+     * @brief Get a GUIInfoManager boolean.
+     * @param dwInfo The boolean to get.
+     * @return The requested boolean or false if it wasn't found.
+     */
+    bool TranslateBoolInfo(DWORD dwInfo) const;
+  //@}
+
   /*! @name Current processing streams control function methods */
   //@{
     /*!>
