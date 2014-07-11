@@ -26,6 +26,7 @@
 #include "XBDateTime.h"
 #include "addons/Service.h"
 #include "dbwrappers/dataset.h"
+#include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
 #include "pvr/PVRManager.h"
 
 using namespace ADDON;
@@ -601,7 +602,10 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
         else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false) && addon &&
             PVR::CPVRManager::Get().IsStarted())
           PVR::CPVRManager::Get().Start(true);
-
+        // restart the audio dsp manager when disabling a dsp add-on with the audio dsp enabled
+        else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false) && addon &&
+            ActiveAE::CActiveAEDSP::Get().IsActivated())
+          ActiveAE::CActiveAEDSP::Get().Activate(true);
         return true;
       }
       return false; // already disabled or failed query
@@ -623,6 +627,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
       // (re)start the pvr manager when enabling a pvr add-on
       else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false) && addon)
         PVR::CPVRManager::Get().Start(true);
+      // (re)start the audio dsp manager when enabling a audio dsp add-on
+      else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false) && addon)
+        ActiveAE::CActiveAEDSP::Get().Activate(true);
     }
     return true;
   }
