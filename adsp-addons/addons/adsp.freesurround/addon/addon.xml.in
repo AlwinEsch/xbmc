@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="adsp.freesurround"
+  version="0.0.1"
+  name="Free Surround Processor"
+  provider-name="-">
+  <requires>
+    <c-pluff version="0.1"/>
+    <import addon="xbmc.adsp" version="0.0.1"/>
+  </requires>
+  <extension
+    point="xbmc.adspaddon"
+    library_linux="XBMC_FreeSurround.adsp"
+    library_osx="XBMC_FreeSurround.adsp"
+    library_wingl="XBMC_FreeSurround_adsp_win32.dll"
+    library_windx="XBMC_FreeSurround_adsp_win32.dll"
+    library_android="libXBMC_adsp_FreeSurround.so" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Free Surround Audio DSP Processor</summary>
+    <description lang="en">Free Surround Audio DSP Processor</description>
+    <disclaimer lang="en">This is a open source audio dsp processing system</disclaimer>
+    <platform>@OS@</platform>
+  </extension>
+</addon>

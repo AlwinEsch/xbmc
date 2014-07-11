@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{260FAE01-2E83-48EA-B6C6-FAE95D71E689}</ProjectGuid>
+    <RootNamespace>adspclient_demo</RootNamespace>
+    <ProjectName>adspbasic</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\addon\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>XBMC_Demo_win32</TargetName>
+    <IncludePath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\addon\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>XBMC_Demo_win32</TargetName>
+    <IncludePath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\xbmc;..\..\..\..\lib;..\..\..\..\lib\platform\windows</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;TARGET_WINDOWS;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libsamplerate-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\xbmc;..\..\..\..\lib;..\..\..\..\lib\platform\windows</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;TARGET_WINDOWS;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libsamplerate-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\project\VS2010Express\platform\platform.vcxproj">
+      <Project>{fe4573f6-a794-4ad3-b37f-49e51f1140e6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\project\VS2010Express\tinyxml\tinyxml.vcxproj">
+      <Project>{bdc7d21d-9fd9-41aa-bec8-8b70e1448c50}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\AudioDSPBasic.h" />
+    <ClInclude Include="..\..\src\AudioDSPSettings.h" />
+    <ClInclude Include="..\..\src\AudioDSPSoundTest.h" />
+    <ClInclude Include="..\..\src\client.h" />
+    <ClInclude Include="..\..\src\DSPProcessMaster.h" />
+    <ClInclude Include="..\..\src\filter\complex.h" />
+    <ClInclude Include="..\..\src\filter\delay.h" />
+    <ClInclude Include="..\..\src\filter\filter.h" />
+    <ClInclude Include="..\..\src\filter\high_shelf.h" />
+    <ClInclude Include="..\..\src\filter\mkfilter.h" />
+    <ClInclude Include="..\..\src\GUIDialogExtendedSettings.h" />
+    <ClInclude Include="..\..\src\GUIDialogSpeakerDistance.h" />
+    <ClInclude Include="..\..\src\GUIDialogSpeakerGain.h" />
+    <ClInclude Include="..\..\src\kissfft\kiss_fft.h" />
+    <ClInclude Include="..\..\src\kissfft\kiss_fftr.h" />
+    <ClInclude Include="..\..\src\kissfft\_kiss_fft_guts.h" />
+    <ClInclude Include="..\..\src\PinkNoise.h" />
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\ctab.h" />
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\DSPProcessDolbyProLogic.h" />
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\lrtab.h" />
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\stab.h" />
+    <ClInclude Include="..\..\src\Process_FreeSurround\ChannelMaps.h" />
+    <ClInclude Include="..\..\src\Process_FreeSurround\DSPProcessFreeSurround.h" />
+    <ClInclude Include="..\..\src\Process_FreeSurround\FreeSurroundDecoder.h" />
+    <ClInclude Include="..\..\src\Process_FreeSurround\GUIDialogFreeSurround.h" />
+    <ClInclude Include="..\..\src\Process_Stereo\DSPProcessStereo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\AudioDSPBasic.cpp" />
+    <ClCompile Include="..\..\src\AudioDSPSettings.cpp" />
+    <ClCompile Include="..\..\src\AudioDSPSoundTest.cpp" />
+    <ClCompile Include="..\..\src\client.cpp" />
+    <ClCompile Include="..\..\src\DSPProcessMaster.cpp" />
+    <ClCompile Include="..\..\src\filter\complex.cpp" />
+    <ClCompile Include="..\..\src\filter\delay.cpp" />
+    <ClCompile Include="..\..\src\filter\filter.cpp" />
+    <ClCompile Include="..\..\src\filter\high_shelf.cpp" />
+    <ClCompile Include="..\..\src\filter\mkfilter.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogExtendedSettings.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogSpeakerDistance.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogSpeakerGain.cpp" />
+    <ClCompile Include="..\..\src\kissfft\kiss_fft.cpp" />
+    <ClCompile Include="..\..\src\kissfft\kiss_fftr.cpp" />
+    <ClCompile Include="..\..\src\Process_DolbyProLogic\DSPProcessDolbyProLogic.cpp" />
+    <ClCompile Include="..\..\src\Process_FreeSurround\ChannelMaps.cpp" />
+    <ClCompile Include="..\..\src\Process_FreeSurround\DSPProcessFreeSurround.cpp" />
+    <ClCompile Include="..\..\src\Process_FreeSurround\FreeSurroundDecoder.cpp" />
+    <ClCompile Include="..\..\src\Process_FreeSurround\GUIDialogFreeSurround.cpp" />
+    <ClCompile Include="..\..\src\Process_Stereo\DSPProcessStereo.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

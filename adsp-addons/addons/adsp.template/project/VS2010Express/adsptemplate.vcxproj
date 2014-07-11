@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B736AB81-3C78-43CE-88E8-80926FC99F47}</ProjectGuid>
+    <RootNamespace>adspclient_demo</RootNamespace>
+    <ProjectName>adsptemplate</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\addon\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>XBMC_adsp_template_win32</TargetName>
+    <IncludePath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\addon\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>XBMC_adsp_template_win32</TargetName>
+    <IncludePath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\xbmc-dev\xbmc-adsp-addons\project\BuildDependencies\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\..\xbmc;..\..\..\..\lib;..\..\..\..\lib\platform\windows;$(SolutionDir)..\..\addons\adsp.template\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;TARGET_WINDOWS;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libsamplerate-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\..\xbmc;..\..\..\..\lib;..\..\..\..\lib\platform\windows;$(SolutionDir)..\..\addons\adsp.template\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;TARGET_WINDOWS;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;libsamplerate-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\project\VS2010Express\platform\platform.vcxproj">
+      <Project>{fe4573f6-a794-4ad3-b37f-49e51f1140e6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\project\VS2010Express\tinyxml\tinyxml.vcxproj">
+      <Project>{bdc7d21d-9fd9-41aa-bec8-8b70e1448c50}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\addon\addon.xml.in" />
+    <None Include="..\..\addon\resources\language\English\strings.po" />
+    <None Include="..\..\addon\resources\language\German\strings.po" />
+    <None Include="..\..\addon\resources\settings.xml" />
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogMasterModeFreeSurround.xml" />
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogSpeakerDistance.xml" />
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogSpeakerGain.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\ADDONOptional.h" />
+    <ClInclude Include="..\..\src\channelUpmixer.h" />
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogMasterProcess.h" />
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogOutputResample.h" />
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogPostProcess.h" />
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogPreProcess.h" />
+    <ClInclude Include="..\..\src\DSPProcessor.h" />
+    <ClInclude Include="..\..\src\template\configuration\templateConfiguration.h" />
+    <ClInclude Include="..\..\src\template\doxygenDocu.h" />
+    <ClInclude Include="..\..\src\template\include\ADSPAddonHandler.h" />
+    <ClInclude Include="..\..\src\template\include\ADSPProcessorHandle.h" />
+    <ClInclude Include="..\..\src\template\include\checkTemplateConfig.h" />
+    <ClInclude Include="..\..\src\template\include\client.h" />
+    <ClInclude Include="..\..\src\template\include\GUIDialogBase.h" />
+    <ClInclude Include="..\..\src\template\include\IADDONOptional.h" />
+    <ClInclude Include="..\..\src\template\include\IADSPProcessor.h" />
+    <ClInclude Include="..\..\src\template\include\MACROHelper.h" />
+    <ClInclude Include="..\..\src\template\include\typedefs.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\ADDONOptional.cpp" />
+    <ClCompile Include="..\..\src\channelUpmixer.cpp" />
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogMasterProcess.cpp" />
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogOutputResample.cpp" />
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogPostProcess.cpp" />
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogPreProcess.cpp" />
+    <ClCompile Include="..\..\src\DSPProcessor.cpp" />
+    <ClCompile Include="..\..\src\template\ADSPAddonHandler.cpp" />
+    <ClCompile Include="..\..\src\template\ADSPProcessorHandle.cpp" />
+    <ClCompile Include="..\..\src\template\client.cpp" />
+    <ClCompile Include="..\..\src\template\configuration\templateConfiguration.cpp" />
+    <ClCompile Include="..\..\src\template\GUIDialogBase.cpp" />
+    <ClCompile Include="..\..\src\template\IADDONOptional.cpp" />
+    <ClCompile Include="..\..\src\template\IADSPProcessor.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

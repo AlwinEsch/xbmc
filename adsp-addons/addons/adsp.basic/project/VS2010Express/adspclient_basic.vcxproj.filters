@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="kissfft">
+      <UniqueIdentifier>{45efb0b7-b097-4b73-a8e8-832fcea28f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="filter">
+      <UniqueIdentifier>{145e0415-0db9-4820-ba70-574434f2cb6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Process_DolbyProLogic">
+      <UniqueIdentifier>{1bf81935-b417-4ded-9bf6-f085254adc49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Process_FreeSurround">
+      <UniqueIdentifier>{928be2a4-51cb-4026-8a1f-8569be1d0e7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Process_Stereo">
+      <UniqueIdentifier>{f00f5235-77f5-4c76-8d64-497f95e2a02b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\AudioDSPBasic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AudioDSPSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\AudioDSPSoundTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DSPProcessMaster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUIDialogExtendedSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUIDialogSpeakerDistance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GUIDialogSpeakerGain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\PinkNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kissfft\kiss_fft.h">
+      <Filter>kissfft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kissfft\kiss_fftr.h">
+      <Filter>kissfft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\kissfft\_kiss_fft_guts.h">
+      <Filter>kissfft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\filter\mkfilter.h">
+      <Filter>filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\filter\complex.h">
+      <Filter>filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\filter\delay.h">
+      <Filter>filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\filter\filter.h">
+      <Filter>filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\filter\high_shelf.h">
+      <Filter>filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\DSPProcessDolbyProLogic.h">
+      <Filter>Process_DolbyProLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\lrtab.h">
+      <Filter>Process_DolbyProLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\stab.h">
+      <Filter>Process_DolbyProLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_DolbyProLogic\ctab.h">
+      <Filter>Process_DolbyProLogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_FreeSurround\FreeSurroundDecoder.h">
+      <Filter>Process_FreeSurround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_FreeSurround\GUIDialogFreeSurround.h">
+      <Filter>Process_FreeSurround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_FreeSurround\ChannelMaps.h">
+      <Filter>Process_FreeSurround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_FreeSurround\DSPProcessFreeSurround.h">
+      <Filter>Process_FreeSurround</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Process_Stereo\DSPProcessStereo.h">
+      <Filter>Process_Stereo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\kissfft\kiss_fft.cpp">
+      <Filter>kissfft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\kissfft\kiss_fftr.cpp">
+      <Filter>kissfft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\filter\mkfilter.cpp">
+      <Filter>filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\filter\complex.cpp">
+      <Filter>filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\filter\delay.cpp">
+      <Filter>filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\filter\filter.cpp">
+      <Filter>filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\filter\high_shelf.cpp">
+      <Filter>filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_DolbyProLogic\DSPProcessDolbyProLogic.cpp">
+      <Filter>Process_DolbyProLogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_FreeSurround\GUIDialogFreeSurround.cpp">
+      <Filter>Process_FreeSurround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_FreeSurround\ChannelMaps.cpp">
+      <Filter>Process_FreeSurround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_FreeSurround\DSPProcessFreeSurround.cpp">
+      <Filter>Process_FreeSurround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_FreeSurround\FreeSurroundDecoder.cpp">
+      <Filter>Process_FreeSurround</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Process_Stereo\DSPProcessStereo.cpp">
+      <Filter>Process_Stereo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\AudioDSPBasic.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogSpeakerGain.cpp" />
+    <ClCompile Include="..\..\src\AudioDSPSettings.cpp" />
+    <ClCompile Include="..\..\src\AudioDSPSoundTest.cpp" />
+    <ClCompile Include="..\..\src\client.cpp" />
+    <ClCompile Include="..\..\src\DSPProcessMaster.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogExtendedSettings.cpp" />
+    <ClCompile Include="..\..\src\GUIDialogSpeakerDistance.cpp" />
+  </ItemGroup>
+</Project>

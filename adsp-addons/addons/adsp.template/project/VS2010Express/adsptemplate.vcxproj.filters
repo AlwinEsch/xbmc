@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="addon">
+      <UniqueIdentifier>{0d5173ca-7f49-472e-8de3-bb85916a0298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources">
+      <UniqueIdentifier>{2b02d4fd-8353-40a3-aceb-d2c6268d06d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\language">
+      <UniqueIdentifier>{a56b8e98-20de-4fee-91a9-b8f898539cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\language\English">
+      <UniqueIdentifier>{79085114-6f39-41a7-8639-9053776f9de0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\language\German">
+      <UniqueIdentifier>{6947bfea-56ab-4dd8-a7f2-0b1bf88b8673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\skins">
+      <UniqueIdentifier>{8bd6d681-b260-4afb-957f-deada95079c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\skins\Confluence">
+      <UniqueIdentifier>{6b047844-a213-4d9a-8c38-f0a348487574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addon\Ressources\skins\Confluence\720p">
+      <UniqueIdentifier>{712fe602-dc96-4483-9dbf-245cad5360d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="template">
+      <UniqueIdentifier>{f7d419d2-5e82-4c88-ab60-9b60bd3639b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="template\configuration">
+      <UniqueIdentifier>{06978836-48d2-47eb-82c7-97b197082122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="template\include">
+      <UniqueIdentifier>{391eb27f-671f-462a-bb09-ed84900804ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dialogs">
+      <UniqueIdentifier>{89cc2491-4431-4e85-a663-6f9cf673e2d1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\addon\addon.xml.in">
+      <Filter>addon</Filter>
+    </None>
+    <None Include="..\..\addon\resources\settings.xml">
+      <Filter>addon\Ressources</Filter>
+    </None>
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogMasterModeFreeSurround.xml">
+      <Filter>addon\Ressources\skins\Confluence\720p</Filter>
+    </None>
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogSpeakerGain.xml">
+      <Filter>addon\Ressources\skins\Confluence\720p</Filter>
+    </None>
+    <None Include="..\..\addon\resources\skins\Confluence\720p\DialogSpeakerDistance.xml">
+      <Filter>addon\Ressources\skins\Confluence\720p</Filter>
+    </None>
+    <None Include="..\..\addon\resources\language\English\strings.po">
+      <Filter>addon\Ressources\language\English</Filter>
+    </None>
+    <None Include="..\..\addon\resources\language\German\strings.po">
+      <Filter>addon\Ressources\language\German</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\template\configuration\templateConfiguration.h">
+      <Filter>template\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\ADSPAddonHandler.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\client.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DSPProcessor.h" />
+    <ClInclude Include="..\..\src\template\include\checkTemplateConfig.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\IADSPProcessor.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\ADSPProcessorHandle.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ADDONOptional.h" />
+    <ClInclude Include="..\..\src\template\include\IADDONOptional.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\MACROHelper.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\typedefs.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\doxygenDocu.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\template\include\GUIDialogBase.h">
+      <Filter>template\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogPostProcess.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogPreProcess.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogMasterProcess.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Dialogs\GUIDialogOutputResample.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\channelUpmixer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\template\ADSPAddonHandler.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\template\client.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DSPProcessor.cpp" />
+    <ClCompile Include="..\..\src\template\IADSPProcessor.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\template\ADSPProcessorHandle.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ADDONOptional.cpp" />
+    <ClCompile Include="..\..\src\template\IADDONOptional.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\template\configuration\templateConfiguration.cpp">
+      <Filter>template\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\template\GUIDialogBase.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogPostProcess.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogPreProcess.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogMasterProcess.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Dialogs\GUIDialogOutputResample.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\channelUpmixer.cpp" />
+  </ItemGroup>
+</Project>
