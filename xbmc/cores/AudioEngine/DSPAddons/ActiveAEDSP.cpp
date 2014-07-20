@@ -370,7 +370,7 @@ bool CActiveAEDSP::TranslateBoolInfo(DWORD dwInfo) const
   return bReturn;
 }
 
-bool CActiveAEDSP::TranslateCharInfo(DWORD dwInfo, CStdString &strValue) const
+bool CActiveAEDSP::TranslateCharInfo(DWORD dwInfo, std::string &strValue) const
 {
   bool bReturn(true);
 
@@ -411,30 +411,12 @@ bool CActiveAEDSP::TranslateCharInfo(DWORD dwInfo, CStdString &strValue) const
     strValue = activeMaster->IconOverrideModePath();
     break;
   default:
-    strValue = StringUtils::EmptyString;
+    strValue.clear();
     bReturn = false;
     break;
   };
 
   return bReturn;
-}
-
-int CActiveAEDSP::TranslateIntInfo(DWORD dwInfo) const
-{
-  bool iReturn(0);
-
-  CSingleLock lock(m_critSection);
-
-  if (!IsProcessing())
-    return iReturn;
-
-  switch (dwInfo)
-  {
-  default:
-    break;
-  };
-
-  return iReturn;
 }
 //@}
 
