@@ -12571,10 +12571,7 @@ msgctxt "#24078"
 msgid "DSP add-on is currently in use and can't be removed."
 msgstr ""
 
-#: xbmc/cores/AudioEngine/DSPAddons/ActiveAEDSP.cpp
-msgctxt "#24079"
-msgid "Please stop playback!"
-msgstr ""
+#empty string id 24079
 
 msgctxt "#24080"
 msgid "Try to reconnect?"
