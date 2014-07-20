@@ -111,7 +111,7 @@ extern "C"
    * @return The XBMC_AE_DSP_MIN_API_VERSION that was used to compile this add-on.
    * @remarks Valid implementation required.
    */
-  const char* GetMininumAudioDSPAPIVersion(void);
+  const char* GetMinimumAudioDSPAPIVersion(void);
 
   /*!
    * @brief Get the XBMC_GUI_API_VERSION that was used to compile this add-on.
@@ -128,7 +128,7 @@ extern "C"
    * @return The XBMC_GUI_MIN_API_VERSION that was used to compile this add-on.
    * @remarks Valid implementation required.
    */
-  const char* GetMininumGUIAPIVersion(void);
+  const char* GetMinimumGUIAPIVersion(void);
 
   /*!
    * @brief Get the list of features that this add-on provides.
@@ -281,7 +281,7 @@ extern "C"
 
   /*!
    * @brief Returns the time in seconds that it will take
-   * for the next added packet to be heard from the speakers.
+   * for the next added packet to be returned to XBMC.
    * @param id The stream id
    * @return the delay in seconds
    * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with
@@ -311,7 +311,7 @@ extern "C"
 
   /*!
    * @brief Returns the time in seconds that it will take
-   * for the next added packet to be heard from the speakers.
+   * for the next added packet to be returned to XBMC.
    * @param id The stream id
    * @param mode_id The mode inside add-on which must be performed on call. Id
    * is set from add-on by iModeNumber on AE_DSP_MODE structure during
@@ -370,7 +370,7 @@ extern "C"
 
   /*!
    * @brief Returns the time in seconds that it will take
-   * for the next added packet to be heard from the speakers.
+   * for the next added packet to be returned to XBMC.
    * @param id The stream id
    * @return the delay in seconds
    * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with
@@ -433,7 +433,7 @@ extern "C"
 
   /*!
    * Returns the time in seconds that it will take
-   * for the next added packet to be heard from the speakers.
+   * for the next added packet to be returned to XBMC.
    * @param id The stream id
    * @param mode_id The mode inside add-on which must be performed on call. Id
    * is set from add-on by iModeNumber on AE_DSP_MODE structure during
@@ -507,7 +507,7 @@ extern "C"
 
   /*!
    * @brief Returns the time in seconds that it will take for the next added
-   * packet to be heard from the speakers.
+   * packet to be returned to XBMC.
    * @param id The stream id
    * @return the delay in seconds
    * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with
@@ -520,9 +520,9 @@ extern "C"
   void __declspec(dllexport) get_addon(struct AudioDSP* pDSP)
   {
     pDSP->GetAudioDSPAPIVersion                 = GetAudioDSPAPIVersion;
-    pDSP->GetMininumAudioDSPAPIVersion          = GetMininumAudioDSPAPIVersion;
+    pDSP->GetMinimumAudioDSPAPIVersion          = GetMinimumAudioDSPAPIVersion;
     pDSP->GetGUIAPIVersion                      = GetGUIAPIVersion;
-    pDSP->GetMininumGUIAPIVersion               = GetMininumGUIAPIVersion;
+    pDSP->GetMinimumGUIAPIVersion               = GetMinimumGUIAPIVersion;
     pDSP->GetAddonCapabilities                  = GetAddonCapabilities;
     pDSP->GetDSPName                            = GetDSPName;
     pDSP->GetDSPVersion                         = GetDSPVersion;
