@@ -10,8 +10,8 @@
   </requires>
   <extension
     point="xbmc.adspaddon"
-    library_linux="XBMC_FreeSurround.adsp"
-    library_osx="XBMC_FreeSurround.adsp"
+    library_linux="XBMC_FreeSurround_adsp.so"
+    library_osx="XBMC_FreeSurround_adsp.dylib"
     library_wingl="XBMC_FreeSurround_adsp_win32.dll"
     library_windx="XBMC_FreeSurround_adsp_win32.dll"
     library_android="libXBMC_adsp_FreeSurround.so" />

@@ -10,8 +10,8 @@
   </requires>
   <extension
     point="xbmc.adspaddon"
-    library_linux="XBMC_Template.adsp"
-    library_osx="XBMC_Template.adsp"
+    library_linux="XBMC_Template_adsp.so"
+    library_osx="XBMC_adsp_template.dylib"
     library_wingl="XBMC_adsp_template_win32.dll"
     library_windx="XBMC_adsp_template_win32.dll"
     library_android="libXBMC_adsp_template.so" />

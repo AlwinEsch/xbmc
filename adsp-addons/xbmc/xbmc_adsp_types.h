@@ -483,9 +483,9 @@ extern "C" {
   struct AudioDSP
   {
     const char*  (__cdecl* GetAudioDSPAPIVersion)                (void);
-    const char*  (__cdecl* GetMininumAudioDSPAPIVersion)         (void);
+    const char*  (__cdecl* GetMinimumAudioDSPAPIVersion)         (void);
     const char*  (__cdecl* GetGUIAPIVersion)                     (void);
-    const char*  (__cdecl* GetMininumGUIAPIVersion)              (void);
+    const char*  (__cdecl* GetMinimumGUIAPIVersion)              (void);
     AE_DSP_ERROR (__cdecl* GetAddonCapabilities)                 (AE_DSP_ADDON_CAPABILITIES*);
     const char*  (__cdecl* GetDSPName)                           (void);
     const char*  (__cdecl* GetDSPVersion)                        (void);

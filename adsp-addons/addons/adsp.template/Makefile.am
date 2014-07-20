@@ -5,7 +5,7 @@
 # how to reach the author.
 #
 
-ADDONBINNAME    = XBMC_Template
+ADDONBINNAME    = XBMC_Template_adsp
 ADDONNAME       = adsp.template
 LIBNAME         = libadsptemplate-addon
 lib_LTLIBRARIES = libadsptemplate-addon.la

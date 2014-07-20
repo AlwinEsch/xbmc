@@ -49,7 +49,7 @@ HOST_CXXFLAGS=""
 ARCH_DEFINES="-DTARGET_POSIX -DTARGET_LINUX -D_LINUX"
 DYN_LIB_EXT="so"
 TARGET_LDFLAGS=""
-BIN_EXT=".adsp"
+BIN_EXT=".so"
 BINPREFIX=""
 case "${host}" in
   arm-*-linux-androideabi)

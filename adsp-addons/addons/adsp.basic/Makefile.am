@@ -5,7 +5,7 @@
 # how to reach the author.
 #
 
-ADDONBINNAME    = XBMC_Basic
+ADDONBINNAME    = XBMC_Basic_adsp
 ADDONNAME       = adsp.basic
 LIBNAME         = libadspbasic-addon
 lib_LTLIBRARIES = libadspbasic-addon.la

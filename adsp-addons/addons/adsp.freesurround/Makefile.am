@@ -5,7 +5,7 @@
 # how to reach the author.
 #
 
-ADDONBINNAME    = XBMC_FreeSurround
+ADDONBINNAME    = XBMC_FreeSurround_adsp
 ADDONNAME       = adsp.freesurround
 LIBNAME         = libadsp-freesurround-addon
 lib_LTLIBRARIES = libadsp-freesurround-addon.la

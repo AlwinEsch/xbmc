@@ -214,7 +214,7 @@ const char* GetAudioDSPAPIVersion(void)
   return s_ApiVersion.c_str();
 }
 
-const char* GetMininumAudioDSPAPIVersion(void)
+const char* GetMinimumAudioDSPAPIVersion(void)
 {
   static string s_MinApiVersion = XBMC_AE_DSP_MIN_API_VERSION;
   return s_MinApiVersion.c_str();
@@ -226,7 +226,7 @@ const char* GetGUIAPIVersion(void)
   return s_GuiApiVersion.c_str();
 }
 
-const char* GetMininumGUIAPIVersion(void)
+const char* GetMinimumGUIAPIVersion(void)
 {
   static string s_MinGuiApiVersion = XBMC_GUI_MIN_API_VERSION;
   return s_MinGuiApiVersion.c_str();
