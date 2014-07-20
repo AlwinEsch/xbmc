@@ -398,7 +398,6 @@ public:
   virtual ~CAddonGUISliderControl(void) {}
 
   virtual void        SetVisible(bool yesNo);
-  virtual void        SetInfo(int iInfo);
   virtual std::string GetDescription() const;
 
   virtual void        SetIntRange(int iStart, int iEnd);

@@ -153,7 +153,6 @@ typedef int         (*GUIControl_Progress_GetInfo)(void *addonData, GUIHANDLE ha
 typedef const char* (*GUIControl_Progress_GetDescription)(void *addonData, GUIHANDLE handle);
 typedef GUIHANDLE   (*GUIWindow_GetControl_Slider)(void *addonData, GUIHANDLE handle, int controlId);
 typedef void        (*GUIControl_Slider_SetVisible)(void *addonData, GUIHANDLE handle, bool yesNo);
-typedef void        (*GUIControl_Slider_SetInfo)(void *addonData, GUIHANDLE handle, int iInfo);
 typedef const char *(*GUIControl_Slider_GetDescription)(void *addonData, GUIHANDLE handle);
 typedef void        (*GUIControl_Slider_SetIntRange)(void *addonData, GUIHANDLE handle, int iStart, int iEnd);
 typedef void        (*GUIControl_Slider_SetIntValue)(void *addonData, GUIHANDLE handle, int iValue);
@@ -266,7 +265,6 @@ typedef struct CB_GUILib
 
   GUIWindow_GetControl_Slider                 Window_GetControl_Slider;
   GUIControl_Slider_SetVisible                Control_Slider_SetVisible;
-  GUIControl_Slider_SetInfo                   Control_Slider_SetInfo;
   GUIControl_Slider_GetDescription            Control_Slider_GetDescription;
   GUIControl_Slider_SetIntRange               Control_Slider_SetIntRange;
   GUIControl_Slider_SetIntValue               Control_Slider_SetIntValue;

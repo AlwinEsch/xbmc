@@ -136,7 +136,6 @@ CAddonCallbacksGUI::CAddonCallbacksGUI(CAddon* addon)
   m_callbacks->RenderAddon_Delete             = CAddonCallbacksGUI::RenderAddon_Delete;
 
   m_callbacks->Control_Slider_SetVisible              = CAddonCallbacksGUI::Control_Slider_SetVisible;
-  m_callbacks->Control_Slider_SetInfo                 = CAddonCallbacksGUI::Control_Slider_SetInfo;
   m_callbacks->Control_Slider_GetDescription          = CAddonCallbacksGUI::Control_Slider_GetDescription;
   m_callbacks->Control_Slider_SetIntRange             = CAddonCallbacksGUI::Control_Slider_SetIntRange;
   m_callbacks->Control_Slider_SetIntValue             = CAddonCallbacksGUI::Control_Slider_SetIntValue;
@@ -1191,18 +1190,8 @@ void CAddonCallbacksGUI::Control_Slider_SetVisible(void *addonData, GUIHANDLE ha
   if (!helper || !handle)
     return;
 
-  CGUISliderControl *pControl = (CGUISliderControl*)handle;
+  CGUIControl *pControl = (CGUIControl*)handle;
   pControl->SetVisible(yesNo);
-}
-
-void CAddonCallbacksGUI::Control_Slider_SetInfo(void *addonData, GUIHANDLE handle, int iInfo)
-{
-  CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
-  if (!helper || !handle)
-    return;
-
-  CGUISliderControl *pControl = (CGUISliderControl*)handle;
-  pControl->SetInfo(iInfo);
 }
 
 const char* CAddonCallbacksGUI::Control_Slider_GetDescription(void *addonData, GUIHANDLE handle)
@@ -1212,7 +1201,7 @@ const char* CAddonCallbacksGUI::Control_Slider_GetDescription(void *addonData, G
     return NULL;
 
   CGUISliderControl *pControl = (CGUISliderControl*)handle;
-  CStdString string = pControl->GetDescription();
+  std::string string = pControl->GetDescription();
 
   char *buffer = (char*) malloc (string.length()+1);
   strcpy(buffer, string.c_str());
@@ -1275,7 +1264,7 @@ float CAddonCallbacksGUI::Control_Slider_GetPercentage(void *addonData, GUIHANDL
 {
   CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
   if (!helper || !handle)
-    return 0.0;
+    return 0.0f;
 
   CGUISliderControl *pControl = (CGUISliderControl*)handle;
   return pControl->GetPercentage();
@@ -1306,7 +1295,7 @@ float CAddonCallbacksGUI::Control_Slider_GetFloatValue(void *addonData, GUIHANDL
 {
   CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
   if (!helper || !handle)
-    return 0.0;
+    return 0.0f;
 
   CGUISliderControl *pControl = (CGUISliderControl*)handle;
   return pControl->GetFloatValue();
@@ -1345,7 +1334,7 @@ void CAddonCallbacksGUI::Control_SettingsSlider_SetVisible(void *addonData, GUIH
   if (!helper || !handle)
     return;
 
-  CGUISliderControl *pControl = (CGUISettingsSliderControl*)handle;
+  CGUIControl *pControl = (CGUIControl*)handle;
   pControl->SetVisible(yesNo);
 }
 
@@ -1366,7 +1355,7 @@ const char* CAddonCallbacksGUI::Control_SettingsSlider_GetDescription(void *addo
     return NULL;
 
   CGUISettingsSliderControl *pControl = (CGUISettingsSliderControl*)handle;
-  CStdString string = pControl->GetDescription();
+  std::string string = pControl->GetDescription();
 
   char *buffer = (char*) malloc (string.length()+1);
   strcpy(buffer, string.c_str());
@@ -1429,7 +1418,7 @@ float CAddonCallbacksGUI::Control_SettingsSlider_GetPercentage(void *addonData, 
 {
   CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
   if (!helper || !handle)
-    return 0.0;
+    return 0.0f;
 
   CGUISettingsSliderControl *pControl = (CGUISettingsSliderControl*)handle;
   return pControl->GetPercentage();
@@ -1460,7 +1449,8 @@ float CAddonCallbacksGUI::Control_SettingsSlider_GetFloatValue(void *addonData, 
 {
   CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
   if (!helper || !handle)
-    return 0.0;
+    return 0.0f;
+
   CGUISettingsSliderControl *pControl = (CGUISettingsSliderControl*)handle;
   return pControl->GetFloatValue();
 }

@@ -103,7 +103,6 @@ public:
 
   static GUIHANDLE    Window_GetControl_Slider(void *addonData, GUIHANDLE handle, int controlId);
   static void         Control_Slider_SetVisible(void *addonData, GUIHANDLE handle, bool yesNo);
-  static void         Control_Slider_SetInfo(void *addonData, GUIHANDLE handle, int iInfo);
   static const char * Control_Slider_GetDescription(void *addonData, GUIHANDLE handle);
   static void         Control_Slider_SetIntRange(void *addonData, GUIHANDLE handle, int iStart, int iEnd);
   static void         Control_Slider_SetIntValue(void *addonData, GUIHANDLE handle, int iValue);

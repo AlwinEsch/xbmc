@@ -444,7 +444,7 @@ void CAddonGUIProgressControl::SetPercentage(float fPercent)
 float CAddonGUIProgressControl::GetPercentage() const
 {
   if (!m_ProgressHandle)
-    return 0.0;
+    return 0.0f;
 
   return ((CB_GUILib*)m_cb)->Control_Progress_GetPercentage(((AddonCB*)m_Handle)->addonData, m_ProgressHandle);
 }
@@ -500,12 +500,6 @@ void CAddonGUISliderControl::SetVisible(bool yesNo)
     ((CB_GUILib*)m_cb)->Control_Slider_SetVisible(((AddonCB*)m_Handle)->addonData, m_SliderHandle, yesNo);
 }
 
-void CAddonGUISliderControl::SetInfo(int iInfo)
-{
-  if (m_SliderHandle)
-    ((CB_GUILib*)m_cb)->Control_Slider_SetInfo(((AddonCB*)m_Handle)->addonData, m_SliderHandle, iInfo);
-}
-
 string CAddonGUISliderControl::GetDescription() const
 {
   if (!m_SliderHandle)
@@ -548,7 +542,7 @@ void CAddonGUISliderControl::SetPercentage(float fPercent)
 float CAddonGUISliderControl::GetPercentage() const
 {
   if (!m_SliderHandle)
-    return 0.0;
+    return 0.0f;
 
   return ((CB_GUILib*)m_cb)->Control_Slider_GetPercentage(((AddonCB*)m_Handle)->addonData, m_SliderHandle);
 }
@@ -568,7 +562,7 @@ void CAddonGUISliderControl::SetFloatValue(float fValue)
 float CAddonGUISliderControl::GetFloatValue() const
 {
   if (!m_SliderHandle)
-    return 0.0;
+    return 0.0f;
   return ((CB_GUILib*)m_cb)->Control_Slider_GetFloatValue(((AddonCB*)m_Handle)->addonData, m_SliderHandle);
 }
 
@@ -655,7 +649,7 @@ void CAddonGUISettingsSliderControl::SetPercentage(float fPercent)
 float CAddonGUISettingsSliderControl::GetPercentage() const
 {
   if (!m_SettingsSliderHandle)
-    return 0.0;
+    return 0.0f;
 
   return ((CB_GUILib*)m_cb)->Control_SettingsSlider_GetPercentage(((AddonCB*)m_Handle)->addonData, m_SettingsSliderHandle);
 }
@@ -675,7 +669,7 @@ void CAddonGUISettingsSliderControl::SetFloatValue(float fValue)
 float CAddonGUISettingsSliderControl::GetFloatValue() const
 {
   if (!m_SettingsSliderHandle)
-    return 0.0;
+    return 0.0f;
   return ((CB_GUILib*)m_cb)->Control_SettingsSlider_GetFloatValue(((AddonCB*)m_Handle)->addonData, m_SettingsSliderHandle);
 }
 
@@ -698,6 +692,7 @@ DLLEXPORT void GUI_ListItem_destroy(CAddonListItem* p)
 {
   delete p;
 }
+
 
 CAddonListItem::CAddonListItem(void *hdl, void *cb, const char *label, const char *label2, const char *iconImage, const char *thumbnailImage, const char *path)
  : m_Handle(hdl)
