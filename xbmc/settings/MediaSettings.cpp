@@ -147,7 +147,7 @@ bool CMediaSettings::Load(const TiXmlNode *settings)
     if (!XMLUtils::GetInt(pElement, "masterstreambase", m_defaultAudioSettings.m_MasterStreamBase))
       m_defaultAudioSettings.m_MasterStreamBase = AE_DSP_ABASE_STEREO;
 
-    CStdString strTag;
+    std::string strTag;
     for (int type = AE_DSP_ASTREAM_BASIC; type < AE_DSP_ASTREAM_MAX; type++)
     {
       for (int base = AE_DSP_ABASE_STEREO; base < AE_DSP_ABASE_MAX; base++)
@@ -253,7 +253,7 @@ bool CMediaSettings::Save(TiXmlNode *settings) const
   XMLUtils::SetInt(pNode, "masterstreamtypesel", m_defaultAudioSettings.m_MasterStreamTypeSel);
   XMLUtils::SetInt(pNode, "masterstreambase", m_defaultAudioSettings.m_MasterStreamBase);
 
-  CStdString strTag;
+  std::string strTag;
   for (int type = AE_DSP_ASTREAM_BASIC; type < AE_DSP_ASTREAM_MAX; type++)
   {
     for (int base = AE_DSP_ABASE_STEREO; base < AE_DSP_ABASE_MAX; base++)

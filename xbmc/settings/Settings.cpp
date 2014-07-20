@@ -834,7 +834,7 @@ bool CSettings::Reset()
   // try to delete the settings file
   if (XFILE::CFile::Exists(settingsFile, false) && !XFILE::CFile::Delete(settingsFile))
     CLog::Log(LOGWARNING, "Unable to delete old settings file at %s", settingsFile.c_str());
-
+  
   // unload any loaded settings
   Unload();
 

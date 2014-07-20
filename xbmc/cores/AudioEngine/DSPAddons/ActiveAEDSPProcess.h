@@ -256,6 +256,7 @@ namespace ActiveAE
       bool MasterModeChange(int iModeID, AE_DSP_STREAMTYPE iStreamType = AE_DSP_ASTREAM_INVALID);
       AE_DSP_BASETYPE GetBaseType(AE_DSP_STREAM_PROPERTIES *props);
       bool ReallocProcessArray(unsigned int requestSize);
+      void CalculateCPUUsage(unsigned int iTime);
       void SetFFMpegDSPProcessorArray(float *array_ffmpeg[2][AE_DSP_CH_MAX], float **array_in, float **array_out);
     //@}
     //@{

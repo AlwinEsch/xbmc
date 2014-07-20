@@ -19,13 +19,9 @@
  *
  */
 
-#include "addons/Addon.h"
-#include "addons/AddonDll.h"
-#include "addons/DllAudioDSP.h"
+#include "ActiveAEDSPAddon.h"
 #include "threads/CriticalSection.h"
 #include "utils/Observer.h"
-#include "utils/StringUtils.h"
-#include "ActiveAEDSPAddon.h"
 
 namespace ActiveAE
 {
@@ -137,11 +133,10 @@ namespace ActiveAE
      * @param streamType the type to ask
      * @return true if the mode is set as enabled of this mode
      */
-    bool SupportStreamType(AE_DSP_STREAMTYPE streamType);
+    bool SupportStreamType(AE_DSP_STREAMTYPE streamType) const;
     //@}
 
     /*! @name Mode user interface related data functions
-     *  @note changes are not written inside database and must be performed with AddUpdate call
      */
     //@{
     /*!
@@ -151,24 +146,10 @@ namespace ActiveAE
     int ModeName(void) const;
 
     /*!
-     * @brief Set the mode name string identification code
-     * @param iModeName the identifier code on addon strings or xbmc strings or -1 if unset
-     * @return true if the value becomes set and a database update becomes required
-     */
-    bool SetModeName(int iModeName);
-
-    /*!
      * @brief Get the mode name string identification code used on setup entries
      * @return the identifier code on addon strings or -1 if unset
      */
     int ModeSetupName(void) const;
-
-    /*!
-     * @brief Set the mode name string identification code used on setup entries
-     * @param iModeSetupName the identifier code on addon strings or xbmc strings or -1 if unset
-     * @return true if the value becomes set and a database update becomes required
-     */
-    bool SetModeSetupName(int iModeSetupName);
 
     /*!
      * @brief Get the mode help string identification code used as help text on dsp manager helper dialog
@@ -177,50 +158,22 @@ namespace ActiveAE
     int ModeHelp(void) const;
 
     /*!
-     * @brief Set the mode help string identification code used as help text on dsp manager helper dialog
-     * @param iModeHelp the identifier code on addon strings or xbmc strings or -1 if unset
-     * @return true if the value becomes set and a database update becomes required
-     */
-    bool SetModeHelp(int iModeHelp);
-
-    /*!
      * @brief Get the mode description string identification code used as small help text on dsp manager dialog
      * @return the identifier code on addon strings or -1 if unset
      */
     int ModeDescription(void) const;
 
     /*!
-     * @brief Set the mode description string identification code used as small help text on dsp manager dialog
-     * @param iModeDescription the identifier code on addon strings or xbmc strings or -1 if unset
-     * @return true if the value becomes set and a database update becomes required
-     */
-    bool SetModeDescription(int iModeDescription);
-
-    /*!
      * @brief Get the path to a from addon set mode identification image
      * @return the path to the image or empty if not present
      */
-    std::string IconOwnModePath(void) const;
-
-    /*!
-     * @brief Set the path to a from addon set mode identification image
-     * @param strIconPath the path to the image or empty for disable show of it
-     * @return true if the image becomes set and a database update becomes required
-     */
-    bool SetIconOwnModePath(const std::string &strIconPath);
+    const std::string &IconOwnModePath(void) const;
 
     /*!
      * @brief Get the path to a from addon set mode identification image to overirde the from XBMC used one, e.g. Dolby Digital with Dolby Digital EX
      * @return the path to the image or empty if not present
      */
-    std::string IconOverrideModePath(void) const;
-
-    /*!
-     * @brief Set the path to a from addon set mode identification image to overirde the from XBMC used one
-     * @param strIconPath the path to the image or empty for disable show of it
-     * @return true if the image becomes set and a database update becomes required
-     */
-    bool SetIconOverrideModePath(const std::string &strIconPath);
+    const std::string &IconOverrideModePath(void) const;
     //@}
 
     /*! @name Master mode type related functions
@@ -266,7 +219,7 @@ namespace ActiveAE
      * @brief Ask database about this mode that it is alread known
      * @return true if present inside database
      */
-    bool IsKnown(void);
+    bool IsKnown(void) const;
     //@}
 
     /*! @name Dynamic processing related functions
@@ -311,7 +264,7 @@ namespace ActiveAE
      * @brief Get the addon mode name
      * @return returns the from addon set name of this mode, used for log messages
      */
-    std::string AddonModeName(void) const;
+    const std::string &AddonModeName(void) const;
 
     /*!
      * @brief Have this mode settings dialogs
@@ -364,7 +317,7 @@ namespace ActiveAE
     unsigned int      m_iStreamTypeFlags;        /*!< The stream content type flags in accordance with AE_DSP_ASTREAM_PRESENT */
     //@}
 
-    CCriticalSection m_critSection;
+    CCriticalSection  m_critSection;
   };
   //@}
 }

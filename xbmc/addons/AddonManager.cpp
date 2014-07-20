@@ -57,7 +57,6 @@
 
 using namespace std;
 using namespace PVR;
-using namespace ActiveAE;
 
 namespace ADDON
 {
@@ -172,7 +171,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
         else if (type == ADDON_ADSPDLL)
         {
 #if defined(HAS_ADSPADDONS)
-          return AddonPtr(new CActiveAEDSPAddon(props));
+          return AddonPtr(new ActiveAE::CActiveAEDSPAddon(props));
 #endif
         }
         else if (type == ADDON_AUDIOENCODER)
@@ -465,10 +464,10 @@ bool CAddonMgr::GetAddons(const TYPE &type, VECADDONS &addons, bool enabled /* =
       // get a pointer to a running audio DSP if it's already started, or we won't be able to change settings
       else if (TranslateType(props->ext_point_id) == ADDON_ADSPDLL &&
           enabled &&
-          CActiveAEDSP::Get().IsActivated())
+          ActiveAE::CActiveAEDSP::Get().IsActivated())
       {
         AddonPtr adspAddon;
-        if (CActiveAEDSP::Get().GetAudioDSPAddon(props->plugin->identifier, adspAddon))
+        if (ActiveAE::CActiveAEDSP::Get().GetAudioDSPAddon(props->plugin->identifier, adspAddon))
         {
           addons.push_back(adspAddon);
           continue;
@@ -506,10 +505,10 @@ bool CAddonMgr::GetAddon(const CStdString &str, AddonPtr &addon, const TYPE &typ
         if (g_PVRClients->GetClient(addon->ID(), pvrAddon))
           addon = pvrAddon;
       }
-      else if (addon->Type() == ADDON_ADSPDLL && CActiveAEDSP::Get().IsActivated())
+      else if (addon->Type() == ADDON_ADSPDLL && ActiveAE::CActiveAEDSP::Get().IsActivated())
       {
         AddonPtr adspAddon;
-        if (CActiveAEDSP::Get().GetAudioDSPAddon(addon->ID(), adspAddon))
+        if (ActiveAE::CActiveAEDSP::Get().GetAudioDSPAddon(addon->ID(), adspAddon))
           addon = adspAddon;
       }
     }
@@ -703,7 +702,7 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
     case ADDON_PVRDLL:
       return AddonPtr(new CPVRClient(addonProps));
     case ADDON_ADSPDLL:
-      return AddonPtr(new CActiveAEDSPAddon(addonProps));
+      return AddonPtr(new ActiveAE::CActiveAEDSPAddon(addonProps));
     case ADDON_AUDIOENCODER:
       return AddonPtr(new CAudioEncoder(addonProps));
     case ADDON_REPOSITORY:

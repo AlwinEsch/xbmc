@@ -54,9 +54,6 @@ CActiveAEDSPProcess::CActiveAEDSPProcess(AE_DSP_STREAM_ID streamId)
   m_ConvertInput            = NULL;
   m_ConvertOutput           = NULL;
 
-  m_Addon_InputResample.Clear();
-  m_Addon_OutputResample.Clear();
-
   /*!
    * Create predefined process arrays on every supported channel for audio dsp's.
    * All are set if used or not for safety reason and unsued ones can be used from
@@ -75,8 +72,7 @@ CActiveAEDSPProcess::~CActiveAEDSPProcess()
 {
   ResetStreamFunctionsSelection();
 
-  if (m_FFMpegDSPProcessor)
-    delete m_FFMpegDSPProcessor;
+  delete m_FFMpegDSPProcessor;
 
   /* Clear the buffer arrays */
   for (int i = 0; i < AE_DSP_CH_MAX; i++)
@@ -603,8 +599,7 @@ void CActiveAEDSPProcess::InitFFMpegDSPProcessor()
   /*!
    * If ffmpeg resampler is already present delete it first to create it from new
    */
-  if (m_FFMpegDSPProcessor)
-    delete m_FFMpegDSPProcessor;
+  delete m_FFMpegDSPProcessor;
   m_FFMpegDSPProcessor = NULL;
 
   /*!
@@ -963,7 +958,6 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out)
   CSingleLock lock(m_restartSection);
 
   bool needDSPAddonsReinit  = m_ForceInit;
-  CThread *processThread    = CThread::GetCurrentThread();
   unsigned int iTime        = XbmcThreads::SystemClockMillis() * 10000;
   int64_t hostFrequency     = CurrentHostFrequency();
 
@@ -1321,57 +1315,7 @@ bool CActiveAEDSPProcess::Process(CSampleBuffer *in, CSampleBuffer *out)
    * Update cpu process percent usage values for modes and total (every second)
    */
   if (iTime >= m_iLastProcessTime + 1000*10000)
-  {
-    int64_t iUsage = processThread->GetAbsoluteUsage();
-
-    if (m_iLastProcessUsage > 0 && m_iLastProcessTime > 0)
-      m_fLastProcessUsage = (float)( iUsage - m_iLastProcessUsage ) / (float)( iTime - m_iLastProcessTime) * 100.0f;
-
-    if (m_Addon_InputResample.iLastUsage > 0 && m_Addon_InputResample.iLastTime > 0)
-    {
-      m_Addon_InputResample.pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addon_InputResample.iLastUsage) / (float)m_Addon_InputResample.iLastTime));
-      m_Addon_InputResample.iLastTime = 0;
-    }
-    m_Addon_InputResample.iLastUsage = iUsage;
-
-    for (unsigned int i = 0; i < m_Addons_PreProc.size(); i++)
-    {
-      if (m_Addons_PreProc[i].iLastUsage > 0 && m_Addons_PreProc[i].iLastTime > 0)
-      {
-        m_Addons_PreProc[i].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_PreProc[i].iLastUsage) / (float)m_Addons_PreProc[i].iLastTime));
-        m_Addons_PreProc[i].iLastTime = 0;
-      }
-
-      m_Addons_PreProc[i].iLastUsage = iUsage;
-    }
-
-    if (m_Addons_MasterProc[m_ActiveMode].iLastUsage > 0 && m_Addons_MasterProc[m_ActiveMode].iLastTime > 0)
-    {
-      m_Addons_MasterProc[m_ActiveMode].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_MasterProc[m_ActiveMode].iLastUsage) / (float)m_Addons_MasterProc[m_ActiveMode].iLastTime));
-      m_Addons_MasterProc[m_ActiveMode].iLastTime = 0;
-    }
-    m_Addons_MasterProc[m_ActiveMode].iLastUsage = iUsage;
-
-    for (unsigned int i = 0; i < m_Addons_PostProc.size(); i++)
-    {
-      if (m_Addons_PostProc[i].iLastUsage > 0 && m_Addons_PostProc[i].iLastTime > 0)
-      {
-        m_Addons_PostProc[i].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_PostProc[i].iLastUsage) / (float)m_Addons_PostProc[i].iLastTime));
-        m_Addons_PostProc[i].iLastTime = 0;
-      }
-      m_Addons_PostProc[i].iLastUsage = iUsage;
-    }
-
-    if (m_Addon_OutputResample.iLastUsage > 0 && m_Addon_OutputResample.iLastTime > 0)
-    {
-      m_Addon_OutputResample.pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addon_OutputResample.iLastUsage) / (float)m_Addon_OutputResample.iLastTime));
-      m_Addon_OutputResample.iLastTime = 0;
-    }
-    m_Addon_OutputResample.iLastUsage = iUsage;
-
-    m_iLastProcessUsage = iUsage;
-    m_iLastProcessTime  = iTime;
-  }
+    CalculateCPUUsage(iTime);
 
   return true;
 }
@@ -1390,6 +1334,58 @@ bool CActiveAEDSPProcess::ReallocProcessArray(unsigned int requestSize)
     }
   }
   return true;
+}
+
+void CActiveAEDSPProcess::CalculateCPUUsage(unsigned int iTime)
+{
+  int64_t iUsage = CThread::GetCurrentThread()->GetAbsoluteUsage();
+
+  if (m_iLastProcessUsage > 0 && m_iLastProcessTime > 0)
+    m_fLastProcessUsage = (float)( iUsage - m_iLastProcessUsage ) / (float)( iTime - m_iLastProcessTime) * 100.0f;
+
+  if (m_Addon_InputResample.iLastUsage > 0 && m_Addon_InputResample.iLastTime > 0)
+  {
+    m_Addon_InputResample.pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addon_InputResample.iLastUsage) / (float)m_Addon_InputResample.iLastTime));
+    m_Addon_InputResample.iLastTime = 0;
+  }
+  m_Addon_InputResample.iLastUsage = iUsage;
+
+  for (unsigned int i = 0; i < m_Addons_PreProc.size(); i++)
+  {
+    if (m_Addons_PreProc[i].iLastUsage > 0 && m_Addons_PreProc[i].iLastTime > 0)
+    {
+      m_Addons_PreProc[i].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_PreProc[i].iLastUsage) / (float)m_Addons_PreProc[i].iLastTime));
+      m_Addons_PreProc[i].iLastTime = 0;
+    }
+    m_Addons_PreProc[i].iLastUsage = iUsage;
+  }
+
+  if (m_Addons_MasterProc[m_ActiveMode].iLastUsage > 0 && m_Addons_MasterProc[m_ActiveMode].iLastTime > 0)
+  {
+    m_Addons_MasterProc[m_ActiveMode].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_MasterProc[m_ActiveMode].iLastUsage) / (float)m_Addons_MasterProc[m_ActiveMode].iLastTime));
+    m_Addons_MasterProc[m_ActiveMode].iLastTime = 0;
+  }
+  m_Addons_MasterProc[m_ActiveMode].iLastUsage = iUsage;
+
+  for (unsigned int i = 0; i < m_Addons_PostProc.size(); i++)
+  {
+    if (m_Addons_PostProc[i].iLastUsage > 0 && m_Addons_PostProc[i].iLastTime > 0)
+    {
+      m_Addons_PostProc[i].pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addons_PostProc[i].iLastUsage) / (float)m_Addons_PostProc[i].iLastTime));
+      m_Addons_PostProc[i].iLastTime = 0;
+    }
+    m_Addons_PostProc[i].iLastUsage = iUsage;
+  }
+
+  if (m_Addon_OutputResample.iLastUsage > 0 && m_Addon_OutputResample.iLastTime > 0)
+  {
+    m_Addon_OutputResample.pMode->SetCPUUsage(m_fLastProcessUsage / ((float)(iUsage - m_Addon_OutputResample.iLastUsage) / (float)m_Addon_OutputResample.iLastTime));
+    m_Addon_OutputResample.iLastTime = 0;
+  }
+  m_Addon_OutputResample.iLastUsage = iUsage;
+
+  m_iLastProcessUsage = iUsage;
+  m_iLastProcessTime  = iTime;
 }
 
 void CActiveAEDSPProcess::SetFFMpegDSPProcessorArray(float *array_ffmpeg[2][AE_DSP_CH_MAX], float **array_in, float **array_out)

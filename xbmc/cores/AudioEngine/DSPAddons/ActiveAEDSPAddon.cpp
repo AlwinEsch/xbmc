@@ -239,39 +239,32 @@ AE_DSP_ADDON_CAPABILITIES CActiveAEDSPAddon::GetAddonCapabilities(void) const
   return addonCapabilities;
 }
 
-string CActiveAEDSPAddon::GetAudioDSPName(void) const
+const std::string &CActiveAEDSPAddon::GetAudioDSPName(void) const
 {
-  string strReturn(m_strAudioDSPName);
-  return strReturn;
+  return m_strAudioDSPName;
 }
 
-string CActiveAEDSPAddon::GetAudioDSPVersion(void) const
+const std::string &CActiveAEDSPAddon::GetAudioDSPVersion(void) const
 {
-  string strReturn(m_strAudioDSPVersion);
-  return strReturn;
+  return m_strAudioDSPVersion;
 }
 
-string CActiveAEDSPAddon::GetFriendlyName(void) const
+const std::string &CActiveAEDSPAddon::GetFriendlyName(void) const
 {
-  string strReturn(m_strFriendlyName);
-  return strReturn;
+  return m_strFriendlyName;
 }
 
 bool CActiveAEDSPAddon::HaveMenuHooks(AE_DSP_MENUHOOK_CAT cat) const
 {
-  bool bReturn(false);
   if (m_bReadyToUse && m_menuhooks.size() > 0)
   {
     for (unsigned int i = 0; i < m_menuhooks.size(); i++)
     {
       if (m_menuhooks[i].category == cat || m_menuhooks[i].category == AE_DSP_MENUHOOK_ALL)
-      {
-        bReturn = true;
-        break;
-      }
+        return true;
     }
   }
-  return bReturn;
+  return false;
 }
 
 AE_DSP_MENUHOOKS *CActiveAEDSPAddon::GetMenuHooks(void)

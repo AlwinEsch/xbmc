@@ -293,7 +293,7 @@ bool CActiveAEDSP::RequestRemoval(AddonPtr addon)
   /* During playback is not recommend for me to change the used addons (need to fix) */
   if (IsInUse(addon->ID()) && IsProcessing())
   {
-    CGUIDialogOK::ShowAndGetInput(24077, 24078, 24079, 0);
+    CGUIDialogOK::ShowAndGetInput(24077, 0, 24078, 0);
     return false;
   }
 
@@ -306,7 +306,7 @@ bool CActiveAEDSP::IsInUse(const string &strAddonId) const
   CSingleLock lock(m_critSection);
 
   for (AE_DSP_ADDONMAP_CITR itr = m_AddonMap.begin(); itr != m_AddonMap.end(); itr++)
-    if (itr->second->Enabled() && itr->second->ID().Equals(strAddonId.c_str()))
+    if (itr->second->Enabled() && itr->second->ID() == strAddonId)
       return true;
   return false;
 }

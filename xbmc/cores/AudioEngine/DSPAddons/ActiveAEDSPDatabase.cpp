@@ -18,21 +18,15 @@
  *
  */
 
+#include "ActiveAEDSPDatabase.h"
+#include "ActiveAEDSP.h"
+
 #include "URL.h"
 #include "dbwrappers/dataset.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
-#include "settings/MediaSourceSettings.h"
-#include "settings/Settings.h"
-#include "video/VideoInfoTag.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
-
-#include "ActiveAEDSP.h"
-#include "ActiveAEDSPMode.h"
-#include "ActiveAEDSPAddon.h"
-#include "ActiveAEDSPDatabase.h"
-#include "ActiveAEDSPProcess.h"
 
 using namespace std;
 using namespace dbiplus;
@@ -115,33 +109,13 @@ void CActiveAEDSPDatabase::CreateAnalytics()
 
 void CActiveAEDSPDatabase::UpdateTables(int iVersion)
 {
-  if (iVersion < 0)
-  {
-    CLog::Log(LOGERROR, "Audio DSP - %s - updating from table versions < 0 not supported. please delete '%s'", __FUNCTION__, GetBaseDBName());
-  }
 }
 
 /********** Mode methods **********/
 
 bool CActiveAEDSPDatabase::ContainsModes(int modeType)
 {
-  try
-  {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-
-    string sql = PrepareSQL("select count(1) from modes WHERE modes.iType='%i'", modeType);
-    if (!m_pDS->query(sql.c_str()) || m_pDS->num_rows() == 0)
-      return false;
-    bool found = m_pDS->fv(0).get_asInt() > 0;
-    m_pDS->close();
-    return found;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "Audio DSP - %s - (modeType='%i') failed", __FUNCTION__, modeType);
-  }
-  return false;
+  return !GetSingleValue(PrepareSQL("SELECT 1 FROM modes WHERE modes.iType='%i'", modeType)).empty();
 }
 
 bool CActiveAEDSPDatabase::DeleteModes(void)
@@ -167,19 +141,19 @@ bool CActiveAEDSPDatabase::DeleteModes(int modeType)
   return DeleteValues("modes", filter);
 }
 
-bool CActiveAEDSPDatabase::DeleteModes(const CActiveAEDSPAddon &addon)
+bool CActiveAEDSPDatabase::DeleteAddonModes(int addonId)
 {
   /* invalid addon Id */
-  if (addon.GetID() <= 0)
+  if (addonId <= 0)
   {
-    CLog::Log(LOGERROR, "Audio DSP - %s - invalid add-on id: %i", __FUNCTION__, addon.GetID());
+    CLog::Log(LOGERROR, "Audio DSP - %s - invalid add-on id: %i", __FUNCTION__, addonId);
     return false;
   }
 
-  CLog::Log(LOGDEBUG, "Audio DSP - %s - deleting all modes from add-on '%i' from the database", __FUNCTION__, addon.GetID());
+  CLog::Log(LOGDEBUG, "Audio DSP - %s - deleting all modes from add-on '%i' from the database", __FUNCTION__, addonId);
 
   Filter filter;
-  filter.AppendWhere(PrepareSQL("iAddonId = %u", addon.GetID()));
+  filter.AppendWhere(PrepareSQL("iAddonId = %u", addonId));
 
   return DeleteValues("modes", filter);
 }
@@ -218,21 +192,12 @@ bool CActiveAEDSPDatabase::PersistModes(vector<CActiveAEDSPModePtr> &modes, int 
 
 bool CActiveAEDSPDatabase::UpdateMode(int modeType, bool active, int addonId, int addonModeNumber, int listNumber)
 {
-  bool bReturn(true);
-
-  try
-  {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-
-    string strSQL = PrepareSQL("update modes set iPosition=%i,bIsEnabled='%i' WHERE modes.iAddonId='%i' AND modes.iAddonModeNumber='%i' AND modes.iType='%i'", listNumber, (active ? 1 : 0), addonId, addonModeNumber, modeType);
-    bReturn = m_pDS->exec(strSQL.c_str());
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "Audio DSP - %s - (Addon='%i', Mode='%i') failed", __FUNCTION__, addonId, addonModeNumber);
-  }
-  return bReturn;
+  return ExecuteQuery(PrepareSQL("UPDATE modes SET iPosition=%i,bIsEnabled=%i WHERE modes.iAddonId=%i AND modes.iAddonModeNumber=%i AND modes.iType=%i",
+                                 listNumber,
+                                 (active ? 1 : 0),
+                                 addonId,
+                                 addonModeNumber,
+                                 modeType));
 }
 
 bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
@@ -246,7 +211,7 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
 
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
-    string strSQL = PrepareSQL("SELECT * FROM modes WHERE modes.iAddonId='%i' AND modes.iAddonModeNumber='%i' AND modes.iType='%i'", mode.AddonID(), mode.AddonModeNumber(), mode.ModeType());
+    string strSQL = PrepareSQL("SELECT * FROM modes WHERE modes.iAddonId=%i AND modes.iAddonModeNumber=%i AND modes.iType=%i", mode.AddonID(), mode.AddonModeNumber(), mode.ModeType());
 
     m_pDS->query( strSQL.c_str() );
     if (m_pDS->num_rows() > 0)
@@ -270,7 +235,7 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
         "iModeDescription=%i, "
         "sAddonModeName='%s', "
         "bHasSettings=%i "
-        "WHERE modes.iAddonId='%i' AND modes.iAddonModeNumber='%i' AND modes.iType='%i'",
+        "WHERE modes.iAddonId=%i AND modes.iAddonModeNumber=%i AND modes.iType=%i",
         mode.StreamTypeFlags(),
         mode.IconOwnModePath().c_str(),
         mode.IconOverrideModePath().c_str(),
@@ -328,32 +293,17 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
 
 int CActiveAEDSPDatabase::GetModeId(const CActiveAEDSPMode &mode)
 {
-  try
-  {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-    int idMode = -1;
-
-    string strSQL = PrepareSQL("SELECT * from modes WHERE modes.iAddonId='%i' and modes.iAddonModeNumber='%i' and modes.iType='%i'", mode.AddonID(), mode.AddonModeNumber(), mode.ModeType());
-
-    m_pDS->query(strSQL.c_str());
-    if (m_pDS->num_rows() > 0)
-      idMode = m_pDS->fv("idMode").get_asInt();
-    m_pDS->close();
-    return idMode;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s (Addon='%i', Mode='%i', Name: %s) failed", __FUNCTION__, mode.AddonID(), mode.AddonModeNumber(), mode.AddonModeName().c_str());
-  }
-  return -1;
+  string id = GetSingleValue(PrepareSQL("SELECT * from modes WHERE modes.iAddonId=%i and modes.iAddonModeNumber=%i and modes.iType=%i", mode.AddonID(), mode.AddonModeNumber(), mode.ModeType()));
+  if (id.empty())
+    return -1;
+  return strtol(id.c_str(), NULL, 10);
 }
 
 int CActiveAEDSPDatabase::GetModes(AE_DSP_MODELIST &results, int modeType)
 {
   int iReturn(0);
 
-  string strQuery=PrepareSQL("SELECT * FROM modes WHERE modes.iType='%i' ORDER BY iPosition", modeType);
+  string strQuery=PrepareSQL("SELECT * FROM modes WHERE modes.iType=%i ORDER BY iPosition", modeType);
 
   m_pDS->query( strQuery.c_str() );
   if (m_pDS->num_rows() > 0)
@@ -407,33 +357,6 @@ int CActiveAEDSPDatabase::GetModes(AE_DSP_MODELIST &results, int modeType)
   return iReturn;
 }
 
-bool CActiveAEDSPDatabase::IsModeEnabled(const CActiveAEDSPMode &mode, int &position)
-{
-  try
-  {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-
-    string strSQL = PrepareSQL("SELECT * from modes WHERE modes.iAddonId='%i' and modes.iAddonModeNumber='%i' and modes.iType='%i'", mode.AddonID(), mode.AddonModeNumber(), mode.ModeType());
-
-    m_pDS->query(strSQL.c_str());
-    if (m_pDS->num_rows() > 0)
-    {
-      if (!m_pDS->fv("bIsEnabled").get_asBool())
-        return false;
-      position = m_pDS->fv("iPosition").get_asInt();
-    }
-
-    m_pDS->close();
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s (Addon='%i', Mode='%i', Name: %s) failed", __FUNCTION__, mode.AddonID(), mode.AddonModeNumber(), mode.AddonModeName().c_str());
-  }
-  return false;
-}
-
 /********** Settings methods **********/
 
 bool CActiveAEDSPDatabase::DeleteActiveDSPSettings()
@@ -446,21 +369,7 @@ bool CActiveAEDSPDatabase::DeleteActiveDSPSettings(const CFileItem *file)
 {
   string strPath, strFileName;
   URIUtils::Split(file->GetPath(), strPath, strFileName);
-
-  try
-  {
-    if (NULL == m_pDB.get()) return false;
-    if (NULL == m_pDS.get()) return false;
-
-    string strSQL=PrepareSQL("DELETE FROM settings WHERE settings.strPath='%s' and settings.strFileName='%s'", strPath.c_str() , strFileName.c_str());
-    m_pDS->exec(strSQL.c_str());
-    return true;
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
-  }
-  return false;
+  return ExecuteQuery(PrepareSQL("DELETE FROM settings WHERE settings.strPath='%s' and settings.strFileName='%s'", strPath.c_str() , strFileName.c_str()));
 }
 
 bool CActiveAEDSPDatabase::GetActiveDSPSettings(const CFileItem *file, CAudioSettings &settings)
@@ -558,15 +467,8 @@ void CActiveAEDSPDatabase::SetActiveDSPSettings(const CFileItem *file, const CAu
 
 void CActiveAEDSPDatabase::EraseActiveDSPSettings()
 {
-  try
-  {
-    CLog::Log(LOGINFO, "Deleting dsp settings information for all files");
-    m_pDS->exec("delete from settings");
-  }
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
-  }
+  CLog::Log(LOGINFO, "Deleting dsp settings information for all files");
+  ExecuteQuery(PrepareSQL("DELETE from settings"));
 }
 
 void CActiveAEDSPDatabase::SplitPath(const string& strFileNameAndPath, string& strPath, string& strFileName)
@@ -595,17 +497,17 @@ bool CActiveAEDSPDatabase::DeleteAddons()
   return DeleteValues("addons");
 }
 
-bool CActiveAEDSPDatabase::Delete(const CActiveAEDSPAddon &addon)
+bool CActiveAEDSPDatabase::Delete(const string &strAddonUid)
 {
   /* invalid addon uid */
-  if (addon.ID().empty())
+  if (strAddonUid.empty())
   {
     CLog::Log(LOGERROR, "Audio DSP - %s - invalid addon uid", __FUNCTION__);
     return false;
   }
 
   Filter filter;
-  filter.AppendWhere(PrepareSQL("sUid = '%s'", addon.ID().c_str()));
+  filter.AppendWhere(PrepareSQL("sUid = '%s'", strAddonUid.c_str()));
 
   return DeleteValues("addons", filter);
 }
@@ -618,7 +520,7 @@ int CActiveAEDSPDatabase::GetAudioDSPAddonId(const string &strAddonUid)
   if (strValue.empty())
     return -1;
 
-  return atol(strValue.c_str());
+  return strtol(strValue.c_str(), NULL, 10);
 }
 
 int CActiveAEDSPDatabase::Persist(const AddonPtr addon)

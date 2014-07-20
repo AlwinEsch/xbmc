@@ -94,17 +94,17 @@ namespace ActiveAE
     /*!
      * @return The name reported by the backend.
      */
-    std::string GetAudioDSPName(void) const;
+    const std::string &GetAudioDSPName(void) const;
 
     /*!
      * @return The version string reported by the backend.
      */
-    std::string GetAudioDSPVersion(void) const;
+    const std::string &GetAudioDSPVersion(void) const;
 
     /*!
      * @return A friendly name for this add-on that can be used in log messages.
      */
-    std::string GetFriendlyName(void) const;
+    const std::string &GetFriendlyName(void) const;
 
     /*!
      * @return True if this add-on has menu hooks, false otherwise.

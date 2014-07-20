@@ -19,13 +19,7 @@
  *
  */
 
-#include "addons/Addon.h"
-#include "addons/AddonDll.h"
-#include "addons/DllAudioDSP.h"
 #include "ActiveAEDSPMode.h"
-#include "dbwrappers/Database.h"
-#include "XBDateTime.h"
-#include "utils/log.h"
 
 class CAudioSettings;
 
@@ -87,10 +81,10 @@ namespace ActiveAE
 
     /*!
      * @brief Remove all modes from a add-on from the database.
-     * @param addon The add-on to delete the modes for.
+     * @param addonId The add-on identifier to delete the modes for.
      * @return True if the modes were deleted, false otherwise.
      */
-    bool DeleteModes(const CActiveAEDSPAddon &addon);
+    bool DeleteAddonModes(int addonId);
 
     /*!
      * @brief Remove a mode entry from the database
@@ -139,14 +133,6 @@ namespace ActiveAE
      * @return The amount of modes that were added.
      */
     int GetModes(AE_DSP_MODELIST &results, int modeType);
-
-    /*!
-     * @brief Check inside database that the mode is not hidden
-     * @param mode The mode to check inside the database
-     * @retval position the processing position where the mode is, if enabled
-     * @return true if enabled
-     */
-    bool IsModeEnabled(const CActiveAEDSPMode &mode, int &position);
     //@}
 
     /*! @name Add-on methods */
@@ -159,10 +145,10 @@ namespace ActiveAE
 
     /*!
      * @brief Remove a add-on from the database
-     * @param strGuid The unique ID of the add-on.
+     * @param strAddonUid The unique ID of the add-on.
      * @return True if the add-on was removed successfully, false otherwise.
      */
-    bool Delete(const CActiveAEDSPAddon &addon);
+    bool Delete(const std::string &strAddonUid);
 
     /*!
      * @brief Get the database ID of a add-on.

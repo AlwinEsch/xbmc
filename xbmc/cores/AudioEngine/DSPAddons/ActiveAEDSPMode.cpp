@@ -18,16 +18,11 @@
  *
  */
 
-#include "ActiveAEDSPDatabase.h"
 #include "ActiveAEDSPMode.h"
-#include "cores/IPlayer.h"
-#include "Engines/ActiveAE/ActiveAEBuffer.h"
-#include "Engines/ActiveAE/ActiveAEResample.h"
-#include "cores/AudioEngine/Utils/AEUtil.h"
+#include "ActiveAEDSPDatabase.h"
+#include "ActiveAEDSP.h"
 #include "utils/StringUtils.h"
 
-using namespace std;
-using namespace ADDON;
 using namespace ActiveAE;
 
 bool CActiveAEDSPMode::operator==(const CActiveAEDSPMode &right) const
@@ -50,8 +45,8 @@ CActiveAEDSPMode::CActiveAEDSPMode()
   m_iModeId                 = -1;
   m_iModePosition           = -1;
   m_bIsEnabled              = false;
-  m_strOwnIconPath          = StringUtils::EmptyString;
-  m_strOverrideIconPath     = StringUtils::EmptyString;
+  m_strOwnIconPath          = "";
+  m_strOverrideIconPath     = "";
   m_iStreamTypeFlags        = 0;
   m_iBaseType               = AE_DSP_ABASE_INVALID;
   m_iModeName               = -1;
@@ -66,7 +61,7 @@ CActiveAEDSPMode::CActiveAEDSPMode()
 
   m_iAddonId                = -1;
   m_iAddonModeNumber        = -1;
-  m_strModeName             = StringUtils::EmptyString;
+  m_strModeName             = "";
 }
 
 CActiveAEDSPMode::CActiveAEDSPMode(int modeId, const AE_DSP_BASETYPE baseType)
@@ -75,8 +70,8 @@ CActiveAEDSPMode::CActiveAEDSPMode(int modeId, const AE_DSP_BASETYPE baseType)
   m_iModeId                 = modeId;
   m_iModePosition           = 0;
   m_bIsEnabled              = true;
-  m_strOwnIconPath          = StringUtils::EmptyString;
-  m_strOverrideIconPath     = StringUtils::EmptyString;
+  m_strOwnIconPath          = "";
+  m_strOverrideIconPath     = "";
   m_iStreamTypeFlags        = AE_DSP_PRSNT_ASTREAM_BASIC |
                               AE_DSP_PRSNT_ASTREAM_MUSIC |
                               AE_DSP_PRSNT_ASTREAM_MOVIE/* |
@@ -256,7 +251,7 @@ bool CActiveAEDSPMode::SupportStreamType(AE_DSP_STREAMTYPE streamType, unsigned 
   return false;
 }
 
-bool CActiveAEDSPMode::SupportStreamType(AE_DSP_STREAMTYPE streamType)
+bool CActiveAEDSPMode::SupportStreamType(AE_DSP_STREAMTYPE streamType) const
 {
   return SupportStreamType(streamType, m_iStreamTypeFlags);
 }
@@ -269,42 +264,10 @@ int CActiveAEDSPMode::ModeName(void) const
   return m_iModeName;
 }
 
-bool CActiveAEDSPMode::SetModeName(int iModeName)
-{
-  CSingleLock lock(m_critSection);
-  if (m_iModeName != iModeName)
-  {
-    /* update the mode name */
-    m_iModeName = iModeName;
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
-}
-
 int CActiveAEDSPMode::ModeSetupName(void) const
 {
   CSingleLock lock(m_critSection);
   return m_iModeSetupName;
-}
-
-bool CActiveAEDSPMode::SetModeSetupName(int iModeSetupName)
-{
-  CSingleLock lock(m_critSection);
-  if (m_iModeSetupName != iModeSetupName)
-  {
-    /* update the mode name */
-    m_iModeSetupName = iModeSetupName;
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
 }
 
 int CActiveAEDSPMode::ModeDescription(void) const
@@ -313,90 +276,22 @@ int CActiveAEDSPMode::ModeDescription(void) const
   return m_iModeDescription;
 }
 
-bool CActiveAEDSPMode::SetModeDescription(int iModeDescription)
-{
-  CSingleLock lock(m_critSection);
-  if (m_iModeDescription != iModeDescription)
-  {
-    /* update the mode name */
-    m_iModeDescription = iModeDescription;
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
-}
-
 int CActiveAEDSPMode::ModeHelp(void) const
 {
   CSingleLock lock(m_critSection);
   return m_iModeHelp;
 }
 
-bool CActiveAEDSPMode::SetModeHelp(int iModeHelp)
+const std::string &CActiveAEDSPMode::IconOwnModePath(void) const
 {
   CSingleLock lock(m_critSection);
-  if (m_iModeHelp != iModeHelp)
-  {
-    /* update the mode name */
-    m_iModeHelp = iModeHelp;
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
+  return m_strOwnIconPath;
 }
 
-string CActiveAEDSPMode::IconOwnModePath(void) const
+const std::string &CActiveAEDSPMode::IconOverrideModePath(void) const
 {
   CSingleLock lock(m_critSection);
-  string strReturn(m_strOwnIconPath);
-  return strReturn;
-}
-
-bool CActiveAEDSPMode::SetIconOwnModePath(const string &strIconPath)
-{
-  CSingleLock lock(m_critSection);
-
-  if (m_strOwnIconPath != strIconPath)
-  {
-    /* update the path */
-    m_strOwnIconPath = StringUtils::Format("%s", strIconPath.c_str());
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
-}
-
-string CActiveAEDSPMode::IconOverrideModePath(void) const
-{
-  CSingleLock lock(m_critSection);
-  string strReturn(m_strOverrideIconPath);
-  return strReturn;
-}
-
-bool CActiveAEDSPMode::SetIconOverrideModePath(const string &strIconPath)
-{
-  CSingleLock lock(m_critSection);
-
-  if (m_strOverrideIconPath != strIconPath)
-  {
-    /* update the path */
-    m_strOverrideIconPath = StringUtils::Format("%s", strIconPath.c_str());
-    SetChanged();
-    m_bChanged = true;
-
-    return true;
-  }
-
-  return false;
+  return m_strOverrideIconPath;
 }
 
 
@@ -458,20 +353,17 @@ int CActiveAEDSPMode::AddUpdate(bool force)
 
 bool CActiveAEDSPMode::Delete(void)
 {
-  bool bReturn = false;
-
   CActiveAEDSPDatabase *database = CActiveAEDSP::Get().GetADSPDatabase();
   if (!database || !database->IsOpen())
   {
     CLog::Log(LOGERROR, "ActiveAE DSP - failed to open the database");
-    return bReturn;
+    return false;
   }
 
-  bReturn = database->DeleteMode(*this);
-  return bReturn;
+  return database->DeleteMode(*this);
 }
 
-bool CActiveAEDSPMode::IsKnown(void)
+bool CActiveAEDSPMode::IsKnown(void) const
 {
   CActiveAEDSPDatabase *database = CActiveAEDSP::Get().GetADSPDatabase();
   if (!database || !database->IsOpen())
@@ -519,11 +411,10 @@ AE_DSP_MODE_TYPE CActiveAEDSPMode::ModeType(void) const
   return m_iModeType;
 }
 
-string CActiveAEDSPMode::AddonModeName(void) const
+const std::string &CActiveAEDSPMode::AddonModeName(void) const
 {
   CSingleLock lock(m_critSection);
-  string strReturn(m_strModeName);
-  return strReturn;
+  return m_strModeName;
 }
 
 bool CActiveAEDSPMode::HasSettingsDialog(void) const
