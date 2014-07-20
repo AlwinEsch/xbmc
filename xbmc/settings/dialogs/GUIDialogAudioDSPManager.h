@@ -22,7 +22,8 @@
 #include "guilib/GUIDialog.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "view/GUIViewControl.h"
-#include "pvr/channels/PVRChannelGroup.h"
+
+class CGUIDialogBusy;
 
 namespace ActiveAE
 {
@@ -63,6 +64,8 @@ namespace ActiveAE
     void Update(void);
     void SaveList(void);
     void Renumber(void);
+    bool UpdateDatabase(int listId, CGUIDialogBusy* pDlgBusy);
+
     bool m_bMovingMode;
     bool m_bContainsChanges;
 

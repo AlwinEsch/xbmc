@@ -22,22 +22,13 @@
 
 #include "FileItem.h"
 #include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
-#include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogTextViewer.h"
-#include "guilib/GUIKeyboardFactory.h"
-#include "guilib/GUIListItemLayout.h"
 #include "dialogs/GUIDialogOK.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogYesNo.h"
-#include "guilib/GUIEditControl.h"
-#include "guilib/GUIRadioButtonControl.h"
-#include "guilib/GUISpinControlEx.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
-#include "settings/Settings.h"
-#include "storage/MediaManager.h"
 #include "utils/StringUtils.h"
 
 #define BUTTON_OK                 4
@@ -242,25 +233,20 @@ bool CGUIDialogAudioDSPManager::OnClickButtonCancel(CGUIMessage &message)
 
 bool CGUIDialogAudioDSPManager::OnClickProcessTypeSpin(CGUIMessage &message)
 {
-  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(SPIN_DSP_TYPE_SELECTION);
-  if (pSpin)
+  if (m_bContainsChanges)
   {
-    if (m_bContainsChanges)
-    {
-      if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
-        SaveList();
+    if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
+      SaveList();
 
-      m_bContainsChanges = false;
-    }
-
-    m_iSelected[LIST_AVAILABLE] = 0;
-    m_iSelected[LIST_ACTIVE]    = 0;
-    m_bMovingMode               = false;
-
-    Update();
-    return true;
+    m_bContainsChanges = false;
   }
-  return false;
+
+  m_iSelected[LIST_AVAILABLE] = 0;
+  m_iSelected[LIST_ACTIVE]    = 0;
+  m_bMovingMode               = false;
+
+  Update();
+  return true;
 }
 
 bool CGUIDialogAudioDSPManager::OnMessageClick(CGUIMessage &message)
@@ -328,8 +314,6 @@ bool CGUIDialogAudioDSPManager::OnMessage(CGUIMessage& message)
 
 void CGUIDialogAudioDSPManager::OnWindowLoaded(void)
 {
-  CGUISpinControlEx *pSpin;
-
   g_graphicsContext.Lock();
 
   m_availableViewControl.Reset();
@@ -340,25 +324,34 @@ void CGUIDialogAudioDSPManager::OnWindowLoaded(void)
   m_activeViewControl.SetParentWindow(GetID());
   m_activeViewControl.AddView(GetControl(CONTROL_LIST_ACTIVE));
 
-  pSpin = (CGUISpinControlEx *)GetControl(SPIN_DSP_TYPE_SELECTION);
-  if (pSpin)
+  CActiveAEDSPDatabase *database = CActiveAEDSP::Get().GetADSPDatabase();
+  if (database)
   {
-    pSpin->Clear();
-
-    CActiveAEDSPDatabase *database = CActiveAEDSP::Get().GetADSPDatabase();
-    if (database)
+    int firstLabel = AE_DSP_MODE_TYPE_UNDEFINED;
+    vector< pair<string, int> > labels;
+    if (database->ContainsModes(AE_DSP_MODE_TYPE_MASTER_PROCESS))
     {
-      if (database->ContainsModes(AE_DSP_MODE_TYPE_MASTER_PROCESS))
-        pSpin->AddLabel(g_localizeStrings.Get(15059), AE_DSP_MODE_TYPE_MASTER_PROCESS);
-      if (database->ContainsModes(AE_DSP_MODE_TYPE_POST_PROCESS))
-        pSpin->AddLabel(g_localizeStrings.Get(15060), AE_DSP_MODE_TYPE_POST_PROCESS);
-      if (database->ContainsModes(AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE))
-        pSpin->AddLabel(g_localizeStrings.Get(15061), AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE);
-      if (database->ContainsModes(AE_DSP_MODE_TYPE_INPUT_RESAMPLE))
-        pSpin->AddLabel(g_localizeStrings.Get(15057), AE_DSP_MODE_TYPE_INPUT_RESAMPLE);
-      if (database->ContainsModes(AE_DSP_MODE_TYPE_PRE_PROCESS))
-        pSpin->AddLabel(g_localizeStrings.Get(15058), AE_DSP_MODE_TYPE_PRE_PROCESS);
+      labels.push_back(make_pair(g_localizeStrings.Get(15059), AE_DSP_MODE_TYPE_MASTER_PROCESS));
+      firstLabel = AE_DSP_MODE_TYPE_MASTER_PROCESS;
     }
+    if (database->ContainsModes(AE_DSP_MODE_TYPE_POST_PROCESS))
+    {
+      labels.push_back(make_pair(g_localizeStrings.Get(15060), AE_DSP_MODE_TYPE_POST_PROCESS));
+      if (firstLabel == AE_DSP_MODE_TYPE_UNDEFINED)
+        firstLabel = AE_DSP_MODE_TYPE_POST_PROCESS;
+    }
+    if (database->ContainsModes(AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE))
+      labels.push_back(make_pair(g_localizeStrings.Get(15061), AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE));
+    if (database->ContainsModes(AE_DSP_MODE_TYPE_INPUT_RESAMPLE))
+      labels.push_back(make_pair(g_localizeStrings.Get(15057), AE_DSP_MODE_TYPE_INPUT_RESAMPLE));
+    if (database->ContainsModes(AE_DSP_MODE_TYPE_PRE_PROCESS))
+    {
+      labels.push_back(make_pair(g_localizeStrings.Get(15058), AE_DSP_MODE_TYPE_PRE_PROCESS));
+      if (firstLabel == AE_DSP_MODE_TYPE_UNDEFINED)
+        firstLabel = AE_DSP_MODE_TYPE_PRE_PROCESS;
+    }
+
+    SET_CONTROL_LABELS(SPIN_DSP_TYPE_SELECTION, firstLabel, &labels);
   }
 
   g_graphicsContext.Unlock();
@@ -459,7 +452,6 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
   {
     if (pItem->GetProperty("ActiveMode").asBoolean())
     {
-      /// TODO: Find better way?!
       for (int iListPtr = 0; iListPtr < m_Items[LIST_AVAILABLE]->Size(); iListPtr++)
       {
         CFileItemPtr pAvailItem = m_Items[LIST_AVAILABLE]->Get(iListPtr);
@@ -501,7 +493,7 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
         m_Items[LIST_ACTIVE]->Clear();
       }
 
-      CFileItemPtr modeFile(new CFileItem(pItem->GetLabel()));
+      CFileItemPtr modeFile(new CFileItem(*pItem));
 
       pItem->SetProperty("ActiveMode", true);
 
@@ -564,10 +556,6 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
         Close();
         addon->CallMenuHook(hook, hookData);
 
-        //Lock graphic context here as it is sometimes called from non rendering threads
-        //maybe we should have a critical section per window instead??
-        CSingleLock lock(g_graphicsContext);
-
         if (!g_windowManager.Initialized())
           return false; // don't do anything
 
@@ -586,8 +574,6 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
 
         if (!m_windowLoaded)
           Close(true);
-
-        lock.Leave();
       }
     }
     else
@@ -603,12 +589,9 @@ void CGUIDialogAudioDSPManager::Update()
 {
   /* lock our display, as this window is rendered from the player thread */
   g_graphicsContext.Lock();
+
   m_availableViewControl.SetCurrentView(CONTROL_LIST_AVAILABLE);
   m_activeViewControl.SetCurrentView(CONTROL_LIST_ACTIVE);
-
-  CGUISpinControlEx *pSpin = (CGUISpinControlEx *)GetControl(SPIN_DSP_TYPE_SELECTION);
-  if (!pSpin)
-    return;
 
   Clear();
 
@@ -617,11 +600,14 @@ void CGUIDialogAudioDSPManager::Update()
   {
     m_iCurrentType = m_iLastType;
     m_iCurrentList = m_iLastList;
-    pSpin->SetValue(m_iCurrentType);
+    CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), SPIN_DSP_TYPE_SELECTION, m_iCurrentType);
+    OnMessage(msg);
   }
   else
   {
-    m_iCurrentType = pSpin->GetValue();
+    CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), SPIN_DSP_TYPE_SELECTION);
+    OnMessage(msg);
+    m_iCurrentType = msg.GetParam1();
   }
 
   AE_DSP_MODELIST modes;
@@ -733,11 +719,15 @@ void CGUIDialogAudioDSPManager::Update()
 
     if (isActive)
     {
-      CFileItemPtr pItem(new CFileItem(modes[iModePtr].first->ModeName()));
-
       int number = modes[iModePtr].first->ModePosition();
       if (number <= 0)
         number = continuesNo;
+
+      string str = StringUtils::Format("%i:%i:%i:%s", number,
+                                                      modes[iModePtr].first->AddonID(),
+                                                      modes[iModePtr].first->AddonModeNumber(),
+                                                      modes[iModePtr].first->AddonModeName().c_str());
+      CFileItemPtr pItem(new CFileItem(str));
 
       pItem->SetProperty("ActiveMode", isActive);
       pItem->SetProperty("Number", number);
@@ -796,49 +786,47 @@ void CGUIDialogAudioDSPManager::SaveList(void)
    return;
 
   /* display the progress dialog */
-  CGUIDialogProgress* pDlgProgress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
-  pDlgProgress->SetHeading(190);
-  pDlgProgress->SetLine(0, "");
-  pDlgProgress->SetLine(1, 328);
-  pDlgProgress->SetLine(2, "");
-  pDlgProgress->StartModal();
-  pDlgProgress->Progress();
-  pDlgProgress->SetPercentage(0);
+  CGUIDialogBusy* pDlgBusy = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
+  pDlgBusy->Show();
 
+  /* persist all modes */
+  bool updateOK = UpdateDatabase(LIST_AVAILABLE, pDlgBusy);
+  if (updateOK)
+    updateOK = UpdateDatabase(LIST_ACTIVE, pDlgBusy);
+  if (updateOK)
+  {
+    CActiveAEDSP::Get().TriggerModeUpdate();
+
+    m_bContainsChanges = false;
+    SetItemsUnchanged(LIST_AVAILABLE);
+    SetItemsUnchanged(LIST_ACTIVE);
+  }
+
+  pDlgBusy->Close();
+}
+
+bool CGUIDialogAudioDSPManager::UpdateDatabase(int listId, CGUIDialogBusy* pDlgBusy)
+{
   CActiveAEDSPDatabase db;
   db.Open();
 
-  /* persist all modes */
-  for (int iListPtr = 0; iListPtr < m_Items[LIST_AVAILABLE]->Size(); iListPtr++)
+  for (int iListPtr = 0; iListPtr < m_Items[listId]->Size(); iListPtr++)
   {
-    CFileItemPtr pItem = m_Items[LIST_AVAILABLE]->Get(iListPtr);
+    CFileItemPtr pItem = m_Items[listId]->Get(iListPtr);
     db.UpdateMode(m_iCurrentType,
                   pItem->GetProperty("ActiveMode").asBoolean(),
                   pItem->GetProperty("AddonId").asInteger(),
                   pItem->GetProperty("AddonModeNumber").asInteger(),
                   pItem->GetProperty("Number").asInteger());
 
-    pDlgProgress->SetPercentage(iListPtr * 100 / m_Items[LIST_AVAILABLE]->Size());
+    pDlgBusy->SetProgress(iListPtr * 100 / 2 / m_Items[listId]->Size() + 50 * listId);
+    if(pDlgBusy->IsCanceled())
+      return false;
+    g_windowManager.ProcessRenderLoop(false);
   }
-  for (int iListPtr = 0; iListPtr < m_Items[LIST_ACTIVE]->Size(); iListPtr++)
-  {
-    CFileItemPtr pItem = m_Items[LIST_ACTIVE]->Get(iListPtr);
-    db.UpdateMode(m_iCurrentType,
-                  pItem->GetProperty("ActiveMode").asBoolean(),
-                  pItem->GetProperty("AddonId").asInteger(),
-                  pItem->GetProperty("AddonModeNumber").asInteger(),
-                  pItem->GetProperty("Number").asInteger());
 
-    pDlgProgress->SetPercentage(iListPtr * 100 / m_Items[LIST_ACTIVE]->Size());
-  }
   db.Close();
-
-  CActiveAEDSP::Get().TriggerModeUpdate();
-
-  m_bContainsChanges = false;
-  SetItemsUnchanged(LIST_AVAILABLE);
-  SetItemsUnchanged(LIST_ACTIVE);
-  pDlgProgress->Close();
+  return true;
 }
 
 void CGUIDialogAudioDSPManager::SetItemsUnchanged(unsigned int listId)
