@@ -1699,12 +1699,12 @@ void CApplication::OnSettingChanged(const CSetting *setting)
     {
       if (((CSettingBool *) setting)->GetValue())
       {
-        CApplicationMessenger::Get().ExecBuiltIn("XBMC.StartAudioDSPEngine", false);
+        CApplicationMessenger::Get().AudioDSPEngineStart();
       }
       else
       {
         CAEFactory::OnSettingsChange(settingId);
-        CApplicationMessenger::Get().ExecBuiltIn("XBMC.StopAudioDSPEngine", false);
+        CApplicationMessenger::Get().AudioDSPEngineStop();
       }
       CApplicationMessenger::Get().MediaRestart(false);
       return;

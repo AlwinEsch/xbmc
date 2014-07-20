@@ -93,6 +93,8 @@ namespace MUSIC_INFO
 #define TMSG_CECTOGGLESTATE       316
 #define TMSG_CECACTIVATESOURCE    317
 #define TMSG_CECSTANDBY           318
+#define TMSG_AUDIODSPENGINESTART  319
+#define TMSG_AUDIODSPENGINESTOP   320
 
 #define TMSG_NETWORKMESSAGE         500
 
@@ -222,6 +224,9 @@ public:
   bool CECToggleState();
   bool CECActivateSource();
   bool CECStandby();
+
+  void AudioDSPEngineStart();
+  void AudioDSPEngineStop();
 
   CStdString GetResponse();
   int SetResponse(CStdString response);
