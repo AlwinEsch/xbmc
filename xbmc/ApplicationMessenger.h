@@ -189,7 +189,7 @@ public:
   void PlayListPlayerClear(int playlist);
   void PlayListPlayerShuffle(int playlist, bool shuffle);
   void PlayListPlayerGetItems(int playlist, CFileItemList &list);
-  void PlayListPlayerInsert(int playlist, const CFileItem &item, int position); 
+  void PlayListPlayerInsert(int playlist, const CFileItem &item, int position);
   void PlayListPlayerInsert(int playlist, const CFileItemList &list, int position);
   void PlayListPlayerRemove(int playlist, int position);
   void PlayListPlayerSwap(int playlist, int indexItem1, int indexItem2);
@@ -225,8 +225,8 @@ public:
   bool CECActivateSource();
   bool CECStandby();
 
-  void AudioDSPEngineStart();
-  void AudioDSPEngineStop();
+  bool AudioDSPEngineStart();
+  bool AudioDSPEngineStop();
 
   CStdString GetResponse();
   int SetResponse(CStdString response);
@@ -258,7 +258,7 @@ public:
 
   void SetSplashMessage(const CStdString& message);
   void SetSplashMessage(int stringID);
-  
+
   bool SetupDisplay();
   bool DestroyDisplay();
   void StartAndroidActivity(const std::vector<std::string> &params);
