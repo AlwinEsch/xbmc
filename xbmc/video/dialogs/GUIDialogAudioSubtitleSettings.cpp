@@ -79,7 +79,7 @@ void CGUIDialogAudioSubtitleSettings::FrameMove()
   if (g_application.m_pPlayer->HasPlayer())
   {
     const CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
-    
+
     // these settings can change on the fly
     m_settingsManager->SetNumber(SETTING_AUDIO_DELAY, videoSettings.m_AudioDelay);
     // TODO (needs special handling): m_settingsManager->SetInt(SETTING_AUDIO_STREAM, g_application.m_pPlayer->GetAudioStream());
@@ -120,7 +120,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingChanged(const CSetting *setting)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
-  
+
   CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_AUDIO_VOLUME)
@@ -197,7 +197,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
-  
+
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_SUBTITLE_BROWSER)
   {
@@ -229,7 +229,7 @@ void CGUIDialogAudioSubtitleSettings::OnSettingAction(const CSetting *setting)
         if (XFILE::CFile::Exists(URIUtils::ReplaceExtension(strPath, ".idx")))
           strPath = URIUtils::ReplaceExtension(strPath, ".idx");
       }
-      
+
       int id = g_application.m_pPlayer->AddSubtitle(strPath);
       if (id >= 0)
       {
@@ -303,7 +303,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   bool usePopup = g_SkinInfo->HasSkinFile("DialogSlider.xml");
 
   CVideoSettings &videoSettings = CMediaSettings::Get().GetCurrentVideoSettings();
-  
+
   if (g_application.m_pPlayer->HasPlayer())
   {
     g_application.m_pPlayer->GetAudioCapabilities(m_audioCaps);
@@ -315,7 +315,7 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
     ->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(SETTING_AUDIO_PASSTHROUGH, "false", SettingDependencyOperatorEquals, false, m_settingsManager)));
   SettingDependencies depsAudioOutputPassthroughDisabled;
   depsAudioOutputPassthroughDisabled.push_back(dependencyAudioOutputPassthroughDisabled);
-  
+
   bool dspEnabled = CSettings::Get().GetBool("audiooutput.dspaddonsenabled");
 
   // audio settings
@@ -335,10 +335,10 @@ void CGUIDialogAudioSubtitleSettings::InitializeSettings()
   // audio delay setting
   if (SupportsAudioFeature(IPC_AUD_OFFSET))
   {
-    CSettingNumber *settingAudioDelay = AddSlider(groupAudio, SETTING_AUDIO_DELAY, 297, 0, videoSettings.m_AudioDelay, 0, -g_advancedSettings.m_videoAudioDelayRange, 0.025f, g_advancedSettings.m_videoAudioDelayRange, usePopup, -1, false, false, !dspEnabled);
+    CSettingNumber *settingAudioDelay = AddSlider(groupAudio, SETTING_AUDIO_DELAY, 297, 0, videoSettings.m_AudioDelay, 0, -g_advancedSettings.m_videoAudioDelayRange, 0.025f, g_advancedSettings.m_videoAudioDelayRange, -1, usePopup, false, !dspEnabled);
     static_cast<CSettingControlSlider*>(settingAudioDelay->GetControl())->SetFormatter(SettingFormatterDelay);
   }
-  
+
   // audio stream setting
   if (SupportsAudioFeature(IPC_AUD_SELECT_STREAM))
     AddAudioStreams(groupAudio, SETTING_AUDIO_STREAM);
