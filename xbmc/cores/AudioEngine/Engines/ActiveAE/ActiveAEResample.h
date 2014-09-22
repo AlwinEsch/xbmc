@@ -45,7 +45,7 @@ public:
   int GetSrcBufferSize(int samples);
   int GetDstBufferSize(int samples);
   static uint64_t GetAVChannelLayout(CAEChannelInfo &info);
-//  static CAEChannelInfo GetAEChannelLayout(uint64_t layout);
+  static CAEChannelInfo GetAEChannelLayout(uint64_t layout);
   static AVSampleFormat GetAVSampleFormat(AEDataFormat format);
   static uint64_t GetAVChannel(enum AEChannel aechannel);
   int GetAVChannelIndex(enum AEChannel aechannel, uint64_t layout);
