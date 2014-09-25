@@ -178,18 +178,18 @@ namespace ActiveAE
      * @brief Remove active dsp settings from the database for file.
      * @return True if dsp data were removed successfully, false if not.
      */
-    bool DeleteActiveDSPSettings(const CFileItem *file);
+    bool DeleteActiveDSPSettings(const CFileItem &item);
 
     /*!
      * @brief GetVideoSettings() obtains any saved video settings for the current file.
      * @return Returns true if the settings exist, false otherwise.
      */
-    bool GetActiveDSPSettings(const CFileItem *file, CAudioSettings &settings);
+    bool GetActiveDSPSettings(const CFileItem &item, CAudioSettings &settings);
 
     /*!
      * @brief Sets the settings for a particular used file
      */
-    void SetActiveDSPSettings(const CFileItem *file, const CAudioSettings &settings);
+    void SetActiveDSPSettings(const CFileItem &item, const CAudioSettings &settings);
 
     /*!
      * @brief EraseActiveDSPSettings() Erases the dsp Settings table and reconstructs it
