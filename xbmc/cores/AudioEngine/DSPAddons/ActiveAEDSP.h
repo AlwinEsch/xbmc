@@ -334,11 +334,6 @@ namespace ActiveAE
     const AE_DSP_MODELIST &GetAvailableModes(AE_DSP_MODE_TYPE modeType);
 
     /*!
-     * @brief Persist the current audio settings in the database.
-     */
-    void SaveCurrentAudioSettings(void);
-
-    /*!
      * @brief Load the settings for the current audio from the database.
      * @return If it was present inside settings it return the type of this settings
      */

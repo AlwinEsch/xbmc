@@ -848,29 +848,9 @@ int CActiveAEDSP::RegisterAudioDSPAddon(AddonPtr addon, bool* newRegistration/*=
 }
 //@}
 
-/*! @name Played source settings methods */
+/*! @name Played source settings methods
+ *  @note for save of settings see CSaveFileStateJob */
 //@{
-void CActiveAEDSP::SaveCurrentAudioSettings(void)
-{
-  CSingleLock lock(m_critSection);
-
-  if (!IsProcessing() || !m_bIsValidAudioDSPSettings)
-    return;
-
-  CFileItem currentFile(g_application.CurrentFileItem());
-
-  if (CMediaSettings::Get().GetCurrentAudioSettings() != CMediaSettings::Get().GetDefaultAudioSettings())
-  {
-    CLog::Log(LOGDEBUG, "ActiveAE DSP - %s - persisting custom audio settings for file '%s'", __FUNCTION__, currentFile.GetPath().c_str());
-    m_DatabaseDSP.SetActiveDSPSettings(&currentFile, CMediaSettings::Get().GetCurrentAudioSettings());
-  }
-  else
-  {
-    CLog::Log(LOGDEBUG, "ActiveAE DSP - %s - no custom audio settings for file '%s'", __FUNCTION__, currentFile.GetPath().c_str());
-    m_DatabaseDSP.DeleteActiveDSPSettings(&currentFile);
-  }
-}
-
 AE_DSP_STREAMTYPE CActiveAEDSP::LoadCurrentAudioSettings(void)
 {
   CSingleLock lock(m_critSection);
@@ -883,7 +863,7 @@ AE_DSP_STREAMTYPE CActiveAEDSP::LoadCurrentAudioSettings(void)
 
     /* load the persisted audio settings and set them as current */
     CAudioSettings loadedAudioSettings = CMediaSettings::Get().GetDefaultAudioSettings();
-    m_DatabaseDSP.GetActiveDSPSettings(&currentFile, loadedAudioSettings);
+    m_DatabaseDSP.GetActiveDSPSettings(currentFile, loadedAudioSettings);
 
     CMediaSettings::Get().GetCurrentAudioSettings() = loadedAudioSettings;
     type = (AE_DSP_STREAMTYPE) loadedAudioSettings.m_MasterStreamTypeSel;

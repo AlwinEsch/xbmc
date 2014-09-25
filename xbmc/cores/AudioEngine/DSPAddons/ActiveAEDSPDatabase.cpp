@@ -365,21 +365,21 @@ bool CActiveAEDSPDatabase::DeleteActiveDSPSettings()
   return DeleteValues("settings");
 }
 
-bool CActiveAEDSPDatabase::DeleteActiveDSPSettings(const CFileItem *file)
+bool CActiveAEDSPDatabase::DeleteActiveDSPSettings(const CFileItem &item)
 {
   string strPath, strFileName;
-  URIUtils::Split(file->GetPath(), strPath, strFileName);
+  URIUtils::Split(item.GetPath(), strPath, strFileName);
   return ExecuteQuery(PrepareSQL("DELETE FROM settings WHERE settings.strPath='%s' and settings.strFileName='%s'", strPath.c_str() , strFileName.c_str()));
 }
 
-bool CActiveAEDSPDatabase::GetActiveDSPSettings(const CFileItem *file, CAudioSettings &settings)
+bool CActiveAEDSPDatabase::GetActiveDSPSettings(const CFileItem &item, CAudioSettings &settings)
 {
   try
   {
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
     string strPath, strFileName;
-    URIUtils::Split(file->GetPath(), strPath, strFileName);
+    URIUtils::Split(item.GetPath(), strPath, strFileName);
     string strSQL=PrepareSQL("SELECT * FROM settings WHERE settings.strPath='%s' and settings.strFileName='%s'", strPath.c_str() , strFileName.c_str());
 
     m_pDS->query( strSQL.c_str() );
@@ -407,14 +407,14 @@ bool CActiveAEDSPDatabase::GetActiveDSPSettings(const CFileItem *file, CAudioSet
   return false;
 }
 
-void CActiveAEDSPDatabase::SetActiveDSPSettings(const CFileItem *file, const CAudioSettings &setting)
+void CActiveAEDSPDatabase::SetActiveDSPSettings(const CFileItem &item, const CAudioSettings &setting)
 {
   try
   {
     if (NULL == m_pDB.get()) return ;
     if (NULL == m_pDS.get()) return ;
     string strPath, strFileName;
-    URIUtils::Split(file->GetPath(), strPath, strFileName);
+    URIUtils::Split(item.GetPath(), strPath, strFileName);
     string strSQL = StringUtils::Format("select * from settings WHERE settings.strPath='%s' and settings.strFileName='%s'", strPath.c_str() , strFileName.c_str());
     m_pDS->query( strSQL.c_str() );
     if (m_pDS->num_rows() > 0)
@@ -461,7 +461,7 @@ void CActiveAEDSPDatabase::SetActiveDSPSettings(const CFileItem *file, const CAu
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, file->GetPath().c_str());
+    CLog::Log(LOGERROR, "%s (%s) failed", __FUNCTION__, item.GetPath().c_str());
   }
 }
 
