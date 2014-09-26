@@ -4355,7 +4355,8 @@ void CApplication::SaveFileState(bool bForeground /* = false */)
       *m_stackFileItemToUpdate,
       m_progressTrackingVideoResumeBookmark,
       m_progressTrackingPlayCountUpdate,
-      CMediaSettings::Get().GetCurrentVideoSettings());
+      CMediaSettings::Get().GetCurrentVideoSettings(),
+      CMediaSettings::Get().GetCurrentAudioSettings());
   
   if (bForeground)
   {
@@ -4466,8 +4467,8 @@ void CApplication::StopPlaying()
     if( m_pKaraokeMgr )
       m_pKaraokeMgr->Stop();
 #endif
-    if (CActiveAEDSP::Get().IsProcessing())
-      CActiveAEDSP::Get().SaveCurrentAudioSettings();
+//    if (CActiveAEDSP::Get().IsProcessing())
+//      CActiveAEDSP::Get().SaveCurrentAudioSettings();
 
     m_pPlayer->CloseFile();
 
@@ -5693,11 +5694,6 @@ void CApplication::CheckPlayingProgress()
         g_application.SeekTime(0);
       }
     }
-  }
-
-  if (CActiveAEDSP::Get().IsProcessing())
-  {
-    CActiveAEDSP::Get().SaveCurrentAudioSettings();
   }
 }
 
