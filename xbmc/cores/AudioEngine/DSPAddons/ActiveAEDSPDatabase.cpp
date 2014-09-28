@@ -256,6 +256,7 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
         "iType, "
         "iPosition, "
         "iStreamTypeFlags, "
+        "iBaseType"
         "bIsEnabled, "
         "sOwnIconPath, "
         "sOverrideIconPath, "
@@ -271,6 +272,7 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
         mode.ModeType(),
         mode.ModePosition(),
         mode.StreamTypeFlags(),
+        mode.BaseType(),
         (mode.IsEnabled() ? 1 : 0),
         mode.IconOwnModePath().c_str(),
         mode.IconOverrideModePath().c_str(),
