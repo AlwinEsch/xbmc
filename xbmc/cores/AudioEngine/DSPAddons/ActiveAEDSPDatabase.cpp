@@ -246,6 +246,7 @@ bool CActiveAEDSPDatabase::AddUpdateMode(CActiveAEDSPMode &mode)
         mode.AddonModeName().c_str(),
         (mode.HasSettingsDialog() ? 1 : 0),
         mode.AddonID(), mode.AddonModeNumber(), mode.ModeType());
+		bReturn = m_pDS->exec(strSQL.c_str());
     }
     else
     { // add the items
