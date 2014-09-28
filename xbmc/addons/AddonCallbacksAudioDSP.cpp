@@ -133,6 +133,15 @@ void CAddonCallbacksADSP::ADSPRegisterMode(void* addonData, AE_DSP_MODES::AE_DSP
   CActiveAEDSPMode transferMode(*mode, addon->GetID());
   int idMode = transferMode.AddUpdate();
   mode->iUniqueDBModeId = idMode;
+
+  if (idMode > AE_DSP_INVALID_ADDON_ID)
+  {
+	  CLog::Log(LOGDEBUG, "Audio DSP - %s - successfull registered mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name());
+  }
+  else
+  {
+	  CLog::Log(LOGERROR, "Audio DSP - %s - failed to register mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name());
+  }
 }
 
 void CAddonCallbacksADSP::ADSPUnregisterMode(void* addonData, AE_DSP_MODES::AE_DSP_MODE* mode)
