@@ -2457,21 +2457,17 @@
           <level>1</level>
           <control type="button" format="action" />
           <dependencies>
-            <dependency type="visible">
-              <or>
+            <dependency type="enable">
                 <condition on="property" name="aesettingvisible" setting="audiooutput.dspaddonsenabled">audiooutput.dspsettings</condition>
-              </or>
             </dependency>
           </dependencies>
         </setting>
-        <setting id="audiooutput.dspresetdb" type="action" label="334" help="36439">
+        <setting id="audiooutput.dspresetdb" type="action" label="311" help="36439">
           <level>1</level>
           <control type="button" format="action" />
           <dependencies>
-            <dependency type="visible">
-              <or>
+            <dependency type="enable">
                 <condition on="property" name="aesettingvisible" setting="audiooutput.dspaddonsenabled">audiooutput.dspresetdb</condition>
-              </or>
             </dependency>
           </dependencies>
         </setting>
