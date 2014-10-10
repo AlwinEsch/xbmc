@@ -22,6 +22,7 @@
 #include "guilib/GUIDialog.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "view/GUIViewControl.h"
+#include "addons/include/xbmc_adsp_types.h"
 
 class CGUIDialogBusy;
 
@@ -37,7 +38,6 @@ namespace ActiveAE
     virtual void OnWindowLoaded(void);
     virtual void OnWindowUnload(void);
     virtual bool HasListItems() const { return true; };
-    virtual CFileItemPtr GetCurrentListItem(int offset = 0);
 
   protected:
     virtual void OnInitWindow();
@@ -57,27 +57,27 @@ namespace ActiveAE
     bool OnClickButtonCancel(CGUIMessage &message);
     bool OnClickProcessTypeSpin(CGUIMessage &message);
 
-    void SetItemsUnchanged(unsigned int listId);
+    void SetItemsUnchanged(void);
 
   private:
     void Clear(void);
     void Update(void);
     void SaveList(void);
     void Renumber(void);
-    bool UpdateDatabase(int listId, CGUIDialogBusy* pDlgBusy);
+    bool UpdateDatabase(CGUIDialogBusy* pDlgBusy);
 
     bool m_bMovingMode;
     bool m_bContainsChanges;
     bool m_bContinousSaving;    // if true, all settings are directly saved
 
-    int m_iLastType;
     int m_iLastList;
     int m_iLastSelected[2];
 
     int m_iCurrentType;
-    int m_iCurrentList;
-    int m_iSelected[2];
-    CFileItemList* m_Items[2];
+    int m_iSelected[AE_DSP_MODE_TYPE_MAX];
+
+    CFileItemList* m_activeItems[AE_DSP_MODE_TYPE_MAX];
+    CFileItemList* m_availableItems[AE_DSP_MODE_TYPE_MAX];
 
     CGUIViewControl m_availableViewControl;
     CGUIViewControl m_activeViewControl;

@@ -51,37 +51,51 @@ CGUIDialogAudioDSPManager::CGUIDialogAudioDSPManager(void) :
 {
   m_bMovingMode               = false;
   m_bContainsChanges          = false;
-  m_iCurrentList              = LIST_AVAILABLE;
   m_bContinousSaving          = true;
   m_iSelected[LIST_AVAILABLE] = 0;
   m_iSelected[LIST_ACTIVE]    = 0;
-  m_Items[LIST_AVAILABLE]     = new CFileItemList;
-  m_Items[LIST_ACTIVE]        = new CFileItemList;
-  m_iCurrentType              = AE_DSP_MODE_TYPE_UNDEFINED;
-  m_iLastType                 = AE_DSP_MODE_TYPE_UNDEFINED;
+
+  for (int ii = 0; ii < AE_DSP_MODE_TYPE_MAX; ii++)
+  {
+    m_activeItems[ii] = new CFileItemList;
+    m_availableItems[ii] = new CFileItemList;
+  }
+
+  m_iCurrentType = AE_DSP_MODE_TYPE_MASTER_PROCESS;//AE_DSP_MODE_TYPE_UNDEFINED;
+  //m_iLastType                 = AE_DSP_MODE_TYPE_UNDEFINED;
 }
 
 CGUIDialogAudioDSPManager::~CGUIDialogAudioDSPManager(void)
 {
-  delete m_Items[LIST_AVAILABLE];
-  delete m_Items[LIST_ACTIVE];
+  for (int ii = 0; ii < AE_DSP_MODE_TYPE_MAX; ii++)
+  {
+    delete m_activeItems[ii];
+    delete m_availableItems[ii];
+  }
 }
 
 bool CGUIDialogAudioDSPManager::OnActionMove(const CAction &action)
 {
   bool bReturn(false);
   int iActionId = action.GetID();
+
   if (GetFocusedControlID() == CONTROL_LIST_ACTIVE)
   {
     if (iActionId == ACTION_MOUSE_MOVE)
     {
       int iSelected = m_activeViewControl.GetSelectedItem();
       if (m_iSelected[LIST_ACTIVE] < iSelected)
+      {
         iActionId = ACTION_MOVE_DOWN;
+      }
       else if (m_iSelected[LIST_ACTIVE] > iSelected)
+      {
         iActionId = ACTION_MOVE_UP;
+      }
       else
+      {
         return bReturn;
+      }
     }
 
     if (iActionId == ACTION_MOVE_DOWN || iActionId == ACTION_MOVE_UP ||
@@ -102,29 +116,31 @@ bool CGUIDialogAudioDSPManager::OnActionMove(const CAction &action)
       {
         bool bMoveUp        = iActionId == ACTION_PAGE_UP || iActionId == ACTION_MOVE_UP;
         unsigned int iLines = bMoveUp ? abs(m_iSelected[LIST_ACTIVE] - iSelected) : 1;
-        bool bOutOfBounds   = bMoveUp ? m_iSelected[LIST_ACTIVE] <= 0  : m_iSelected[LIST_ACTIVE] >= m_Items[LIST_ACTIVE]->Size() - 1;
+        bool bOutOfBounds   = bMoveUp ? m_iSelected[LIST_ACTIVE] <= 0  : m_iSelected[LIST_ACTIVE] >= m_activeItems[m_iCurrentType]->Size() - 1;
         if (bOutOfBounds)
         {
           bMoveUp = !bMoveUp;
-          iLines  = m_Items[LIST_ACTIVE]->Size() - 1;
+          iLines  = m_activeItems[m_iCurrentType]->Size() - 1;
         }
 
         string strNumber;
         for (unsigned int iLine = 0; iLine < iLines; iLine++)
         {
           unsigned int iNewSelect = bMoveUp ? m_iSelected[LIST_ACTIVE] - 1 : m_iSelected[LIST_ACTIVE] + 1;
-          if (m_Items[LIST_ACTIVE]->Get(iNewSelect)->GetProperty("Number").asString() != "-")
+          if (m_activeItems[m_iCurrentType]->Get(iNewSelect)->GetProperty("Number").asString() != "-")
           {
             strNumber = StringUtils::Format("%i", m_iSelected[LIST_ACTIVE]+1);
-            m_Items[LIST_ACTIVE]->Get(iNewSelect)->SetProperty("Number", strNumber);
+            m_activeItems[m_iCurrentType]->Get(iNewSelect)->SetProperty("Number", strNumber);
             strNumber = StringUtils::Format("%i", iNewSelect+1);
-            m_Items[LIST_ACTIVE]->Get(m_iSelected[LIST_ACTIVE])->SetProperty("Number", strNumber);
+            m_activeItems[m_iCurrentType]->Get(m_iSelected[LIST_ACTIVE])->SetProperty("Number", strNumber);
           }
-          m_Items[LIST_ACTIVE]->Swap(iNewSelect, m_iSelected[LIST_ACTIVE]);
+          m_activeItems[m_iCurrentType]->Swap(iNewSelect, m_iSelected[LIST_ACTIVE]);
           m_iSelected[LIST_ACTIVE] = iNewSelect;
         }
 
-        m_activeViewControl.SetItems(*m_Items[LIST_ACTIVE]);
+        SET_CONTROL_FOCUS(CONTROL_LIST_ACTIVE, 0);
+
+        m_activeViewControl.SetItems(*m_activeItems[m_iCurrentType]);
         m_activeViewControl.SetSelectedItem(m_iSelected[LIST_ACTIVE]);
       }
     }
@@ -194,7 +210,7 @@ bool CGUIDialogAudioDSPManager::OnClickListAvailable(CGUIMessage &message)
   int iItem = m_availableViewControl.GetSelectedItem();
 
   /* Check file item is in list range and get his pointer */
-  if (iItem < 0 || iItem >= (int)m_Items[LIST_AVAILABLE]->Size()) return true;
+  if (iItem < 0 || iItem >= (int)m_availableItems[m_iCurrentType]->Size()) return true;
 
   /* Process actions */
   if (iAction == ACTION_SELECT_ITEM || iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_LEFT_CLICK || iAction == ACTION_MOUSE_RIGHT_CLICK)
@@ -216,7 +232,7 @@ bool CGUIDialogAudioDSPManager::OnClickListActive(CGUIMessage &message)
     int iItem = m_activeViewControl.GetSelectedItem();
 
     /* Check file item is in list range and get his pointer */
-    if (iItem < 0 || iItem >= (int)m_Items[LIST_ACTIVE]->Size()) return true;
+    if (iItem < 0 || iItem >= (int)m_activeItems[m_iCurrentType]->Size()) return true;
 
     /* Process actions */
     if (iAction == ACTION_SELECT_ITEM || iAction == ACTION_CONTEXT_MENU || iAction == ACTION_MOUSE_LEFT_CLICK || iAction == ACTION_MOUSE_RIGHT_CLICK)
@@ -229,7 +245,7 @@ bool CGUIDialogAudioDSPManager::OnClickListActive(CGUIMessage &message)
   }
   else
   {
-    CFileItemPtr pItem = m_Items[LIST_ACTIVE]->Get(m_iSelected[LIST_ACTIVE]);
+    CFileItemPtr pItem = m_activeItems[m_iCurrentType]->Get(m_iSelected[LIST_ACTIVE]);
     if (pItem)
     {
       pItem->Select(false);
@@ -409,158 +425,202 @@ void CGUIDialogAudioDSPManager::OnWindowUnload(void)
   m_activeViewControl.Reset();
 }
 
-CFileItemPtr CGUIDialogAudioDSPManager::GetCurrentListItem(int offset)
-{
-  return m_Items[m_iCurrentList]->Get(m_iSelected[m_iCurrentList]);
-}
-
 bool CGUIDialogAudioDSPManager::OnPopupMenu(int iItem, int listType)
 {
   // popup the context menu
   // grab our context menu
   CContextButtons buttons;
-
-  // mark the item
-  if (iItem >= 0 && iItem < m_Items[listType]->Size())
-    m_Items[listType]->Get(iItem)->Select(true);
-  else
-    return false;
-
-  CFileItemPtr pItem = m_Items[listType]->Get(iItem);
-  if (!pItem)
-    return false;
+  int listSize = 0;
+  CFileItemPtr pItem;
 
   if (listType == LIST_ACTIVE)
   {
-    if (m_Items[LIST_ACTIVE]->Size() > 1)
+    listSize = m_activeItems[m_iCurrentType]->Size();
+    pItem = m_activeItems[m_iCurrentType]->Get(iItem);
+  }
+  else if (listType == LIST_AVAILABLE)
+  {
+    listSize = m_availableItems[m_iCurrentType]->Size();
+    pItem = m_availableItems[m_iCurrentType]->Get(iItem);
+  }
+
+  if (!pItem)
+  {
+    return false;
+  }
+
+  // mark the item
+  if (iItem >= 0 && iItem < listSize)
+  {
+    pItem->Select(true);
+  }
+  else
+  {
+    return false;
+  }
+
+  if (listType == LIST_ACTIVE)
+  {
+    if (listSize > 1)
+    {
       buttons.Add(CONTEXT_BUTTON_MOVE, 116);              /* Move mode up or down */
+    }
     buttons.Add(CONTEXT_BUTTON_ACTIVATE, 24021);          /* Used to deactivate addon process type */
   }
   else if (listType == LIST_AVAILABLE)
   {
-    if (!pItem->GetProperty("ActiveMode").asBoolean())
+    if (m_activeItems[m_iCurrentType]->Size() > 0 && (m_iCurrentType == AE_DSP_MODE_TYPE_INPUT_RESAMPLE || m_iCurrentType == AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE))
     {
-      if ((m_iCurrentType == AE_DSP_MODE_TYPE_INPUT_RESAMPLE || m_iCurrentType == AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE) && m_Items[LIST_ACTIVE]->Size() > 0)
-        buttons.Add(CONTEXT_BUTTON_ACTIVATE, 15080);          /* Used to swap addon process type */
-      else
-        buttons.Add(CONTEXT_BUTTON_ACTIVATE, 24022);          /* Used to activate addon process type */
+      buttons.Add(CONTEXT_BUTTON_ACTIVATE, 15080);        /* Used to swap addon resampling process type */
     }
     else
-      buttons.Add(CONTEXT_BUTTON_ACTIVATE, 24021);          /* Used to deactivate addon process type */
+    {
+      buttons.Add(CONTEXT_BUTTON_ACTIVATE, 24022);        /* Used to activate addon process type */
+    }
   }
 
   if (pItem->GetProperty("SettingsDialog").asInteger() != 0)
+  {
     buttons.Add(CONTEXT_BUTTON_SETTINGS, 15077);          /* Used to activate addon process type help description*/
+  }
 
   if (pItem->GetProperty("Help").asInteger() > 0)
-    buttons.Add(CONTEXT_BUTTON_HELP, 15062);          /* Used to activate addon process type help description*/
+  {
+    buttons.Add(CONTEXT_BUTTON_HELP, 15062);              /* Used to activate addon process type help description*/
+  }
 
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(buttons);
 
   // deselect our item
-  if (iItem >= 0 && iItem < m_Items[listType]->Size())
-    m_Items[listType]->Get(iItem)->Select(false);
+  if (iItem >= 0 && iItem < listSize)
+  {
+    pItem->Select(false);
+  }
 
   if (choice < 0)
+  {
     return false;
+  }
 
   return OnContextButton(iItem, (CONTEXT_BUTTON)choice, listType);
 }
 
 bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON button, int listType)
 {
+  CFileItemPtr pItem;
+  int listSize = 0;
+  if (listType == LIST_ACTIVE)
+  {
+    pItem = m_activeItems[m_iCurrentType]->Get(itemNumber);
+    listSize = m_activeItems[m_iCurrentType]->Size();
+  }
+  else if (listType == LIST_AVAILABLE)
+  {
+    pItem = m_availableItems[m_iCurrentType]->Get(itemNumber);
+    listSize = m_availableItems[m_iCurrentType]->Size();
+  }
+
   /* Check file item is in list range and get his pointer */
-  if (itemNumber < 0 || itemNumber >= (int)m_Items[listType]->Size()) return false;
-
-  CFileItemPtr pItem = m_Items[listType]->Get(itemNumber);
-  if (!pItem)
+  if (!pItem || itemNumber < 0 || itemNumber >= listSize)
+  {
     return false;
+  }
 
-  /*!
-   * Open audio dsp addon mode help text dialog
-   */
   if (button == CONTEXT_BUTTON_HELP)
   {
+    /*!
+    * Open audio dsp addon mode help text dialog
+    */
     AE_DSP_ADDON addon;
     if (CActiveAEDSP::Get().GetAudioDSPAddon((int)pItem->GetProperty("AddonId").asInteger(), addon))
     {
       CGUIDialogTextViewer* pDlgInfo = (CGUIDialogTextViewer*)g_windowManager.GetWindow(WINDOW_DIALOG_TEXT_VIEWER);
-      pDlgInfo->SetHeading(g_localizeStrings.Get(15062)+" - "+pItem->GetProperty("Name").c_str());
+      pDlgInfo->SetHeading(g_localizeStrings.Get(15062) + " - " + pItem->GetProperty("Name").asString());
       pDlgInfo->SetText(addon->GetString((uint32_t)pItem->GetProperty("Help").asInteger()));
       pDlgInfo->DoModal();
     }
   }
   else if (button == CONTEXT_BUTTON_ACTIVATE)
   {
+    /*!
+    * Deactivate selected processing mode
+    */
     if (pItem->GetProperty("ActiveMode").asBoolean())
     {
-      for (int iListPtr = 0; iListPtr < m_Items[LIST_AVAILABLE]->Size(); iListPtr++)
-      {
-        CFileItemPtr pAvailItem = m_Items[LIST_AVAILABLE]->Get(iListPtr);
-        if (pAvailItem && pAvailItem->GetProperty("Name") == pItem->GetProperty("Name") &&
-                          pAvailItem->GetProperty("AddonName") == pItem->GetProperty("AddonName"))
-        {
-          pAvailItem->SetProperty("ActiveMode", false);
-          pAvailItem->SetProperty("Changed", true);
-
-          for (int iListActivePtr = 0; iListActivePtr < m_Items[LIST_ACTIVE]->Size(); iListActivePtr++)
-          {
-            CFileItemPtr pSelItem = m_Items[LIST_ACTIVE]->Get(iListActivePtr);
-            if (pSelItem && pSelItem->GetProperty("Name") == pAvailItem->GetProperty("Name") &&
-                            pSelItem->GetProperty("AddonName") == pAvailItem->GetProperty("AddonName"))
-            {
-              m_Items[LIST_ACTIVE]->Remove(iListActivePtr);
-              break;
-            }
-          }
-          break;
-        }
-      }
+      // remove mode from active mode list and add it to available mode list
+      CFileItemPtr newItem(dynamic_cast<CFileItem*>(pItem->Clone()));
+      newItem->SetProperty("ActiveMode", false);
+      newItem->SetProperty("Changed", true);
+      m_activeItems[m_iCurrentType]->Remove(itemNumber);
+      m_availableItems[m_iCurrentType]->Add(newItem);
     }
     else
     {
-      if ((m_iCurrentType == AE_DSP_MODE_TYPE_INPUT_RESAMPLE || m_iCurrentType == AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE) && m_Items[LIST_ACTIVE]->Size() > 0)
-      {
-        for (int iListPtr = 0; iListPtr < m_Items[LIST_AVAILABLE]->Size(); iListPtr++)
+      /*!
+      * Activate selected processing mode
+      */
+      if ((m_iCurrentType == AE_DSP_MODE_TYPE_INPUT_RESAMPLE || m_iCurrentType == AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE) && m_activeItems[m_iCurrentType]->Size() > 0)
+      { // if there is already an active resampler, now we remove it
+        CFileItemPtr activeResampler = m_activeItems[m_iCurrentType]->Get(0);
+        if (activeResampler)
         {
-          CFileItemPtr pSelItem = m_Items[LIST_AVAILABLE]->Get(iListPtr);
-          if (pSelItem && pSelItem->GetProperty("Name") == m_Items[LIST_AVAILABLE]->Get(0)->GetProperty("Name") &&
-                          pSelItem->GetProperty("AddonName") == m_Items[LIST_AVAILABLE]->Get(0)->GetProperty("AddonName"))
-          {
-            pSelItem->SetProperty("ActiveMode", false);
-            pSelItem->SetProperty("Changed", true);
-            break;
-          }
+          CFileItemPtr newItem(dynamic_cast<CFileItem*>(activeResampler->Clone()));
+          newItem->SetProperty("ActiveMode", false);
+          newItem->SetProperty("Changed", true);
+
+          m_availableItems[m_iCurrentType]->Add(newItem);
+          // clear active list, because only one active resampling mode is supported by ActiveAEDSP
+          m_activeItems[m_iCurrentType]->Clear();
         }
-        m_Items[LIST_ACTIVE]->Clear();
       }
 
-      CFileItemPtr modeFile(new CFileItem(*pItem));
+      // remove mode from available mode list and add it to active mode list
+      CFileItemPtr newItem(dynamic_cast<CFileItem*>(pItem->Clone()));
 
-      pItem->SetProperty("ActiveMode", true);
+      newItem->SetProperty("Number", (int)m_activeItems[m_iCurrentType]->Size() +1);
+      newItem->SetProperty("Changed", true);
+      newItem->SetProperty("ActiveMode", true);
 
-      modeFile->SetProperty("ActiveMode", true);
-      modeFile->SetProperty("Number", (int)m_Items[LIST_ACTIVE]->Size());
-      modeFile->SetProperty("Name", pItem->GetProperty("Name"));
-      modeFile->SetProperty("Description", pItem->GetProperty("Description"));
-      modeFile->SetProperty("Help", pItem->GetProperty("Help"));
-      modeFile->SetProperty("Icon", pItem->GetProperty("Icon"));
-      modeFile->SetProperty("SettingsDialog", pItem->GetProperty("SettingsDialog"));
-      modeFile->SetProperty("AddonId", pItem->GetProperty("AddonId"));
-      modeFile->SetProperty("AddonModeNumber", pItem->GetProperty("AddonModeNumber"));
-      modeFile->SetProperty("AddonName", pItem->GetProperty("AddonName"));
-      modeFile->SetProperty("Changed", true);
-      pItem->SetProperty("Changed", true);
-      m_Items[LIST_ACTIVE]->Add(modeFile);
+      m_availableItems[m_iCurrentType]->Remove(itemNumber);
+      m_activeItems[m_iCurrentType]->Add(newItem);
     }
+
     m_bContainsChanges = true;
-    m_activeViewControl.SetItems(*m_Items[LIST_ACTIVE]);
+    if (m_bContinousSaving)
+    {
+      SaveList();
+    }
+
+    // reorder available mode list, so that the mode order is always consistent
+    m_availableItems[m_iCurrentType]->ClearSortState();
+    m_availableItems[m_iCurrentType]->Sort(SortByLabel, SortOrderAscending);
+
+    // update active and available mode list
     Renumber();
+    m_availableViewControl.SetItems(*m_availableItems[m_iCurrentType]);
+    m_activeViewControl.SetItems(*m_activeItems[m_iCurrentType]);
   }
   else if (button == CONTEXT_BUTTON_MOVE)
   {
     m_bMovingMode = true;
     pItem->Select(true);
+
+    CGUIListContainer *modeList = dynamic_cast<CGUIListContainer*>(GetControl(CONTROL_LIST_MODE_SELECTION));
+    CGUIButtonControl *applyButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_APPLY_CHANGES));
+    CGUIButtonControl *clearActiveModesButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_CLEAR_ACTIVE_MODES));
+    if (!modeList || !applyButton || !clearActiveModesButton)
+    {
+      // Todo: show some error message!
+      return false;
+    }
+    
+    // if we are in MovingMode all buttons and mode selection list will be disabled!
+    modeList->SetEnabled(false);
+    clearActiveModesButton->SetEnabled(false);
+    if (!m_bContinousSaving)
+    {
+      applyButton->SetEnabled(false);
+    }
   }
   else if (button == CONTEXT_BUTTON_SETTINGS)
   {
@@ -598,8 +658,6 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
           }
         }
 
-        m_iLastType = m_iCurrentType;
-        m_iLastList = m_iCurrentList;
         m_iLastSelected[LIST_AVAILABLE] = m_availableViewControl.GetSelectedItem();
         m_iLastSelected[LIST_ACTIVE]    = m_activeViewControl.GetSelectedItem();
 
@@ -640,186 +698,79 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
 
 void CGUIDialogAudioDSPManager::Update()
 {
-  /* lock our display, as this window is rendered from the player thread */
-  g_graphicsContext.Lock();
-
-  m_availableViewControl.SetCurrentView(CONTROL_LIST_AVAILABLE);
-  m_activeViewControl.SetCurrentView(CONTROL_LIST_ACTIVE);
+  CGUIDialogBusy* pDlgBusy = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
+  if (!pDlgBusy)
+  {
+    //ToDo: add some error message to logfile
+    return;
+  }
+  pDlgBusy->Show();
 
   Clear();
 
-  m_iCurrentType = AE_DSP_MODE_TYPE_UNDEFINED;
-  if (m_iLastType != AE_DSP_MODE_TYPE_UNDEFINED)
-  {
-    m_iCurrentType = m_iLastType;
-    m_iCurrentList = m_iLastList;
-    CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), SPIN_DSP_TYPE_SELECTION, m_iCurrentType);
-    OnMessage(msg);
-  }
-  else
-  {
-    CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), SPIN_DSP_TYPE_SELECTION);
-    OnMessage(msg);
-    m_iCurrentType = msg.GetParam1();
-  }
-
   AE_DSP_MODELIST modes;
   CActiveAEDSPDatabase db;
-  db.Open();
-  db.GetModes(modes, m_iCurrentType);
-
-  // No modes available, nothing to do.
-  if(modes.empty())
+  if (!db.Open())
+  {
+    pDlgBusy->Close();
+    CLog::Log(LOGERROR, "%s - Could not open CActiveAEDSPDatabase!", __FUNCTION__);
     return;
-
-  AE_DSP_MENUHOOK_CAT menuHook;
-  switch (m_iCurrentType)
-  {
-    case AE_DSP_MODE_TYPE_PRE_PROCESS:
-      menuHook = AE_DSP_MENUHOOK_PRE_PROCESS;
-      break;
-    case AE_DSP_MODE_TYPE_MASTER_PROCESS:
-      menuHook = AE_DSP_MENUHOOK_MASTER_PROCESS;
-      break;
-    case AE_DSP_MODE_TYPE_POST_PROCESS:
-      menuHook = AE_DSP_MENUHOOK_POST_PROCESS;
-      break;
-    case AE_DSP_MODE_TYPE_INPUT_RESAMPLE:
-    case AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE:
-      menuHook = AE_DSP_MENUHOOK_RESAMPLE;
-      break;
-    default:
-      menuHook = AE_DSP_MENUHOOK_ALL;
-      break;
-  };
-
-  int continuesNo = 1;
-  for (unsigned int iModePtr = 0; iModePtr < modes.size(); iModePtr++)
-  {
-    AE_DSP_ADDON addon;
-    if (!CActiveAEDSP::Get().GetAudioDSPAddon(modes[iModePtr].first->AddonID(), addon))
-      continue;
-
-    CFileItemPtr pItem(new CFileItem(addon->GetString(modes[iModePtr].first->ModeName())));
-
-    string addonName;
-    CActiveAEDSP::Get().GetAudioDSPAddonName(modes[iModePtr].first->AddonID(), addonName);
-
-    bool isActive = modes[iModePtr].first->IsEnabled();
-
-    string description;
-    if (modes[iModePtr].first->ModeDescription() > 0)
-      description = addon->GetString(modes[iModePtr].first->ModeDescription());
-    else
-      description = g_localizeStrings.Get(15063);
-
-    int dialogId = 0;
-    if (modes[iModePtr].first->HasSettingsDialog())
-    {
-      AE_DSP_MENUHOOKS hooks;
-
-      /*
-       * Find first general settings dialog about mode
-       */
-      if (CActiveAEDSP::Get().GetMenuHooks(modes[iModePtr].first->AddonID(), AE_DSP_MENUHOOK_SETTING, hooks))
-      {
-        for (unsigned int i = 0; i < hooks.size(); i++)
-        {
-          if (hooks[i].iRelevantModeId == modes[iModePtr].first->AddonModeNumber())
-          {
-            dialogId = hooks[i].iHookId;
-            break;
-          }
-        }
-      }
-
-      /*
-       * If nothing was present, check for playback settings
-       */
-      if (dialogId == 0 && CActiveAEDSP::Get().GetMenuHooks(modes[iModePtr].first->AddonID(), menuHook, hooks))
-      {
-        for (unsigned int i = 0; i < hooks.size(); i++)
-        {
-          if (hooks[i].iRelevantModeId == modes[iModePtr].first->AddonModeNumber())
-          {
-            if (!hooks[i].bNeedPlayback)
-              dialogId = hooks[i].iHookId;
-            else
-              dialogId = -1;
-            break;
-          }
-        }
-      }
-      if (dialogId == 0)
-        CLog::Log(LOGERROR, "DSP Dialog Manager - %s - Present marked settings dialog of mode %s on addon %s not found",
-                            __FUNCTION__,
-                            addon->GetString(modes[iModePtr].first->ModeName()).c_str(),
-                            addonName.c_str());
-    }
-
-    pItem->SetProperty("ActiveMode", isActive);
-    pItem->SetProperty("Name", addon->GetString(modes[iModePtr].first->ModeName()));
-    pItem->SetProperty("Description", description);
-    pItem->SetProperty("Help", modes[iModePtr].first->ModeHelp());
-    pItem->SetProperty("Icon", modes[iModePtr].first->IconOwnModePath());
-    pItem->SetProperty("SettingsDialog", dialogId);
-    pItem->SetProperty("AddonId", modes[iModePtr].first->AddonID());
-    pItem->SetProperty("AddonModeNumber", modes[iModePtr].first->AddonModeNumber());
-    pItem->SetProperty("AddonName", addonName);
-    pItem->SetProperty("Changed", false);
-
-    m_Items[LIST_AVAILABLE]->Add(pItem);
-
-    if (isActive)
-    {
-      int number = modes[iModePtr].first->ModePosition();
-      if (number <= 0)
-        number = continuesNo;
-
-      string str = StringUtils::Format("%i:%i:%i:%s", number,
-                                                      modes[iModePtr].first->AddonID(),
-                                                      modes[iModePtr].first->AddonModeNumber(),
-                                                      modes[iModePtr].first->AddonModeName().c_str());
-      CFileItemPtr pItem(new CFileItem(str));
-
-      pItem->SetProperty("ActiveMode", isActive);
-      pItem->SetProperty("Number", number);
-      pItem->SetProperty("Name", addon->GetString(modes[iModePtr].first->ModeName()));
-      pItem->SetProperty("Description", description);
-      pItem->SetProperty("Help", modes[iModePtr].first->ModeHelp());
-      pItem->SetProperty("Icon", modes[iModePtr].first->IconOwnModePath());
-      pItem->SetProperty("SettingsDialog", dialogId);
-      pItem->SetProperty("AddonId", modes[iModePtr].first->AddonID());
-      pItem->SetProperty("AddonModeNumber", modes[iModePtr].first->AddonModeNumber());
-      pItem->SetProperty("AddonName", addonName);
-      pItem->SetProperty("Changed", false);
-
-      m_Items[LIST_ACTIVE]->Add(pItem);
-      continuesNo++;
-    }
   }
 
-  m_Items[LIST_AVAILABLE]->Sort(SortByLabel, SortOrderAscending);
-  if (m_iCurrentType == AE_DSP_MODE_TYPE_MASTER_PROCESS)
-    m_Items[LIST_ACTIVE]->Sort(SortByLabel, SortOrderAscending);
+  for (int iModeType = 0; iModeType < AE_DSP_MODE_TYPE_MAX; iModeType++)
+  {
+    modes.clear();
+    db.GetModes(modes, iModeType);
+
+    // No modes available, nothing to do.
+    if (!modes.empty())
+    {
+      AE_DSP_MENUHOOK_CAT menuHook = helper_getMenuHookCategory(iModeType);
+      int continuesNo = 1;
+      for (unsigned int iModePtr = 0; iModePtr < modes.size(); iModePtr++)
+      {
+        CFileItem *listItem = helper_createModeListItem(modes[iModePtr].first, menuHook, &continuesNo);
+        if (listItem)
+        {
+          CFileItemPtr pItem(listItem);
+
+          if (pItem->GetProperty("ActiveMode").asBoolean())
+          {
+            m_activeItems[iModeType]->Add(pItem);
+          }
+          else
+          {
+            m_availableItems[iModeType]->Add(pItem);
+          }
+        }
+        g_windowManager.ProcessRenderLoop(false);
+      }
+
+      m_availableItems[iModeType]->Sort(SortByLabel, SortOrderAscending);
+      if (iModeType == AE_DSP_MODE_TYPE_MASTER_PROCESS)
+      {
+        m_activeItems[iModeType]->Sort(SortByLabel, SortOrderAscending);
+      }
+
+    }
+  }
 
   db.Close();
 
-  m_availableViewControl.SetItems(*m_Items[LIST_AVAILABLE]);
-  m_activeViewControl.SetItems(*m_Items[LIST_ACTIVE]);
-
-  if (m_iLastType != AE_DSP_MODE_TYPE_UNDEFINED)
+  pDlgBusy->Close();
+}
+void CGUIDialogAudioDSPManager::SetSelectedModeType(void)
+{
+  /* lock our display, as this window is rendered from the player thread */
+  g_graphicsContext.Lock();
+  if (m_iCurrentType > AE_DSP_MODE_TYPE_UNDEFINED && m_iCurrentType < AE_DSP_MODE_TYPE_MAX && !m_bMovingMode)
   {
-    m_iSelected[LIST_AVAILABLE] = m_iLastSelected[LIST_AVAILABLE];
-    m_iSelected[LIST_ACTIVE]    = m_iLastSelected[LIST_ACTIVE];
+    m_availableViewControl.SetCurrentView(CONTROL_LIST_AVAILABLE);
+    m_activeViewControl.SetCurrentView(CONTROL_LIST_ACTIVE);
 
-    RestoreControlStates();
-
-    m_iLastType = AE_DSP_MODE_TYPE_UNDEFINED;
+    m_availableViewControl.SetItems(*m_availableItems[m_iCurrentType]);
+    m_activeViewControl.SetItems(*m_activeItems[m_iCurrentType]);
   }
-
-  m_availableViewControl.SetSelectedItem(m_iSelected[LIST_AVAILABLE]);
-  m_activeViewControl.SetSelectedItem(m_iSelected[LIST_ACTIVE]);
 
   g_graphicsContext.Unlock();
 }
@@ -829,8 +780,11 @@ void CGUIDialogAudioDSPManager::Clear(void)
   m_availableViewControl.Clear();
   m_activeViewControl.Clear();
 
-  m_Items[LIST_AVAILABLE]->Clear();
-  m_Items[LIST_ACTIVE]->Clear();
+  for (int ii = 0; ii < AE_DSP_MODE_TYPE_MAX; ii++)
+  {
+    m_activeItems[ii]->Clear();
+    m_availableItems[ii]->Clear();
+  }
 }
 
 void CGUIDialogAudioDSPManager::SaveList(void)
@@ -840,55 +794,127 @@ void CGUIDialogAudioDSPManager::SaveList(void)
 
   /* display the progress dialog */
   CGUIDialogBusy* pDlgBusy = (CGUIDialogBusy*)g_windowManager.GetWindow(WINDOW_DIALOG_BUSY);
+  if (!pDlgBusy)
+  {
+    //ToDo: add some error message to logfile
+    return;
+  }
   pDlgBusy->Show();
 
   /* persist all modes */
-  bool updateOK = UpdateDatabase(LIST_AVAILABLE, pDlgBusy);
-  if (updateOK)
-    updateOK = UpdateDatabase(LIST_ACTIVE, pDlgBusy);
-  if (updateOK)
+  if (UpdateDatabase(pDlgBusy))
   {
     CActiveAEDSP::Get().TriggerModeUpdate();
 
     m_bContainsChanges = false;
-    SetItemsUnchanged(LIST_AVAILABLE);
-    SetItemsUnchanged(LIST_ACTIVE);
+    SetItemsUnchanged();
   }
 
   pDlgBusy->Close();
 }
 
-bool CGUIDialogAudioDSPManager::UpdateDatabase(int listId, CGUIDialogBusy* pDlgBusy)
+bool CGUIDialogAudioDSPManager::UpdateDatabase(CGUIDialogBusy* pDlgBusy)
 {
   CActiveAEDSPDatabase db;
-  db.Open();
-
-  for (int iListPtr = 0; iListPtr < m_Items[listId]->Size(); iListPtr++)
+  if (!db.Open())
   {
-    CFileItemPtr pItem = m_Items[listId]->Get(iListPtr);
-    db.UpdateMode(m_iCurrentType,
-                  pItem->GetProperty("ActiveMode").asBoolean(),
-                  (int)pItem->GetProperty("AddonId").asInteger(),
-                  (int)pItem->GetProperty("AddonModeNumber").asInteger(),
-                  (int)pItem->GetProperty("Number").asInteger());
-
-    pDlgBusy->SetProgress((float)(iListPtr * 100 / 2 / m_Items[listId]->Size() + 50 * listId));
-    if(pDlgBusy->IsCanceled())
-      return false;
-    g_windowManager.ProcessRenderLoop(false);
+    CLog::Log(LOGERROR, "%s - Could not open CActiveAEDSPDatabase!", __FUNCTION__);
+    return false;
   }
 
+  // calculate available items
+  int maxItems = 0;
+  for (int i = 0; i < AE_DSP_MODE_TYPE_MAX; i++)
+  {
+    maxItems += m_activeItems[i]->Size() + m_availableItems[i]->Size();
+  }
+
+  int processedItems = 0;
+  for (int i = 0; i < AE_DSP_MODE_TYPE_MAX; i++)
+  {
+    for (int iListPtr = 0; iListPtr < m_activeItems[i]->Size(); iListPtr++)
+    {
+      CFileItemPtr pItem = m_activeItems[i]->Get(iListPtr);
+      if (pItem->GetProperty("Changed").asBoolean())
+      {
+        bool success = db.UpdateMode( i,
+                                      pItem->GetProperty("ActiveMode").asBoolean(),
+                                      (int)pItem->GetProperty("AddonId").asInteger(),
+                                      (int)pItem->GetProperty("AddonModeNumber").asInteger(),
+                                      (int)pItem->GetProperty("Number").asInteger());
+
+        if (!success)
+        {
+          //ToDo some error message
+        }
+      }
+
+      processedItems++;
+      if (pDlgBusy)
+      {
+        pDlgBusy->SetProgress((float)(processedItems * 100 / maxItems));
+
+        if (pDlgBusy->IsCanceled())
+        {
+          return false;
+        }
+      }
+
+      g_windowManager.ProcessRenderLoop(false);
+    }
+
+    for (int iListPtr = 0; iListPtr < m_availableItems[i]->Size(); iListPtr++)
+    {
+      CFileItemPtr pItem = m_availableItems[i]->Get(iListPtr);
+      if (pItem && pItem->GetProperty("Changed").asBoolean())
+      {
+        bool success = db.UpdateMode( i,
+                                      pItem->GetProperty("ActiveMode").asBoolean(),
+                                      (int)pItem->GetProperty("AddonId").asInteger(),
+                                      (int)pItem->GetProperty("AddonModeNumber").asInteger(),
+                                      (int)pItem->GetProperty("Number").asInteger());
+
+        if (!success)
+        {
+          //ToDo some error message
+        }
+      }
+
+      processedItems++;
+      if (pDlgBusy)
+      {
+        pDlgBusy->SetProgress((float)(processedItems * 100 / maxItems));
+
+        if (pDlgBusy->IsCanceled())
+        {
+          return false;
+        }
+      }
+
+      g_windowManager.ProcessRenderLoop(false);
+    }
+  }
   db.Close();
   return true;
 }
 
-void CGUIDialogAudioDSPManager::SetItemsUnchanged(unsigned int listId)
+void CGUIDialogAudioDSPManager::SetItemsUnchanged()
 {
-  for (int iItemPtr = 0; iItemPtr < m_Items[listId]->Size(); iItemPtr++)
+  for (int i = 0; i < AE_DSP_MODE_TYPE_MAX; i++)
   {
-    CFileItemPtr pItem = m_Items[listId]->Get(iItemPtr);
-    if (pItem)
-      pItem->SetProperty("Changed", false);
+    for (int iItemPtr = 0; iItemPtr < m_activeItems[i]->Size(); iItemPtr++)
+    {
+      CFileItemPtr pItem = m_activeItems[i]->Get(iItemPtr);
+      if (pItem)
+        pItem->SetProperty("Changed", false);
+    }
+
+    for (int iItemPtr = 0; iItemPtr < m_availableItems[i]->Size(); iItemPtr++)
+    {
+      CFileItemPtr pItem = m_availableItems[i]->Get(iItemPtr);
+      if (pItem)
+        pItem->SetProperty("Changed", false);
+    }
   }
 }
 
@@ -898,10 +924,13 @@ void CGUIDialogAudioDSPManager::Renumber(void)
   string strNumber;
   CFileItemPtr pItem;
 
-  for (int iModePtr = 0; iModePtr < m_Items[LIST_ACTIVE]->Size(); iModePtr++)
+  for (int iModePtr = 0; iModePtr < m_activeItems[m_iCurrentType]->Size(); iModePtr++)
   {
-    pItem = m_Items[LIST_ACTIVE]->Get(iModePtr);
-    if (pItem->GetProperty("ActiveMode").asBoolean())
+    pItem = m_activeItems[m_iCurrentType]->Get(iModePtr);
+    strNumber = StringUtils::Format("%i", ++iNextModeNumber);
+    pItem->SetProperty("Number", strNumber);
+  }
+}
     {
       strNumber = StringUtils::Format("%i", ++iNextModeNumber);
       pItem->SetProperty("Number", strNumber);
