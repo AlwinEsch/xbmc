@@ -29,22 +29,49 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
+#include "guilib/GUIListContainer.h"
+#include "guilib/GUIRadioButtonControl.h"
 #include "utils/StringUtils.h"
 
-#define BUTTON_OK                 4
-#define BUTTON_APPLY              5
-#define BUTTON_CANCEL             6
-#define IMAGE_CHANNEL_LOGO        10
-#define SPIN_DSP_TYPE_SELECTION   13
-#define CONTROL_LIST_AVAILABLE    20
-#define CONTROL_LIST_ACTIVE       21
-#define HELP_LABEL                22
+#define CONTROL_LIST_AVAILABLE                  20
+#define CONTROL_LIST_ACTIVE                     21
+#define CONTROL_RADIO_BUTTON_CONTINOUS_SAVING   22
+#define CONTROL_BUTTON_APPLY_CHANGES            23
+#define CONTROL_BUTTON_CLEAR_ACTIVE_MODES       24
+#define CONTROL_LIST_MODE_SELECTION             9000
 
-#define LIST_AVAILABLE            0
-#define LIST_ACTIVE               1
+#define LIST_AVAILABLE                          0
+#define LIST_ACTIVE                             1
+
+#define LIST_INPUT_RESAMPLE                     0
+#define LIST_PRE_PROCESS                        1
+#define LIST_MASTER_PROCESS                     2
+#define LIST_POST_PROCESS                       3
+#define LIST_OUTPUT_RESAMPLE                    4
 
 using namespace std;
 using namespace ActiveAE;
+
+typedef struct
+{
+  const char* sModeType;
+  int iModeType;
+} MODE_TYPES;
+
+const MODE_TYPES mode_types[] = {
+  { "Preprocessing",    AE_DSP_MODE_TYPE_PRE_PROCESS },
+  { "InputResampling",  AE_DSP_MODE_TYPE_INPUT_RESAMPLE },
+  { "Masterprocessing", AE_DSP_MODE_TYPE_MASTER_PROCESS },
+  { "OutputResampling", AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE },
+  { "Postprocessing",   AE_DSP_MODE_TYPE_POST_PROCESS },
+  { "Undefined",        AE_DSP_MODE_TYPE_UNDEFINED }
+};
+
+// helper function prototypes
+int helper_translateModeType(string ModeString);
+CFileItem *helper_createModeListItem(CActiveAEDSPModePtr &ModePointer, AE_DSP_MENUHOOK_CAT &MenuHook, int *ContinuesNo);
+int helper_getDialogId(CActiveAEDSPModePtr &ModePointer, AE_DSP_MENUHOOK_CAT &MenuHook, AE_DSP_ADDON &Addon, string AddonName);
+AE_DSP_MENUHOOK_CAT helper_getMenuHookCategory(int CurrentType);
 
 CGUIDialogAudioDSPManager::CGUIDialogAudioDSPManager(void) :
     CGUIDialog(WINDOW_DIALOG_AUDIO_DSP_MANAGER, "DialogAudioDSPManager.xml")
@@ -176,6 +203,7 @@ void CGUIDialogAudioDSPManager::OnInitWindow()
   applyButton->SetEnabled(!m_bContinousSaving);
 
   Update();
+  SetSelectedModeType();
 }
 
 void CGUIDialogAudioDSPManager::OnDeinitWindow(int nextWindowID)
@@ -257,6 +285,24 @@ bool CGUIDialogAudioDSPManager::OnClickListActive(CGUIMessage &message)
       {
         SaveList();
       }
+
+      CGUIListContainer *modeList = dynamic_cast<CGUIListContainer*>(GetControl(CONTROL_LIST_MODE_SELECTION));
+      CGUIButtonControl *applyButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_APPLY_CHANGES));
+      CGUIButtonControl *clearActiveModesButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_CLEAR_ACTIVE_MODES));
+      if (!modeList || !applyButton || !clearActiveModesButton)
+      {
+        // Todo: show some error message!
+        return false;
+      }
+
+      // reenable all buttons and mode selection list
+      modeList->SetEnabled(true);
+      clearActiveModesButton->SetEnabled(true);
+      if (!m_bContinousSaving)
+      {
+        applyButton->SetEnabled(true);
+      }
+
       return true;
     }
   }
@@ -264,38 +310,63 @@ bool CGUIDialogAudioDSPManager::OnClickListActive(CGUIMessage &message)
   return false;
 }
 
-bool CGUIDialogAudioDSPManager::OnClickButtonOK(CGUIMessage &message)
+bool CGUIDialogAudioDSPManager::OnClickRadioContinousSaving(CGUIMessage &message)
 {
-  SaveList();
-  Close();
-  return true;
-}
+  CGUIRadioButtonControl *radioButton = dynamic_cast<CGUIRadioButtonControl*>(GetControl(CONTROL_RADIO_BUTTON_CONTINOUS_SAVING));
+  CGUIButtonControl *applyChangesButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_APPLY_CHANGES));
 
-bool CGUIDialogAudioDSPManager::OnClickButtonApply(CGUIMessage &message)
-{
-  SaveList();
-  return true;
-}
-
-bool CGUIDialogAudioDSPManager::OnClickButtonCancel(CGUIMessage &message)
-{
-  Close();
-  return true;
-}
-
-bool CGUIDialogAudioDSPManager::OnClickProcessTypeSpin(CGUIMessage &message)
-{
-  if (m_bContainsChanges)
+  if (!radioButton || !applyChangesButton)
   {
-    if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
-      SaveList();
-
-    m_bContainsChanges = false;
+    //ToDo: Log some error
+    return false;
   }
 
-  m_iSelected[LIST_AVAILABLE] = 0;
-  m_iSelected[LIST_ACTIVE]    = 0;
-  m_bMovingMode               = false;
+  if (!radioButton->IsSelected())
+  {
+    applyChangesButton->SetEnabled(true);
+    m_bContinousSaving = false;
+  }
+  else
+  {
+    m_bContinousSaving = true;
+    applyChangesButton->SetEnabled(false);
+  }
+
+  return true;
+}
+
+bool CGUIDialogAudioDSPManager::OnClickApplyChanges(CGUIMessage &message)
+{
+  SaveList();
+  return true;
+}
+
+bool CGUIDialogAudioDSPManager::OnClickClearActiveModes(CGUIMessage &message)
+{
+  if (m_activeItems[m_iCurrentType]->Size() > 0)
+  {
+    for (int iItem = 0; iItem < m_activeItems[m_iCurrentType]->Size(); iItem++)
+    {
+      CFileItemPtr pItem = m_activeItems[m_iCurrentType]->Get(iItem);
+      if (pItem)
+      {
+        // remove mode from active mode list and add it to available mode list
+        CFileItemPtr newItem(dynamic_cast<CFileItem*>(pItem->Clone()));
+        newItem->SetProperty("ActiveMode", false);
+        newItem->SetProperty("Changed", true);
+        m_availableItems[m_iCurrentType]->Add(newItem);
+      }
+    }
+    m_activeItems[m_iCurrentType]->Clear();
+
+    // reorder available mode list, so that the mode order is always consistent
+    m_availableItems[m_iCurrentType]->ClearSortState();
+    m_availableItems[m_iCurrentType]->Sort(SortByLabel, SortOrderAscending);
+
+    // update active and available mode list
+    m_availableViewControl.SetItems(*m_availableItems[m_iCurrentType]);
+    m_activeViewControl.SetItems(*m_activeItems[m_iCurrentType]);
+
     m_bContainsChanges = true;
     if (m_bContinousSaving)
     {
@@ -303,7 +374,6 @@ bool CGUIDialogAudioDSPManager::OnClickProcessTypeSpin(CGUIMessage &message)
     }
   }
 
-  Update();
   return true;
 }
 
@@ -316,14 +386,12 @@ bool CGUIDialogAudioDSPManager::OnMessageClick(CGUIMessage &message)
     return OnClickListAvailable(message);
   case CONTROL_LIST_ACTIVE:
     return OnClickListActive(message);
-  case BUTTON_OK:
-    return OnClickButtonOK(message);
-  case BUTTON_APPLY:
-    return OnClickButtonApply(message);
-  case BUTTON_CANCEL:
-    return OnClickButtonCancel(message);
-  case SPIN_DSP_TYPE_SELECTION:
-    return OnClickProcessTypeSpin(message);
+  case CONTROL_RADIO_BUTTON_CONTINOUS_SAVING:
+    return OnClickRadioContinousSaving(message);
+  case CONTROL_BUTTON_CLEAR_ACTIVE_MODES:
+    return OnClickClearActiveModes(message);
+  case CONTROL_BUTTON_APPLY_CHANGES:
+    return OnClickApplyChanges(message);
   default:
     return false;
   }
@@ -337,34 +405,31 @@ bool CGUIDialogAudioDSPManager::OnMessage(CGUIMessage& message)
   {
     case GUI_MSG_CLICKED:
       return OnMessageClick(message);
+    
     case GUI_MSG_ITEM_SELECT:
+    {
+      int focusedControl = GetFocusedControlID();
+      if (focusedControl == CONTROL_LIST_MODE_SELECTION)
       {
-        bool ret = CGUIDialog::OnMessage(message);
-        if (ret)
-        {
-          int iItem = -1;
-          int focusedControl = GetFocusedControlID();
-          if (focusedControl == CONTROL_LIST_AVAILABLE)
-          {
-            m_iCurrentList = LIST_AVAILABLE;
-            iItem = m_availableViewControl.GetSelectedItem();
-          }
-          else if (focusedControl == CONTROL_LIST_ACTIVE)
-          {
-            m_iCurrentList = LIST_ACTIVE;
-            iItem = m_activeViewControl.GetSelectedItem();
-          }
+        CGUIListContainer *modeListPtr = dynamic_cast<CGUIListContainer*>(GetControl(CONTROL_LIST_MODE_SELECTION));
 
-          /* Check file item is in list range and get his pointer */
-          if (iItem >= 0 || iItem < (int)m_Items[m_iCurrentList]->Size())
+        if (modeListPtr)
+        {
+          CGUIListItemPtr modeListItem = modeListPtr->GetListItem(0); // get current selected list item
+          if (modeListItem)
           {
-            CFileItemPtr pItem = m_Items[m_iCurrentList]->Get(iItem);
-            if (pItem)
-              SET_CONTROL_LABEL(HELP_LABEL, pItem->GetProperty("Description").c_str());
+            string currentModeString = modeListItem->GetProperty("currentMode").asString();
+            int newModeType = helper_translateModeType(currentModeString);
+
+            if (m_iCurrentType != newModeType)
+            {
+              m_iCurrentType = newModeType;
+              SetSelectedModeType();
+            }
           }
         }
-        return ret;
       }
+    }
   }
 
   return CGUIDialog::OnMessage(message);
@@ -381,36 +446,6 @@ void CGUIDialogAudioDSPManager::OnWindowLoaded(void)
   m_activeViewControl.Reset();
   m_activeViewControl.SetParentWindow(GetID());
   m_activeViewControl.AddView(GetControl(CONTROL_LIST_ACTIVE));
-
-  CActiveAEDSPDatabase *database = CActiveAEDSP::Get().GetADSPDatabase();
-  if (database)
-  {
-    int firstLabel = AE_DSP_MODE_TYPE_UNDEFINED;
-    vector< pair<string, int> > labels;
-    if (database->ContainsModes(AE_DSP_MODE_TYPE_MASTER_PROCESS))
-    {
-      labels.push_back(make_pair(g_localizeStrings.Get(15059), AE_DSP_MODE_TYPE_MASTER_PROCESS));
-      firstLabel = AE_DSP_MODE_TYPE_MASTER_PROCESS;
-    }
-    if (database->ContainsModes(AE_DSP_MODE_TYPE_POST_PROCESS))
-    {
-      labels.push_back(make_pair(g_localizeStrings.Get(15060), AE_DSP_MODE_TYPE_POST_PROCESS));
-      if (firstLabel == AE_DSP_MODE_TYPE_UNDEFINED)
-        firstLabel = AE_DSP_MODE_TYPE_POST_PROCESS;
-    }
-    if (database->ContainsModes(AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE))
-      labels.push_back(make_pair(g_localizeStrings.Get(15061), AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE));
-    if (database->ContainsModes(AE_DSP_MODE_TYPE_INPUT_RESAMPLE))
-      labels.push_back(make_pair(g_localizeStrings.Get(15057), AE_DSP_MODE_TYPE_INPUT_RESAMPLE));
-    if (database->ContainsModes(AE_DSP_MODE_TYPE_PRE_PROCESS))
-    {
-      labels.push_back(make_pair(g_localizeStrings.Get(15058), AE_DSP_MODE_TYPE_PRE_PROCESS));
-      if (firstLabel == AE_DSP_MODE_TYPE_UNDEFINED)
-        firstLabel = AE_DSP_MODE_TYPE_PRE_PROCESS;
-    }
-
-    SET_CONTROL_LABELS(SPIN_DSP_TYPE_SELECTION, firstLabel, &labels);
-  }
 
   g_graphicsContext.Unlock();
 
