@@ -52,10 +52,9 @@ namespace ActiveAE
 
     bool OnClickListAvailable(CGUIMessage &message);
     bool OnClickListActive(CGUIMessage &message);
-    bool OnClickButtonOK(CGUIMessage &message);
-    bool OnClickButtonApply(CGUIMessage &message);
-    bool OnClickButtonCancel(CGUIMessage &message);
-    bool OnClickProcessTypeSpin(CGUIMessage &message);
+    bool OnClickRadioContinousSaving(CGUIMessage &message);
+    bool OnClickApplyChanges(CGUIMessage &message);
+    bool OnClickClearActiveModes(CGUIMessage &message);
 
     void SetItemsUnchanged(void);
 
@@ -65,6 +64,7 @@ namespace ActiveAE
     void SaveList(void);
     void Renumber(void);
     bool UpdateDatabase(CGUIDialogBusy* pDlgBusy);
+    void SetSelectedModeType(void);
 
     bool m_bMovingMode;
     bool m_bContainsChanges;
