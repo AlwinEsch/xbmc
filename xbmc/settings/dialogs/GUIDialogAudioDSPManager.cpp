@@ -52,6 +52,7 @@ CGUIDialogAudioDSPManager::CGUIDialogAudioDSPManager(void) :
   m_bMovingMode               = false;
   m_bContainsChanges          = false;
   m_iCurrentList              = LIST_AVAILABLE;
+  m_bContinousSaving          = true;
   m_iSelected[LIST_AVAILABLE] = 0;
   m_iSelected[LIST_ACTIVE]    = 0;
   m_Items[LIST_AVAILABLE]     = new CFileItemList;
@@ -147,11 +148,41 @@ void CGUIDialogAudioDSPManager::OnInitWindow()
   m_bMovingMode               = false;
   m_bContainsChanges          = false;
 
+  CGUIRadioButtonControl *radioButton = dynamic_cast<CGUIRadioButtonControl*>(GetControl(CONTROL_RADIO_BUTTON_CONTINOUS_SAVING));
+  CGUIButtonControl *applyButton = dynamic_cast<CGUIButtonControl*>(GetControl(CONTROL_BUTTON_APPLY_CHANGES));
+  if (!radioButton || !applyButton)
+  {
+    // ToDo: some error message
+    return;
+  }
+
+  SET_CONTROL_SELECTED(GetID(), CONTROL_RADIO_BUTTON_CONTINOUS_SAVING, m_bContinousSaving);
+  applyButton->SetEnabled(!m_bContinousSaving);
+
   Update();
 }
 
 void CGUIDialogAudioDSPManager::OnDeinitWindow(int nextWindowID)
 {
+  if (m_bContainsChanges)
+  {
+    if (m_bContinousSaving)
+    {
+      SaveList();
+    }
+    else
+    {
+      if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
+      {
+        SaveList();
+      }
+      else
+      {
+        m_bContinousSaving = false;
+      }
+    }
+  }
+
   Clear();
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
@@ -205,6 +236,11 @@ bool CGUIDialogAudioDSPManager::OnClickListActive(CGUIMessage &message)
       pItem->SetProperty("Changed", true);
       m_bMovingMode = false;
       m_bContainsChanges = true;
+
+      if (m_bContinousSaving)
+      {
+        SaveList();
+      }
       return true;
     }
   }
@@ -244,6 +280,12 @@ bool CGUIDialogAudioDSPManager::OnClickProcessTypeSpin(CGUIMessage &message)
   m_iSelected[LIST_AVAILABLE] = 0;
   m_iSelected[LIST_ACTIVE]    = 0;
   m_bMovingMode               = false;
+    m_bContainsChanges = true;
+    if (m_bContinousSaving)
+    {
+      SaveList();
+    }
+  }
 
   Update();
   return true;
@@ -539,10 +581,21 @@ bool CGUIDialogAudioDSPManager::OnContextButton(int itemNumber, CONTEXT_BUTTON b
 
         if (m_bContainsChanges)
         {
-          if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
+          if (m_bContinousSaving)
+          {
             SaveList();
-
-          m_bContainsChanges = false;
+          }
+          else
+          {
+            if (CGUIDialogYesNo::ShowAndGetInput(19098, 15078, -1, 15079))
+            {
+              SaveList();
+            }
+            else
+            {
+              m_bContainsChanges = false;
+            }
+          }
         }
 
         m_iLastType = m_iCurrentType;
