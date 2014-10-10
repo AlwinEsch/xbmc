@@ -966,11 +966,173 @@ void CGUIDialogAudioDSPManager::Renumber(void)
     pItem->SetProperty("Number", strNumber);
   }
 }
+
+
+// ---- Helper functions ----
+int helper_translateModeType(string ModeString)
+{
+  int iType = AE_DSP_MODE_TYPE_UNDEFINED;
+  for (int ii = 0; ii < ARRAY_SIZE(mode_types) && iType == AE_DSP_MODE_TYPE_UNDEFINED; ii++)
+  {
+    string tempModeString = mode_types[ii].sModeType;
+    if (ModeString == tempModeString)
     {
-      strNumber = StringUtils::Format("%i", ++iNextModeNumber);
-      pItem->SetProperty("Number", strNumber);
+      iType = mode_types[ii].iModeType;
     }
-    else
-      pItem->SetProperty("Number", "-");
   }
+
+  return iType;
+}
+
+CFileItem *helper_createModeListItem(CActiveAEDSPModePtr &ModePointer, AE_DSP_MENUHOOK_CAT &MenuHook, int *ContinuesNo)
+{
+  CFileItem *pItem = NULL;
+
+  if (!ContinuesNo)
+  {
+    return pItem;
+  }
+
+  // start to get Addon and Mode properties
+  const int AddonID = ModePointer->AddonID();
+
+  string addonName;
+  if (!CActiveAEDSP::Get().GetAudioDSPAddonName(AddonID, addonName))
+  {
+    return pItem;
+  }
+
+  AE_DSP_ADDON addon;
+  if (!CActiveAEDSP::Get().GetAudioDSPAddon(AddonID, addon))
+  {
+    return pItem;
+  }
+
+  string modeName = addon->GetString(ModePointer->ModeName());
+
+  string description;
+  if (ModePointer->ModeDescription() > -1)
+  {
+    description = addon->GetString(ModePointer->ModeDescription());
+  }
+  else
+  {
+    description = g_localizeStrings.Get(15063);
+  }
+
+  bool isActive = ModePointer->IsEnabled();
+  int number = ModePointer->ModePosition();
+  int dialogId = helper_getDialogId(ModePointer, MenuHook, addon, addonName);
+  // end to get Addon and Mode properties
+
+  if (isActive)
+  {
+    if (number <= 0)
+    {
+      number = *ContinuesNo;
+      (*ContinuesNo)++;
+    }
+
+    string str = StringUtils::Format("%i:%i:%i:%s", 
+                                      number,
+                                      AddonID,
+                                      ModePointer->AddonModeNumber(),
+                                      ModePointer->AddonModeName().c_str());
+    
+    pItem = new CFileItem(str);
+  }
+  else
+  {
+    pItem = new CFileItem(modeName);
+  }
+
+  // set list item properties
+  pItem->SetProperty("ActiveMode", isActive);
+  pItem->SetProperty("Number", number);
+  pItem->SetProperty("Name", modeName);
+  pItem->SetProperty("Description", description);
+  pItem->SetProperty("Help", ModePointer->ModeHelp());
+  pItem->SetProperty("Icon", ModePointer->IconOwnModePath());
+  pItem->SetProperty("SettingsDialog", dialogId);
+  pItem->SetProperty("AddonId", AddonID);
+  pItem->SetProperty("AddonModeNumber", ModePointer->AddonModeNumber());
+  pItem->SetProperty("AddonName", addonName);
+  pItem->SetProperty("Changed", false);
+
+  return pItem;
+}
+
+int helper_getDialogId(CActiveAEDSPModePtr &ModePointer, AE_DSP_MENUHOOK_CAT &MenuHook, AE_DSP_ADDON &Addon, string AddonName)
+{
+  int dialogId = 0;
+
+  if (ModePointer->HasSettingsDialog())
+  {
+    AE_DSP_MENUHOOKS hooks;
+
+    // Find first general settings dialog about mode
+    if (CActiveAEDSP::Get().GetMenuHooks(ModePointer->AddonID(), AE_DSP_MENUHOOK_SETTING, hooks))
+    {
+      for (unsigned int i = 0; i < hooks.size() && dialogId == 0; i++)
+      {
+        if (hooks[i].iRelevantModeId == ModePointer->AddonModeNumber())
+        {
+          dialogId = hooks[i].iHookId;
+        }
+      }
+    }
+
+    // If nothing was present, check for playback settings
+    if (dialogId == 0 && CActiveAEDSP::Get().GetMenuHooks(ModePointer->AddonID(), MenuHook, hooks))
+    {
+      for (unsigned int i = 0; i < hooks.size() && (dialogId == 0 || dialogId != -1); i++)
+      {
+        if (hooks[i].iRelevantModeId == ModePointer->AddonModeNumber())
+        {
+          if (!hooks[i].bNeedPlayback)
+          {
+            dialogId = hooks[i].iHookId;
+          }
+          else
+          {
+            dialogId = -1;
+          }
+        }
+      }
+    }
+
+    if (dialogId == 0)
+      CLog::Log(LOGERROR, "DSP Dialog Manager - %s - Present marked settings dialog of mode %s on addon %s not found",
+      __FUNCTION__,
+      Addon->GetString(ModePointer->ModeName()).c_str(),
+      AddonName.c_str());
+  }
+
+  return dialogId;
+}
+
+AE_DSP_MENUHOOK_CAT helper_getMenuHookCategory(int CurrentType)
+{
+  AE_DSP_MENUHOOK_CAT menuHook = AE_DSP_MENUHOOK_ALL;
+  switch (CurrentType)
+  {
+  case AE_DSP_MODE_TYPE_PRE_PROCESS:
+    menuHook = AE_DSP_MENUHOOK_PRE_PROCESS;
+    break;
+  case AE_DSP_MODE_TYPE_MASTER_PROCESS:
+    menuHook = AE_DSP_MENUHOOK_MASTER_PROCESS;
+    break;
+  case AE_DSP_MODE_TYPE_POST_PROCESS:
+    menuHook = AE_DSP_MENUHOOK_POST_PROCESS;
+    break;
+  case AE_DSP_MODE_TYPE_INPUT_RESAMPLE:
+  case AE_DSP_MODE_TYPE_OUTPUT_RESAMPLE:
+    menuHook = AE_DSP_MENUHOOK_RESAMPLE;
+    break;
+  default:
+    menuHook = AE_DSP_MENUHOOK_ALL;
+    break;
+  };
+
+  return menuHook;
 }
