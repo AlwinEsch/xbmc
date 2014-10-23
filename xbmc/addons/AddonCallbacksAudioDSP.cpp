@@ -136,11 +136,11 @@ void CAddonCallbacksADSP::ADSPRegisterMode(void* addonData, AE_DSP_MODES::AE_DSP
 
   if (idMode > AE_DSP_INVALID_ADDON_ID)
   {
-	  CLog::Log(LOGDEBUG, "Audio DSP - %s - successfull registered mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name());
+	  CLog::Log(LOGDEBUG, "Audio DSP - %s - successfull registered mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name().c_str());
   }
   else
   {
-	  CLog::Log(LOGERROR, "Audio DSP - %s - failed to register mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name());
+	  CLog::Log(LOGERROR, "Audio DSP - %s - failed to register mode %s of %s adsp-addon", __FUNCTION__, mode->strModeName, addon->Name().c_str());
   }
 }
 
