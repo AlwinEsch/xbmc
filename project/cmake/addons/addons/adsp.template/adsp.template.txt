@@ -1,1 +1,1 @@
-adsp.template https://github.com/AchimTuran/adsp.template master
+adsp.template https://github.com/AchimTuran/adsp.template fix_win32_cmake

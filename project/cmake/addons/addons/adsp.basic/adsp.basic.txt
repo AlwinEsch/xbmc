@@ -1,1 +1,1 @@
-adsp.basic https://github.com/AchimTuran/adsp.basic master
+adsp.basic https://github.com/AchimTuran/adsp.basic fix_win32_cmake

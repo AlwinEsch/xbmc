@@ -1,1 +1,1 @@
-adsp.freesurround https://github.com/AchimTuran/adsp.freesurround master
+adsp.freesurround https://github.com/AchimTuran/adsp.freesurround fix_win32_cmake
