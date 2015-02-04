@@ -33,6 +33,7 @@
 #include "cores/IPlayer.h"
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/AudioEngine/AEFactory.h"
+#include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
@@ -277,6 +278,7 @@ using namespace ANNOUNCEMENT;
 using namespace PVR;
 using namespace EPG;
 using namespace PERIPHERALS;
+using namespace ActiveAE;
 
 using namespace XbmcThreads;
 
@@ -1282,6 +1284,7 @@ bool CApplication::Initialize()
         g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
 
       CStereoscopicsManager::Get().Initialize();
+      StartAudioDSPEngine();
     }
 
   }
@@ -1398,6 +1401,19 @@ void CApplication::StopPVRManager()
   g_EpgContainer.Stop();
 }
 
+void CApplication::StartAudioDSPEngine()
+{
+
+  if (CSettings::Get().GetBool("audiooutput.dspaddonsenabled"))
+    CActiveAEDSP::Get().Activate(false);
+}
+
+void CApplication::StopAudioDSPEngine()
+{
+  CLog::Log(LOGINFO, "stopping AudioDSPEngine");
+  CActiveAEDSP::Get().Deactivate();
+}
+
 void CApplication::StartServices()
 {
 #if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
@@ -1469,6 +1485,22 @@ void CApplication::OnSettingChanged(const CSetting *setting)
   }
   else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
+    if (settingId == "audiooutput.dspaddonsenabled")
+    {
+      if (((CSettingBool *) setting)->GetValue())
+      {
+        CApplicationMessenger::Get().AudioDSPEngineStart();
+        CApplicationMessenger::Get().MediaRestart(false);
+      }
+      else
+      {
+        CAEFactory::OnSettingsChange(settingId);
+        CApplicationMessenger::Get().MediaRestart(false);
+        CApplicationMessenger::Get().AudioDSPEngineStop();
+      }
+      return;
+    }
+
     // AE is master of audio settings and needs to be informed first
     CAEFactory::OnSettingsChange(settingId);
 
@@ -2907,6 +2939,8 @@ void CApplication::Stop(int exitCode)
     StopServices();
     //Sleep(5000);
 
+    StopAudioDSPEngine();
+
 #if HAS_FILESYTEM_DAAP
     CLog::Log(LOGNOTICE, "stop daap clients");
     g_DaapClient.Release();
@@ -3218,6 +3252,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
 
     // Switch to default options
     CMediaSettings::Get().GetCurrentVideoSettings() = CMediaSettings::Get().GetDefaultVideoSettings();
+    CMediaSettings::Get().GetCurrentAudioSettings() = CMediaSettings::Get().GetDefaultAudioSettings();
     // see if we have saved options in the database
 
     m_pPlayer->SetPlaySpeed(1, g_application.m_muted);
@@ -3744,7 +3779,8 @@ void CApplication::SaveFileState(bool bForeground /* = false */)
       *m_stackFileItemToUpdate,
       m_progressTrackingVideoResumeBookmark,
       m_progressTrackingPlayCountUpdate,
-      CMediaSettings::Get().GetCurrentVideoSettings());
+      CMediaSettings::Get().GetCurrentVideoSettings(),
+      CMediaSettings::Get().GetCurrentAudioSettings());
   
   if (bForeground)
   {
@@ -3860,7 +3896,6 @@ void CApplication::StopPlaying()
     if( m_pKaraokeMgr )
       m_pKaraokeMgr->Stop();
 #endif
-
     m_pPlayer->CloseFile();
 
     // turn off visualisation window when stopping
