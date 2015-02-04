@@ -152,6 +152,7 @@
 
 using namespace std;
 using namespace PVR;
+using namespace ActiveAE;
 using namespace PERIPHERALS;
 
 CGUIWindowManager::CGUIWindowManager(void)
