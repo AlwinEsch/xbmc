@@ -86,6 +86,8 @@
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
+#include "settings/dialogs/GUIDialogAudioDSPManager.h"
+#include "settings/dialogs/GUIDialogAudioDSPSettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKeyboardGeneric.h"
@@ -220,6 +222,8 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogVisualisationPresetList);
   Add(new CGUIDialogVideoSettings);
   Add(new CGUIDialogAudioSubtitleSettings);
+  Add(new CGUIDialogAudioDSPManager);
+  Add(new CGUIDialogAudioDSPSettings);
   Add(new CGUIDialogVideoBookmarks);
   // Don't add the filebrowser dialog - it's created and added when it's needed
   Add(new CGUIDialogNetworkSetup);
@@ -333,6 +337,8 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_MEDIA_SOURCE);
     Delete(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
     Delete(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+    Delete(WINDOW_DIALOG_AUDIO_DSP_OSD_SETTINGS);
+    Delete(WINDOW_DIALOG_AUDIO_DSP_MANAGER);
     Delete(WINDOW_DIALOG_VIDEO_BOOKMARKS);
     Delete(WINDOW_DIALOG_CONTENT_SETTINGS);
     Delete(WINDOW_DIALOG_FAVOURITES);
