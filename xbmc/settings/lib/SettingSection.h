@@ -50,6 +50,20 @@ public:
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
   /*!
+   \brief Gets the position of localizeable label ID of the setting group.
+   behind or before a separator.
+
+   \return The wanted position
+   */
+  bool HideSeparator() { return m_HideSeparator; }
+  /*!
+   \brief Sets the position of localizeable label ID of the setting group.
+   behind or before a separator.
+
+   \param before The wanted position
+   */
+  void SetHideSeparator(bool hide) { m_HideSeparator = hide; }
+  /*!
    \brief Gets the full list of settings belonging to the setting group.
 
    \return Full list of settings belonging to the setting group
@@ -69,6 +83,7 @@ public:
   void AddSettings(const SettingList &settings);
 
 private:
+  bool m_HideSeparator;
   SettingList m_settings;
 };
 
@@ -95,30 +110,6 @@ public:
   // implementation of ISetting
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
-  /*!
-   \brief Gets the localizeable label ID of the setting category.
-
-   \return Localizeable label ID of the setting category
-   */
-  const int GetLabel() const { return m_label; }
-  /*!
-   \brief Sets the localizeable label ID of the setting category.
-
-   \param label Localizeable label ID of the setting category
-   */
-  void SetLabel(int label) { m_label = label; }
-  /*!
-   \brief Gets the localizeable help ID of the setting category.
-
-   \return Localizeable help ID of the setting category
-   */
-  const int GetHelp() const { return m_help; }
-  /*!
-   \brief Sets the localizeable help ID of the setting category.
-
-   \param label Localizeable help ID of the setting category
-   */
-  void SetHelp(int help) { m_help = help; }
   /*!
    \brief Gets the full list of setting groups belonging to the setting
    category.
@@ -147,8 +138,6 @@ public:
   void AddGroups(const SettingGroupList &groups);
 
 private:
-  int m_label;
-  int m_help;
   SettingGroupList m_groups;
   CSettingCategoryAccess m_accessCondition;
 };
@@ -177,30 +166,6 @@ public:
   virtual bool Deserialize(const TiXmlNode *node, bool update = false);
 
   /*!
-   \brief Gets the localizeable label ID of the setting section.
-
-   \return Localizeable label ID of the setting section
-   */
-  const int GetLabel() const { return m_label; }
-  /*!
-   \brief Sets the localizeable label ID of the setting section.
-
-   \param label Localizeable label ID of the setting section
-   */
-  void SetLabel(int label) { m_label = label; }
-  /*!
-   \brief Gets the localizeable help ID of the setting section.
-
-   \return Localizeable help ID of the setting section
-   */
-  const int GetHelp() const { return m_help; }
-  /*!
-   \brief Sets the localizeable help ID of the setting section.
-
-   \param label Localizeable help ID of the setting section
-   */
-  void SetHelp(int help) { m_help = help; }
-  /*!
    \brief Gets the full list of setting categories belonging to the setting
    section.
 
@@ -221,7 +186,5 @@ public:
   void AddCategories(const SettingCategoryList &categories);
 
 private:
-  int m_label;
-  int m_help;
   SettingCategoryList m_categories;
 };

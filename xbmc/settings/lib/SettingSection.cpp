@@ -63,6 +63,7 @@ template<class T> void addISetting(const TiXmlNode *node, const T &item, std::ve
 
 CSettingGroup::CSettingGroup(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : ISetting(id, settingsManager)
+  , m_HideSeparator(false)
 { }
 
 CSettingGroup::~CSettingGroup()
@@ -77,6 +78,14 @@ bool CSettingGroup::Deserialize(const TiXmlNode *node, bool update /* = false */
   // handle <visible> conditions
   if (!ISetting::Deserialize(node, update))
     return false;
+
+  const TiXmlElement *element = node->ToElement();
+  if (element == NULL)
+    return false;
+
+  bool bValue = false;
+  if (element->QueryBoolAttribute(SETTING_XML_ATTR_HIDE_SEPARATOR, &bValue) == TIXML_SUCCESS)
+    m_HideSeparator = bValue;
 
   const TiXmlElement *settingElement = node->FirstChildElement(SETTING_XML_ELM_SETTING);
   while (settingElement != NULL)
@@ -153,7 +162,6 @@ void CSettingGroup::AddSettings(const SettingList &settings)
 
 CSettingCategory::CSettingCategory(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
   : ISetting(id, settingsManager),
-    m_label(-1), m_help(-1),
     m_accessCondition(settingsManager)
 { }
 
@@ -170,16 +178,6 @@ bool CSettingCategory::Deserialize(const TiXmlNode *node, bool update /* = false
   // handle <visible> conditions
   if (!ISetting::Deserialize(node, update))
     return false;
-    
-  const TiXmlElement *element = node->ToElement();
-  if (element == NULL)
-    return false;
-    
-  int tmp = -1;
-  if (element->QueryIntAttribute(SETTING_XML_ATTR_LABEL, &tmp) == TIXML_SUCCESS && tmp > 0)
-    m_label = tmp;
-  if (element->QueryIntAttribute(SETTING_XML_ATTR_HELP, &tmp) == TIXML_SUCCESS && tmp > 0)
-    m_help = tmp;
 
   const TiXmlNode *accessNode = node->FirstChild(SETTING_XML_ELM_ACCESS);
   if (accessNode != NULL && !m_accessCondition.Deserialize(accessNode))
@@ -254,8 +252,7 @@ void CSettingCategory::AddGroups(const SettingGroupList &groups)
 }
 
 CSettingSection::CSettingSection(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
-  : ISetting(id, settingsManager),
-    m_label(-1), m_help(-1)
+  : ISetting(id, settingsManager)
 { }
 
 CSettingSection::~CSettingSection()
@@ -271,16 +268,6 @@ bool CSettingSection::Deserialize(const TiXmlNode *node, bool update /* = false 
   // handle <visible> conditions
   if (!ISetting::Deserialize(node, update))
     return false;
-    
-  const TiXmlElement *element = node->ToElement();
-  if (element == NULL)
-    return false;
-
-  int tmp = -1;
-  if (element->QueryIntAttribute(SETTING_XML_ATTR_LABEL, &tmp) == TIXML_SUCCESS && tmp > 0)
-    m_label = tmp;
-  if (element->QueryIntAttribute(SETTING_XML_ATTR_HELP, &tmp) == TIXML_SUCCESS && tmp > 0)
-    m_help = tmp;
     
   const TiXmlNode *categoryNode = node->FirstChild(SETTING_XML_ELM_CATEGORY);
   while (categoryNode != NULL)

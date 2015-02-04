@@ -139,6 +139,30 @@ protected:
   bool m_hideValue;
 };
 
+class CSettingControlInfoButton : public ISettingControl
+{
+public:
+  CSettingControlInfoButton()
+    : m_heading(-1),
+      m_hideValue(false)
+  { }
+  virtual ~CSettingControlInfoButton() { }
+
+  // implementation of ISettingControl
+  virtual std::string GetType() const { return "infobutton"; }
+  virtual bool Deserialize(const TiXmlNode *node, bool update = false);
+  virtual bool SetFormat(const std::string &format);
+
+  int GetHeading() const { return m_heading; }
+  void SetHeading(int heading) { m_heading = heading; }
+  bool HideValue() const { return m_hideValue; }
+  void SetHideValue(bool hideValue) { m_hideValue = hideValue; }
+
+protected:
+  int m_heading;
+  bool m_hideValue;
+};
+
 class CSettingControlList : public ISettingControl
 {
 public:
