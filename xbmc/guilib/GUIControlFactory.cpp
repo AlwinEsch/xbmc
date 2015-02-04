@@ -28,6 +28,7 @@
 #include "GUIImage.h"
 #include "GUIBorderedImage.h"
 #include "GUILabelControl.h"
+#include "GUISettingsLabelControl.h"
 #include "GUIEditControl.h"
 #include "GUIFadeLabelControl.h"
 #include "GUICheckMarkControl.h"
@@ -86,6 +87,7 @@ static const ControlMapping controls[] =
     {"image",             CGUIControl::GUICONTROL_BORDEREDIMAGE},
     {"label",             CGUIControl::GUICONTROL_LABEL},
     {"label",             CGUIControl::GUICONTROL_LISTLABEL},
+    {"settingslabel",     CGUIControl::GUICONTROL_SETTINGS_LABEL},
     {"group",             CGUIControl::GUICONTROL_GROUP},
     {"group",             CGUIControl::GUICONTROL_LISTGROUP},
     {"progress",          CGUIControl::GUICONTROL_PROGRESS},
@@ -1142,6 +1144,23 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
       ((CGUILabelControl *)control)->SetInfo(content);
       ((CGUILabelControl *)control)->SetWidthControl(minWidth, (scrollValue == CGUIControl::ALWAYS) ? true : false);
     }
+  }
+  else if (type == CGUIControl::GUICONTROL_SETTINGS_LABEL)
+  {
+    control = new CGUISettingsLabelControl(
+      parentID, id, posX, posY, width, height,
+      textureBackground, labelInfo);
+    
+    float selPosY = 0;
+    float selHeight = 0;
+    XMLUtils::GetFloat(pControlNode, "imageposy", selPosY);
+    XMLUtils::GetFloat(pControlNode, "imageheight", selHeight);
+    if (!selHeight)
+      selHeight = minHeight;
+
+    ((CGUISettingsLabelControl *)control)->SetImage(selPosY, selHeight);
+    ((CGUISettingsLabelControl *)control)->SetLabel(strLabel);
+    ((CGUISettingsLabelControl *)control)->SetAspectRatio(aspect);
   }
   else if (type == CGUIControl::GUICONTROL_EDIT)
   {
