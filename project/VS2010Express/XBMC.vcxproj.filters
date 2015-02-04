@@ -3116,6 +3116,12 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksAudioDSP.cpp">
       <Filter>addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\HttpRangeUtils.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -6086,6 +6092,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\addons\DllAudioDSP.h">
       <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h">
+      <Filter>settings\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h">
+      <Filter>settings\dialogs</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\HttpRangeUtils.h">
       <Filter>utils</Filter>
