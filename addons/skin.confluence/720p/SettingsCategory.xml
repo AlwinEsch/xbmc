@@ -255,6 +255,31 @@
 			<height>2</height>
 			<texture>separator2.png</texture>
 		</control>
+		<control type="settingslabel" id="14">
+			<description>Default Info Label</description>
+			<left>0</left>
+			<top>0</top>
+			<height>40</height>
+			<imageposy>36</imageposy>
+			<imageheight>2</imageheight>
+			<font>font13</font>
+			<textcolor>grey2</textcolor>
+			<disabledcolor>grey3</disabledcolor>
+			<shadowcolor>black</shadowcolor>
+			<texturebg>separator2.png</texturebg>
+			<align>center</align>
+			<aligny>center</aligny>
+		</control>
+		<control type="button" id="15">
+			<description>Default Info Button</description>
+			<left>0</left>
+			<top>0</top>
+			<height>40</height>
+			<font>font13</font>
+			<textcolor>grey2</textcolor>
+			<focusedcolor>white</focusedcolor>
+			<texturefocus border="5">button-focus2.png</texturefocus>
+		</control>
 		<control type="label" id="2">
 			<description>Fake Label so we can pass it value down to the one below</description>
 			<left>0</left>
