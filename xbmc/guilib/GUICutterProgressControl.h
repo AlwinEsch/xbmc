@@ -36,13 +36,57 @@
  \ingroup controls
  \brief
  */
-class CGUICutterProgressControl
+class CGUICutterProgressControl :
+      public CGUIControl
 {
 public:
-  CGUICutterProgressControl();
+  CGUICutterProgressControl(int parentID, int controlID, float posX, float posY,
+                            float width, float height, const CTextureInfo& backGroundTexture,
+                            const CTextureInfo& leftTexture, const CTextureInfo& midTexture,
+                            const CTextureInfo& rightTexture, const CTextureInfo& overlayTexture,
+                            const CTextureInfo& cuttedTexture, const CTextureInfo& markTextureFront,
+                            const CTextureInfo& markTextureBack, bool reveal=false);
   virtual ~CGUICutterProgressControl();
   virtual CGUICutterProgressControl *Clone() const { return new CGUICutterProgressControl(*this); };
 
+  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Render();
+  virtual bool CanFocus() const;
+  virtual void AllocResources();
+  virtual void FreeResources(bool immediately = false);
+  virtual void DynamicResourceAlloc(bool bOnOff);
+  virtual void SetInvalid();
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual void SetPosition(float posX, float posY);
+
+  virtual void UpdateInfo(const CGUIListItem *item = NULL);
+
+protected:
+  virtual bool UpdateColors();
+
+  CGUITexture m_guiBackground;
+  CGUITexture m_guiLeft;
+  CGUITexture m_guiMid;
+  CGUITexture m_guiRight;
+  CGUITexture m_guiOverlay;
+
+  typedef std::vector<std::pair<int64_t, CGUITexture> >::iterator listIterator;
+  std::vector<std::pair<int64_t, CGUITexture> > m_guiCuttedMap;
+  std::vector<std::pair<int64_t, CGUITexture> > m_guiMarkMap;
+
+  const CTextureInfo m_CuttedTexture;
+  const CTextureInfo m_MarkTextureFront;
+  const CTextureInfo m_MarkTextureBack;
+
+  CRect   m_guiMidClipRect;
+  int     m_PosX;
+  int     m_PosY;
+  int64_t m_StreamSize;
+  int64_t m_StreamPosition;
+  float   m_fPercent;
+  bool    m_bReveal;
+  bool    m_bChanged;
+  int     m_iInfoCode;
 };
 
 #endif // GUILIB_GUICUTTERPROGRESSCONTROL_H
