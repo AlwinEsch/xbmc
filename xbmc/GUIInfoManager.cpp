@@ -221,6 +221,8 @@ const infomap player_labels[] =  {{ "hasmedia",         PLAYER_HAS_MEDIA },     
                                   { "isinternetstream", PLAYER_ISINTERNETSTREAM },
                                   { "pauseenabled",     PLAYER_CAN_PAUSE },
                                   { "seekenabled",      PLAYER_CAN_SEEK },
+                                  { "cutenabled",       PLAYER_CAN_CUT },
+                                  { "currentposmarked", PLAYER_CURRENT_POS_MARKED },
                                   { "channelpreviewactive", PLAYER_IS_CHANNEL_PREVIEW_ACTIVE}};
 
 const infomap player_param[] =   {{ "art",              PLAYER_ITEM_ART }};
@@ -716,7 +718,8 @@ const infomap pvr[] =            {{ "isrecording",              PVR_IS_RECORDING
                                   { "timeshiftstart",           PVR_TIMESHIFT_START_TIME },
                                   { "timeshiftend",             PVR_TIMESHIFT_END_TIME },
                                   { "timeshiftcur",             PVR_TIMESHIFT_PLAY_TIME },
-                                  { "timeshiftprogress",        PVR_TIMESHIFT_PROGRESS }};
+                                  { "timeshiftprogress",        PVR_TIMESHIFT_PROGRESS },
+                                  { "cutterinprogress",         PVR_CUTTER_IN_PROGRESS }};
 
 const infomap adsp[] =           {{ "isactive",                 ADSP_IS_ACTIVE },
                                   { "hasinputresample",         ADSP_HAS_INPUT_RESAMPLE },
@@ -2749,6 +2752,12 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       break;
     case PLAYER_CAN_SEEK:
       bReturn = g_application.m_pPlayer->CanSeek();
+      break;
+    case PLAYER_CAN_CUT:
+      bReturn = g_application.m_pPlayer->SceneMarker_CanCut();
+      break;
+    case PLAYER_CURRENT_POS_MARKED:
+      bReturn = g_application.m_pPlayer->SceneMarker_CurrentPositionMarked();
       break;
     case PLAYER_RECORDING:
       bReturn = g_application.m_pPlayer->IsRecording();

@@ -32,6 +32,7 @@ struct TextCacheStruct_t;
 class TiXmlElement;
 class CStreamDetails;
 class CAction;
+class CCutMarks;
 
 namespace PVR
 {
@@ -144,6 +145,7 @@ public:
   virtual bool HasRDS() const { return false; }
   virtual bool IsPassthrough() const { return false;}
   virtual bool CanSeek() {return true;}
+  virtual bool CanCut() {return false;}
   virtual void Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false) = 0;
   virtual bool SeekScene(bool bPlus = true) {return false;}
   virtual void SeekPercentage(float fPercent = 0){}
@@ -282,6 +284,18 @@ public:
    \brief define the subtitle capabilities of the player
    */
   virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1,IPC_SUBS_ALL); };
+
+  // Stream cut functions
+  bool  SceneMarker_CurrentPositionMarked(void) { return false; };
+  bool  SceneMarker_Toggle(bool &added, int64_t &position, int64_t &streamsize) { return false; };
+  bool  SceneMarker_Jump(bool Forward, int64_t &position, int64_t &newposition, int64_t &streamsize) { return false; };
+  void  SceneMarker_Move(bool Forward, bool &moved, int64_t &position, int64_t &newposition, int64_t &streamsize) { moved = false; };
+  CCutMarks *SceneMarker_GetCutMarks(bool &modified) { return NULL; };
+  void  SceneMarker_Cut() {};
+  void  SceneMarker_Test() {};
+  void  SceneMarker_Edit() {};
+  void  SceneMarker_Save() {};
+  void  SceneMarker_Clear() {};
 
 protected:
   IPlayerCallback& m_callback;

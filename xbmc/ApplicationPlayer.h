@@ -40,6 +40,7 @@ namespace PVR
 class CAction;
 class CPlayerOptions;
 class CStreamDetails;
+class CCutMarks;
 
 struct SPlayerAudioStreamInfo;
 struct SPlayerVideoStreamInfo;
@@ -83,6 +84,7 @@ public:
   bool  CanPause();
   bool  CanRecord();
   bool  CanSeek();
+  bool  CanCut();
   bool  ControlsVolume() const;
   void  DoAudioWork();
   void  GetAudioCapabilities(std::vector<int> &audioCaps);
@@ -155,4 +157,16 @@ public:
   void  SetVolume(float volume);
   bool  SwitchChannel(const PVR::CPVRChannelPtr &channel);
   void  ToFFRW(int iSpeed = 0);
+
+  // Stream cut functions
+  bool  SceneMarker_CurrentPositionMarked(void);
+  bool  SceneMarker_Toggle(bool &added, int64_t &position, int64_t &streamsize);
+  bool  SceneMarker_Jump(bool Forward, int64_t &position, int64_t &newposition, int64_t &streamsize);
+  void  SceneMarker_Move(bool Forward, bool &moved, int64_t &position, int64_t &newposition, int64_t &streamsize);
+  CCutMarks *SceneMarker_GetCutMarks(bool &modified);
+  void  SceneMarker_Cut();
+  void  SceneMarker_Test();
+  void  SceneMarker_Edit();
+  void  SceneMarker_Save();
+  void  SceneMarker_Clear();
 };

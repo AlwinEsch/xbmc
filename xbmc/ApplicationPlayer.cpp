@@ -262,6 +262,12 @@ bool CApplicationPlayer::CanSeek()
   return (player && player->CanSeek());
 }
 
+bool CApplicationPlayer::CanCut()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  return (player && player->CanCut());
+}
+
 bool CApplicationPlayer::SeekScene(bool bPlus)
 {
   std::shared_ptr<IPlayer> player = GetInternal();
@@ -736,4 +742,71 @@ void CApplicationPlayer::SetPlaySpeed(int iSpeed, bool bApplicationMuted)
 int CApplicationPlayer::GetPlaySpeed() const
 {
   return m_iPlaySpeed;
+}
+
+bool CApplicationPlayer::SceneMarker_CurrentPositionMarked()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->SceneMarker_CurrentPositionMarked();
+  return false;
+}
+
+bool CApplicationPlayer::SceneMarker_Toggle(bool &added, int64_t &position, int64_t &streamsize)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->SceneMarker_Toggle(added, position, streamsize);
+  return false;
+}
+
+bool CApplicationPlayer::SceneMarker_Jump(bool Forward, int64_t &position, int64_t &newposition, int64_t &streamsize)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->SceneMarker_Jump(Forward, position, newposition, streamsize);
+  return false;
+}
+
+void CApplicationPlayer::SceneMarker_Move(bool Forward, bool &moved, int64_t &position, int64_t &newposition, int64_t &streamsize)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->SceneMarker_Move(Forward, moved, position, newposition, streamsize);
+}
+
+CCutMarks *CApplicationPlayer::SceneMarker_GetCutMarks(bool &modified)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->SceneMarker_GetCutMarks(modified);
+  return NULL;
+}
+
+void CApplicationPlayer::SceneMarker_Test()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->SceneMarker_Test();
+}
+
+void CApplicationPlayer::SceneMarker_Cut()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->SceneMarker_Cut();
+}
+
+void CApplicationPlayer::SceneMarker_Save()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->SceneMarker_Save();
+}
+
+void CApplicationPlayer::SceneMarker_Clear()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->SceneMarker_Clear();
 }
