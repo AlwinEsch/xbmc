@@ -223,6 +223,14 @@
 					<label>842</label>
 					<visible>Window.IsActive(TVTimers) | Window.IsActive(RadioTimers)</visible>
 				</control>
+				<control type="button" id="37">
+					<description>Cancel cut</description>
+					<textwidth>235</textwidth>
+					<include>ButtonCommonValues</include>
+					<visible>PVR.CutterinProgress</visible>
+					<label>38080</label>
+					<onclick>CancelCut()</onclick>
+				</control>
 				<!-- Playback controls -->
 				<include>CommonNowPlaying_Controls</include>
 			</control>

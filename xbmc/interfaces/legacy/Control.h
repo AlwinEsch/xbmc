@@ -1063,6 +1063,59 @@ namespace XBMCAddon
 #endif
     };
 
+    class ControlCutterProgress : public Control
+    {
+    public:
+      ControlCutterProgress(long x, long y, long width, long height,
+                      const char* texturebg = NULL,
+                      const char* textureleft = NULL,
+                      const char* texturemid = NULL,
+                      const char* textureright = NULL,
+                      const char* textureoverlay = NULL,
+                      const char* texturecutted = NULL,
+                      const char* texturemarkfront = NULL,
+                      const char* texturemarkback = NULL);
+
+      /**
+       * setPercent(percent) -- Sets the percentage of the progressbar to show.
+       *
+       * percent       : float - percentage of the bar to show.
+       *
+       * *Note, valid range for percent is 0-100
+       *
+       * example:
+       *   - self.progress.setPercent(60)
+       */
+      virtual void setPercent(float pct) throw (UnimplementedException);
+
+      /**
+       * getPercent() -- Returns a float of the percent of the progress.
+       *
+       * example:
+       *   - print self.progress.getValue()
+       */
+       virtual float getPercent() throw (UnimplementedException);
+
+#ifndef SWIG
+      std::string strTextureLeft;
+      std::string strTextureMid;
+      std::string strTextureRight;
+      std::string strTextureBg;
+      std::string strTextureOverlay;
+      std::string strTextureCutted;
+      std::string strTextureMarkFront;
+      std::string strTextureMarkBack;
+      int aspectRatio;
+      color_t colorDiffuse;
+
+      SWIGHIDDENVIRTUAL CGUIControl* Create() throw (WindowException);
+      ControlCutterProgress() :
+        Control     ("ControlCutterProgress"),
+        aspectRatio (0)
+      {}
+#endif
+    };
+
     // ControlButton class
     /**
      * ControlButton class.

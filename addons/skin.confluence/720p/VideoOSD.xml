@@ -172,7 +172,7 @@
 				<visible>VideoPlayer.Content(LiveTV)</visible>
 			</control>
 			<control type="image" id="2200">
-				<width>270</width>
+				<width>215</width>
 				<texture>-</texture>
 				<visible>VideoPlayer.HasMenu + !VideoPlayer.Content(LiveTV)</visible>
 			</control>
@@ -256,6 +256,20 @@
 				<ondown>1000</ondown>
 				<onclick>PlayerControl(ShowVideoMenu)</onclick>
 				<visible>!VideoPlayer.Content(LiveTV) + VideoPlayer.HasMenu</visible>
+			</control>
+			<control type="button" id="256">
+				<width>55</width>
+				<height>55</height>
+				<label>31356</label>
+				<font>-</font>
+				<texturefocus>OSDCutterFO.png</texturefocus>
+				<texturenofocus>OSDCutterNF.png</texturenofocus>
+				<onleft>253</onleft>
+				<onright>254</onright>
+				<onup>1000</onup>
+				<ondown>1000</ondown>
+				<onclick>ActivateWindow(PVROSDCutter)</onclick>
+				<enable>Player.CutEnabled</enable>
 			</control>
 			<control type="togglebutton" id="353">
 				<width>55</width>

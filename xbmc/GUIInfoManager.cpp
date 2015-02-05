@@ -2754,7 +2754,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       bReturn = g_application.m_pPlayer->CanSeek();
       break;
     case PLAYER_CAN_CUT:
-      bReturn = g_application.m_pPlayer->SceneMarker_CanCut();
+      bReturn = g_application.m_pPlayer->CanCut();
       break;
     case PLAYER_CURRENT_POS_MARKED:
       bReturn = g_application.m_pPlayer->SceneMarker_CurrentPositionMarked();

@@ -29,6 +29,7 @@
 #include "guilib/GUITextBox.h"
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUICheckMarkControl.h"
+#include "guilib/GUICutterProgressControl.h"
 #include "guilib/GUIImage.h"
 #include "guilib/GUIListContainer.h"
 #include "guilib/GUIProgressControl.h"
@@ -522,6 +523,72 @@ namespace XBMCAddon
 
       if (pGUIControl && colorDiffuse)
         ((CGUIProgressControl *)pGUIControl)->SetColorDiffuse(colorDiffuse);
+
+      return pGUIControl;
+    }
+
+    // ============================================================
+
+    // ============================================================
+    // ============================================================
+    ControlCutterProgress::ControlCutterProgress(long x, long y, long width, long height,
+                                     const char* texturebg,
+                                     const char* textureleft,
+                                     const char* texturemid,
+                                     const char* textureright,
+                                     const char* textureoverlay,
+                                     const char* texturecutted,
+                                     const char* texturemarkfront,
+                                     const char* texturemarkback):
+      Control("ControlCutterProgress")
+    {
+      dwPosX = x;
+      dwPosY = y;
+      dwWidth = width;
+      dwHeight = height;
+
+      // if texture is supplied use it, else get default ones
+      strTextureBg = texturebg ? texturebg :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"texturebg", (char*)"progress_back.png");
+      strTextureLeft = textureleft ? textureleft :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"lefttexture", (char*)"progress_left.png");
+      strTextureMid = texturemid ? texturemid :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"midtexture", (char*)"progress_mid.png");
+      strTextureRight = textureright ? textureright :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"righttexture", (char*)"progress_right.png");
+      strTextureOverlay = textureoverlay ? textureoverlay :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"overlaytexture", (char*)"progress_over.png");
+      strTextureCutted = texturecutted ? texturecutted :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"cuttedtexture", (char*)"progress_cutted.png");
+      strTextureMarkFront = texturemarkfront ? texturemarkfront :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"marktexturefront", (char*)"progress_mark_front.png");
+      strTextureMarkBack = texturemarkback ? texturemarkback :
+        XBMCAddonUtils::getDefaultImage((char*)"cutterprogress", (char*)"marktextureback", (char*)"progress_mark_back.png");
+    }
+
+    void ControlCutterProgress::setPercent(float pct) throw (UnimplementedException)
+    {
+      if (pGUIControl)
+        ((CGUICutterProgressControl*)pGUIControl)->SetPercentage(pct);
+    }
+
+    float ControlCutterProgress::getPercent() throw (UnimplementedException)
+    {
+      return (pGUIControl) ? ((CGUICutterProgressControl*)pGUIControl)->GetPercentage() : 0.0f;
+    }
+
+    CGUIControl* ControlCutterProgress::Create() throw (WindowException)
+    {
+      pGUIControl = new CGUICutterProgressControl(iParentId, iControlId,
+         (float)dwPosX, (float)dwPosY,
+         (float)dwWidth,(float)dwHeight,
+         CTextureInfo(strTextureBg),CTextureInfo(strTextureLeft),
+         CTextureInfo(strTextureMid),CTextureInfo(strTextureRight),
+         CTextureInfo(strTextureCutted),CTextureInfo(strTextureOverlay),
+         CTextureInfo(strTextureMarkFront),CTextureInfo(strTextureMarkBack);
+
+      if (pGUIControl && colorDiffuse)
+        ((CGUICutterProgressControl *)pGUIControl)->SetColorDiffuse(colorDiffuse);
 
       return pGUIControl;
     }

@@ -323,6 +323,9 @@ namespace XBMCAddon
       case CGUIControl::GUICONTROL_PROGRESS:
         pControl = new ControlProgress();
         break;
+      case CGUIControl::GUICONTROL_CUTTER_PROGRESS:
+        pControl = new ControlCutterProgress();
+        break;
       case CGUIControl::GUICONTROL_SLIDER:
         pControl = new ControlSlider();
         break;			
