@@ -107,6 +107,8 @@ void CGUIControlProfilerItem::SaveToXML(TiXmlElement *parent)
     lpszType = "group"; break;
   case CGUIControl::GUICONTROL_PROGRESS:
     lpszType = "progress"; break;
+  case CGUIControl::GUICONTROL_CUTTER_PROGRESS:
+    lpszType = "cutterprogress"; break;
   case CGUIControl::GUICONTROL_RADIO:
     lpszType = "radiobutton"; break;
   case CGUIControl::GUICONTROL_RSS:

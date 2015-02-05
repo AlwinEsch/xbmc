@@ -56,6 +56,7 @@
 #include "GUIListGroup.h"
 #include "GUIInfoManager.h"
 #include "input/Key.h"
+#include "GUICutterProgressControl.h"
 #include "addons/Skin.h"
 #include "utils/CharsetConverter.h"
 #include "utils/XMLUtils.h"
@@ -86,6 +87,7 @@ static const ControlMapping controls[] =
     {"group",             CGUIControl::GUICONTROL_GROUP},
     {"group",             CGUIControl::GUICONTROL_LISTGROUP},
     {"progress",          CGUIControl::GUICONTROL_PROGRESS},
+    {"cutterprogress",    CGUIControl::GUICONTROL_CUTTER_PROGRESS},
     {"radiobutton",       CGUIControl::GUICONTROL_RADIO},
     {"rss",               CGUIControl::GUICONTROL_RSS},
     {"selectbutton",      CGUIControl::GUICONTROL_SELECTBUTTON},
@@ -698,7 +700,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   float fInterval = 0.1f;
   bool bReverse = true;
   bool bReveal = false;
-  CTextureInfo textureBackground, textureLeft, textureRight, textureMid, textureOverlay;
+  CTextureInfo textureBackground, textureLeft, textureRight, textureMid, textureOverlay, textureMarkFront, textureMarkBack, textureCutted;
   CTextureInfo textureNib, textureNibFocus, textureBar, textureBarFocus;
   CTextureInfo textureLeftFocus, textureRightFocus;
   CTextureInfo textureUp, textureDown;
@@ -969,6 +971,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetTexture(pControlNode, "midtexture", textureMid);
   GetTexture(pControlNode, "righttexture", textureRight);
   GetTexture(pControlNode, "overlaytexture", textureOverlay);
+  GetTexture(pControlNode, "cuttedtexture", textureCutted);
+  GetTexture(pControlNode, "marktexturefront", textureMarkFront);
+  GetTexture(pControlNode, "marktextureback", textureMarkBack);
 
   // the <texture> tag can be overridden by the <info> tag
   GetInfoTexture(pControlNode, "texture", texture, textureFile, parentID);
@@ -1334,6 +1339,17 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
         textureOverlay, bReveal);
 
       ((CGUIProgressControl *)control)->SetInfo(singleInfo);
+    }
+    break;
+  case CGUIControl::GUICONTROL_CUTTER_PROGRESS:
+    {
+      control = new CGUICutterProgressControl(
+        parentID, id, posX, posY, width, height,
+        textureBackground, textureLeft, textureMid, textureRight,
+        textureOverlay, textureCutted, textureMarkFront, textureMarkBack,
+        bReveal);
+
+      ((CGUICutterProgressControl *)control)->SetInfo(singleInfo);
     }
     break;
   case CGUIControl::GUICONTROL_IMAGE:
