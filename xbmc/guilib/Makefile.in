@@ -17,6 +17,7 @@ SRCS += GUIControlFactory.cpp
 SRCS += GUIControlGroup.cpp
 SRCS += GUIControlGroupList.cpp
 SRCS += GUIControlProfiler.cpp
+SRCS += GUICutterProgressControl.cpp
 SRCS += GUIDialog.cpp
 SRCS += GUIEditControl.cpp
 SRCS += GUIFadeLabelControl.cpp
