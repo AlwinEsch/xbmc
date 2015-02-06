@@ -156,6 +156,7 @@
 #define WINDOW_DIALOG_MUSIC_OVERLAY       12903
 #define WINDOW_DIALOG_VIDEO_OVERLAY       12904
 #define WINDOW_VIDEO_TIME_SEEK            12905 // virtual window for time seeking during fullscreen video
+#define WINDOW_DIALOG_OSD_CUTTER          12906
 
 #define WINDOW_SPLASH                     12997 // splash window
 #define WINDOW_START                      12998 // first window to load

@@ -1,4 +1,9 @@
 SRCS=GUIDialogAudioSubtitleSettings.cpp \
+<<<<<<< a39be7f784c12c6e2f5aeaa4d3e6cd48f070a303
+=======
+     GUIDialogCutterOSD.cpp \
+     GUIDialogFileStacking.cpp \
+>>>>>>> next several parts for cutter
      GUIDialogFullScreenInfo.cpp \
      GUIDialogSubtitles.cpp \
      GUIDialogTeletext.cpp \

@@ -539,8 +539,7 @@ namespace XBMCAddon
                                      const char* textureoverlay,
                                      const char* texturecutted,
                                      const char* texturemarkfront,
-                                     const char* texturemarkback):
-      Control("ControlCutterProgress")
+                                     const char* texturemarkback)
     {
       dwPosX = x;
       dwPosY = y;
@@ -585,7 +584,7 @@ namespace XBMCAddon
          CTextureInfo(strTextureBg),CTextureInfo(strTextureLeft),
          CTextureInfo(strTextureMid),CTextureInfo(strTextureRight),
          CTextureInfo(strTextureCutted),CTextureInfo(strTextureOverlay),
-         CTextureInfo(strTextureMarkFront),CTextureInfo(strTextureMarkBack);
+         CTextureInfo(strTextureMarkFront),CTextureInfo(strTextureMarkBack));
 
       if (pGUIControl && colorDiffuse)
         ((CGUICutterProgressControl *)pGUIControl)->SetColorDiffuse(colorDiffuse);

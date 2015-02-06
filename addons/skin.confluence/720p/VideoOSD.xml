@@ -268,7 +268,7 @@
 				<onright>254</onright>
 				<onup>1000</onup>
 				<ondown>1000</ondown>
-				<onclick>ActivateWindow(PVROSDCutter)</onclick>
+				<onclick>ActivateWindow(OSDCutter)</onclick>
 				<enable>Player.CutEnabled</enable>
 			</control>
 			<control type="togglebutton" id="353">

@@ -138,6 +138,7 @@
 #include "video/dialogs/GUIDialogSubtitles.h"
 #include "settings/dialogs/GUIDialogAudioDSPManager.h"
 #include "settings/dialogs/GUIDialogAudioDSPSettings.h"
+#include "video/dialogs/GUIDialogCutterOSD.h"
 
 #include "peripherals/dialogs/GUIDialogPeripheralSettings.h"
 #include "addons/AddonCallbacksGUI.h"
@@ -285,6 +286,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowSplash);
 
   Add(new CGUIWindowEventLog);
+  Add(new CGUIDialogCutterOSD);
 }
 
 bool CGUIWindowManager::DestroyWindows()
@@ -380,6 +382,7 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_SLIDESHOW);
     Delete(WINDOW_ADDON_BROWSER);
     Delete(WINDOW_SKIN_SETTINGS);
+    Delete(WINDOW_DIALOG_OSD_CUTTER);
 
     Delete(WINDOW_HOME);
     Delete(WINDOW_PROGRAMS);

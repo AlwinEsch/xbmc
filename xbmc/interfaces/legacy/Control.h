@@ -1110,7 +1110,6 @@ namespace XBMCAddon
 
       SWIGHIDDENVIRTUAL CGUIControl* Create() throw (WindowException);
       ControlCutterProgress() :
-        Control     ("ControlCutterProgress"),
         aspectRatio (0)
       {}
 #endif

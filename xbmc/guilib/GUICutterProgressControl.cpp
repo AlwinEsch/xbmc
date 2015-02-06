@@ -87,7 +87,7 @@ void CGUICutterProgressControl::AllocResources()
 
 }
 
-void CGUICutterProgressControl::FreeResources(bool immediately = false)
+void CGUICutterProgressControl::FreeResources(bool immediately)
 {
 
 
@@ -120,5 +120,80 @@ void CGUICutterProgressControl::SetPosition(float posX, float posY)
 void CGUICutterProgressControl::UpdateInfo(const CGUIListItem *item /* = NULL */)
 {
 
+
+}
+
+std::string CGUICutterProgressControl::GetDescription() const
+{
+//  fprintf(stderr, "<<<<<<<<<<< %s\n", __PRETTY_FUNCTION__);
+//  CStdString percent;
+//  percent.Format("%2.f", m_fPercent);
+  return "";
+}
+
+bool CGUICutterProgressControl::UpdateLayout(void)
+{
+
+  return false;
+}
+
+void CGUICutterProgressControl::SetStreamSize(int64_t streamsize)
+{
+  m_StreamSize = streamsize;
+}
+
+void CGUICutterProgressControl::SetStreamPosition(int64_t position)
+{
+  m_StreamPosition = position;
+}
+
+
+bool CGUICutterProgressControl::RemoveSceneMark(int64_t markPoint)
+{
+  return false;
+}
+
+bool CGUICutterProgressControl::MoveSceneMark(int64_t markPoint, int64_t newPoint)
+{
+  return false;
+}
+
+bool CGUICutterProgressControl::AddCutMarks(std::vector< std::pair<int64_t, int64_t> > &list)
+{
+
+  return true;
+}
+
+void CGUICutterProgressControl::ClearSceneMarks()
+{
+}
+
+bool CGUICutterProgressControl::AddSceneMark(int64_t markPoint, bool Start, bool Current)
+{
+
+}
+
+void CGUICutterProgressControl::SetMarks(const CCutMarks *Marks)
+{
+
+}
+
+float CGUICutterProgressControl::GetPercentage() const
+{
+  return 0.0f;
+}
+
+void CGUICutterProgressControl::SetPercentage(float fPercent)
+{
+
+}
+
+bool CGUICutterProgressControl::UpdateColors()
+{
+  return true;
+}
+
+void CGUICutterProgressControl::SetInfo(int iInfo)
+{
 
 }

@@ -32,6 +32,8 @@
 #include "GUITexture.h"
 #include "GUIControl.h"
 
+class CCutMarks;
+
 /*!
  \ingroup controls
  \brief
@@ -58,11 +60,27 @@ public:
   virtual void SetInvalid();
   virtual bool OnMessage(CGUIMessage& message);
   virtual void SetPosition(float posX, float posY);
+  void SetPercentage(float fPercent);
+  void SetInfo(int iInfo);
+  int GetInfo() const {return m_iInfoCode;};
 
+  void SetStreamSize(int64_t streamsize);
+  void SetStreamPosition(int64_t position);
+  bool AddSceneMark(int64_t markPoint, bool Start, bool Current);
+  bool RemoveSceneMark(int64_t markPoint);
+  bool MoveSceneMark(int64_t markPoint, int64_t newPoint);
+  void ClearSceneMarks();
+  bool AddCutMarks(std::vector< std::pair<int64_t, int64_t> > &list);
+  void SetMarks(const CCutMarks *Marks);
+
+  float GetPercentage() const;
+  std::string GetDescription() const;
   virtual void UpdateInfo(const CGUIListItem *item = NULL);
+  bool UpdateLayout(void);
 
 protected:
   virtual bool UpdateColors();
+  int Pos(int p) { return p * m_width / m_StreamSize; }
 
   CGUITexture m_guiBackground;
   CGUITexture m_guiLeft;

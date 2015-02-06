@@ -54,7 +54,6 @@
 #include "utils/RssManager.h"
 #include "utils/JSONVariantParser.h"
 #include "PartyModeManager.h"
-#include "pvr/internal/cutter.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/Settings.h"
@@ -972,26 +971,26 @@ int CBuiltins::Execute(const std::string& execString)
       if( g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
         g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
     }
-    else if( parameter.Equals("marktoggle") )
+    else if (paramlow == "marktoggle")
     {
-      if (g_application.m_pPlayer->IsPlaying())
-        g_application.m_pPlayer->SceneMarker_Toggle();
+//      if (g_application.m_pPlayer->IsPlaying())
+//        g_application.m_pPlayer->SceneMarker_Toggle();
     }
-    else if( parameter.Equals("markjumpfwd") )
+    else if (paramlow == "markjumpfwd")
     {
       int64_t position;
       int64_t streamsize;
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Jump(true, position, position, streamsize);
     }
-    else if( parameter.Equals("markjumpback") )
+    else if (paramlow == "markjumpback")
     {
       int64_t position;
       int64_t streamsize;
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Jump(false, position, position, streamsize);
     }
-    else if( parameter.Equals("oneframefwd") )
+    else if (paramlow == "oneframefwd")
     {
       bool moved = false;
       int64_t position;
@@ -999,7 +998,7 @@ int CBuiltins::Execute(const std::string& execString)
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Move(true, moved, position, position, streamsize);
     }
-    else if( parameter.Equals("oneframeback") )
+    else if (paramlow == "oneframeback")
     {
       bool moved = false;
       int64_t position;
@@ -1007,22 +1006,22 @@ int CBuiltins::Execute(const std::string& execString)
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Move(false, moved, position, position, streamsize);
     }
-    else if( parameter.Equals("markeditcut") )
+    else if (paramlow == "markeditcut")
     {
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Cut();
     }
-    else if( parameter.Equals("markeditsave") )
+    else if (paramlow == "markeditsave")
     {
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Save();
     }
-    else if( parameter.Equals("markeditclear") )
+    else if (paramlow == "markeditclear")
     {
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Clear();
     }
-    else if( parameter.Equals("markedittest") )
+    else if (paramlow == "markedittest")
     {
       if (g_application.m_pPlayer->IsPlaying())
         g_application.m_pPlayer->SceneMarker_Test();
@@ -1143,15 +1142,10 @@ int CBuiltins::Execute(const std::string& execString)
     g_application.m_eForcedNextPlayer = CPlayerCoreFactory::Get().GetPlayerCore(parameter);
     g_application.OnAction(CAction(ACTION_PLAYER_PLAY));
   }
-  else if (execute.Equals("cancelcut"))
+  else if (execute == "cancelcut")
   {
-/*    if (CCutter::Active())
-    {
-      bool stopcut = CGUIDialogYesNo::ShowAndGetInput(38035,-1,38080,-1,-1);
 
-      if (stopcut && cCutter::Active())
-        cCutter::Stop();
-    }*/
+
   }
   else if (execute == "mute")
   {

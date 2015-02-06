@@ -49,7 +49,8 @@ void CGUIDialogVideoOSD::FrameMove()
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS)
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_PVR_OSD_CHANNELS)
                            || g_windowManager.IsWindowActive(WINDOW_DIALOG_PVR_OSD_GUIDE)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_OSD_TELETEXT))
+                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_OSD_TELETEXT)
+                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_OSD_CUTTER))
       // extend show time by original value
       SetAutoClose(m_showDuration);
   }
@@ -98,6 +99,9 @@ bool CGUIDialogVideoOSD::OnMessage(CGUIMessage& message)
       if (pDialog && pDialog->IsDialogRunning())
         pDialog->Close(true);
       pDialog = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+      if (pDialog && pDialog->IsDialogRunning())
+        pDialog->Close(true);
+      pDialog = (CGUIDialog *)g_windowManager.GetWindow(WINDOW_DIALOG_OSD_CUTTER);
       if (pDialog && pDialog->IsDialogRunning())
         pDialog->Close(true);
     }
