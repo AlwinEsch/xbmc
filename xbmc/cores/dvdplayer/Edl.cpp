@@ -19,6 +19,7 @@
  */
 
 #include "Edl.h"
+#include "Application.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
@@ -634,29 +635,8 @@ bool CEdl::ReadPvr(const std::string &strMovie)
 
 bool CEdl::AddCut(Cut& cut)
 {
-  if (cut.action != CUT && cut.action != MUTE && cut.action != COMM_BREAK)
-  {
-    CLog::Log(LOGERROR, "%s - Not a CUT, MUTE, or COMM_BREAK! [%s - %s], %d", __FUNCTION__,
-              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
-              cut.action);
+  if (!CheckValidCut(cut))
     return false;
-  }
-
-  if (cut.start < 0)
-  {
-    CLog::Log(LOGERROR, "%s - Before start! [%s - %s], %d", __FUNCTION__,
-              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
-              cut.action);
-    return false;
-  }
-
-  if (cut.start >= cut.end)
-  {
-    CLog::Log(LOGERROR, "%s - Times are around the wrong way or the same! [%s - %s], %d", __FUNCTION__,
-              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
-              cut.action);
-    return false;
-  }
 
   if (InCut(cut.start) || InCut(cut.end))
   {
@@ -725,6 +705,26 @@ bool CEdl::AddCut(Cut& cut)
   return true;
 }
 
+bool CEdl::RemoveCut(Cut& cut)
+{
+  if (!CheckValidCut(cut))
+    return false;
+
+  for (unsigned int i = 0; i < m_vecCuts.size(); i++)
+  {
+    if (cut.start >= m_vecCuts[i].start && cut.end <= m_vecCuts[i].end)
+    {
+      if (cut.action == CUT)
+        m_iTotalCutTime -= m_vecCuts[i].end - m_vecCuts[i].start;
+
+      m_vecCuts.erase(m_vecCuts.begin()+i);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool CEdl::AddSceneMarker(const int iSceneMarker)
 {
   Cut cut;
@@ -791,6 +791,46 @@ int CEdl::RestoreCutTime(int iClock) const
 bool CEdl::HasSceneMarker() const
 {
   return !m_vecSceneMarkers.empty();
+}
+
+bool CEdl::OnSceneMarker(const int iClock)
+{
+  for (unsigned int i = 0; i < m_vecSceneMarkers.size(); i++)
+  {
+    //fprintf(stderr, "---------------- %s -- %i %i\n", __PRETTY_FUNCTION__, m_vecSceneMarkers[i], iClock);
+    if (m_vecSceneMarkers[i] == iClock)
+      return true;
+  }
+
+  return false;
+}
+
+bool CEdl::RemoveSceneMarker(int sceneMarker)
+{
+  for (unsigned int i = 0; i < m_vecSceneMarkers.size(); i++)
+  {
+    if (m_vecSceneMarkers[i] == sceneMarker)
+    {
+      m_vecSceneMarkers.erase(m_vecSceneMarkers.begin()+i);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool CEdl::MoveSceneMarker(int sceneMarker, int newPos)
+{
+  for (unsigned int i = 0; i < m_vecSceneMarkers.size(); i++)
+  {
+    if (m_vecSceneMarkers[i] == sceneMarker)
+    {
+      m_vecSceneMarkers[i] = newPos;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::string CEdl::GetInfo() const
@@ -889,6 +929,70 @@ bool CEdl::GetNextSceneMarker(bool bPlus, const int iClock, int *iSceneMarker) c
     *iSceneMarker = cut.end;
 
   return bFound;
+}
+
+bool CEdl::GenerateCutMarks()
+{
+  if (!HasSceneMarker())
+    return false;
+
+  int markStart = -1;
+  int markEnd   = -1;
+
+  for (unsigned int i = 0; i < m_vecSceneMarkers.size(); i++)
+  {
+    if (markStart == -1)
+    {
+      markStart = m_vecSceneMarkers[i];
+      continue;
+    }
+    else
+    {
+      markEnd = m_vecSceneMarkers[i];
+    }
+
+    if (markStart >= 0 && markEnd > markStart)
+    {
+      Cut cut;
+      cut.start   = markStart;
+      cut.end     = markEnd;
+      cut.action  = CUT;
+
+      markStart = -1;
+      markEnd   = -1;
+
+      if (!AddCut(cut))
+      {
+        CLog::Log(LOGWARNING, "%s - Error adding cut from scene markers %i and %i", __FUNCTION__, markStart, markEnd);
+        continue;
+      }
+    }
+  }
+
+  if (markStart >= 0 && markEnd == -1)
+  {
+    Cut cut;
+    cut.start   = markStart;
+    cut.end     = g_application.m_pPlayer->GetTotalTime();
+    cut.action  = CUT;
+
+    if (!AddCut(cut))
+    {
+      CLog::Log(LOGWARNING, "%s - Error adding single cut from scene marker %i to end of file", __FUNCTION__, markStart);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool CEdl::GetCutMarks(std::vector<Cut> &list)
+{
+  for (unsigned int i = 0; i < m_vecCuts.size(); i++)
+  {
+    list.push_back(m_vecCuts[i]);
+  }
+  return true;
 }
 
 std::string CEdl::MillisecondsToTimeString(const int iMilliseconds)
@@ -990,4 +1094,33 @@ void CEdl::MergeShortCommBreaks()
     }
   }
   return;
+}
+
+bool CEdl::CheckValidCut(Cut& cut)
+{
+  if (cut.action != CUT && cut.action != MUTE && cut.action != COMM_BREAK)
+  {
+    CLog::Log(LOGERROR, "%s - Not a CUT, MUTE, or COMM_BREAK! [%s - %s], %d", __FUNCTION__,
+              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
+              cut.action);
+    return false;
+  }
+
+  if (cut.start < 0)
+  {
+    CLog::Log(LOGERROR, "%s - Before start! [%s - %s], %d", __FUNCTION__,
+              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
+              cut.action);
+    return false;
+  }
+
+  if (cut.start >= cut.end)
+  {
+    CLog::Log(LOGERROR, "%s - Times are around the wrong way or the same! [%s - %s], %d", __FUNCTION__,
+              MillisecondsToTimeString(cut.start).c_str(), MillisecondsToTimeString(cut.end).c_str(),
+              cut.action);
+    return false;
+  }
+
+  return true;
 }

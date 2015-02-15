@@ -47,21 +47,30 @@ public:
     int start; // ms
     int end;   // ms
     Action action;
+    std::string comment;
   };
 
   bool ReadEditDecisionLists(const std::string& strMovie, const float fFramesPerSecond, const int iHeight);
   void Clear();
 
-  bool HasCut() const;
-  bool HasSceneMarker() const;
   std::string GetInfo() const;
   int GetTotalCutTime() const;
   int RemoveCutTime(int iSeek) const;
   int RestoreCutTime(int iClock) const;
 
-  bool InCut(int iSeek, Cut *pCut = NULL) const;
-
+  bool HasSceneMarker() const;
+  bool OnSceneMarker(const int iClock);
   bool GetNextSceneMarker(bool bPlus, const int iClock, int *iSceneMarker) const;
+  bool AddSceneMarker(const int sceneMarker);
+  bool RemoveSceneMarker(int sceneMarker);
+  bool MoveSceneMarker(int sceneMarker, int newPos);
+
+  bool HasCut() const;
+  bool InCut(int iSeek, Cut *pCut = NULL) const;
+  bool AddCut(Cut& NewCut);
+  bool RemoveCut(Cut& Cut);
+  bool GenerateCutMarks();
+  bool GetCutMarks(std::vector<Cut> &list);
 
   static std::string MillisecondsToTimeString(const int iMilliseconds);
 
@@ -77,8 +86,6 @@ private:
   bool ReadBeyondTV(const std::string& strMovie);
   bool ReadPvr(const std::string& strMovie);
 
-  bool AddCut(Cut& NewCut);
-  bool AddSceneMarker(const int sceneMarker);
-
   void MergeShortCommBreaks();
+  bool CheckValidCut(Cut& Cut);
 };
