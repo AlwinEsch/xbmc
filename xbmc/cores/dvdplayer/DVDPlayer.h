@@ -536,7 +536,7 @@ protected:
 
   CEvent m_ready;
 
-  CEdl m_Edl;
+  CEdlPtr m_Edl;
 
   struct SEdlAutoSkipMarkers {
 

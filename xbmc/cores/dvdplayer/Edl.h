@@ -22,7 +22,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <stdint.h>
+
+class CEdl;
+typedef std::shared_ptr<CEdl> CEdlPtr;
 
 class CEdl
 {

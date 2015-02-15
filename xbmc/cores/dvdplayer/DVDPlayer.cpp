@@ -596,6 +596,7 @@ CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
 
   m_dvd.Clear();
   m_State.Clear();
+  m_Edl = CEdlPtr(new CEdl);
   m_EdlAutoSkipMarkers.Clear();
   m_UpdateApplication = 0;
 
@@ -701,7 +702,7 @@ bool CDVDPlayer::CloseFile(bool reopen)
   // we are done after the StopThread call
   StopThread();
 
-  m_Edl.Clear();
+  m_Edl->Clear();
   m_EdlAutoSkipMarkers.Clear();
 
   m_HasVideo = false;
@@ -1174,12 +1175,12 @@ void CDVDPlayer::Process()
   OpenDefaultStreams();
 
   // look for any EDL files
-  m_Edl.Clear();
+  m_Edl->Clear();
   m_EdlAutoSkipMarkers.Clear();
   if (m_CurrentVideo.id >= 0 && m_CurrentVideo.hint.fpsrate > 0 && m_CurrentVideo.hint.fpsscale > 0)
   {
     float fFramesPerSecond = (float)m_CurrentVideo.hint.fpsrate / (float)m_CurrentVideo.hint.fpsscale;
-    m_Edl.ReadEditDecisionLists(m_filename, fFramesPerSecond, m_CurrentVideo.hint.height);
+    m_Edl->ReadEditDecisionLists(m_filename, fFramesPerSecond, m_CurrentVideo.hint.height);
   }
 
   /*
@@ -1194,15 +1195,15 @@ void CDVDPlayer::Process()
     if (m_PlayerOptions.startpercent > 0 && m_pDemuxer)
     {
       int playerStartTime = (int)( ( (float) m_pDemuxer->GetStreamLength() ) * ( m_PlayerOptions.startpercent/(float)100 ) );
-      starttime = m_Edl.RestoreCutTime(playerStartTime);
+      starttime = m_Edl->RestoreCutTime(playerStartTime);
     }
     else
     {
-      starttime = m_Edl.RestoreCutTime(m_PlayerOptions.starttime * 1000); // s to ms
+      starttime = m_Edl->RestoreCutTime(m_PlayerOptions.starttime * 1000); // s to ms
     }
     CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %d", __FUNCTION__, starttime);
   }
-  else if(m_Edl.InCut(0, &cut)
+  else if(m_Edl->InCut(0, &cut)
       && (cut.action == CEdl::CUT || cut.action == CEdl::COMM_BREAK))
   {
     starttime = cut.end;
@@ -1598,13 +1599,13 @@ void CDVDPlayer::ProcessAudioData(CDemuxStream* pStream, DemuxPacket* pPacket)
   CEdl::Cut cut;
   if (CheckSceneSkip(m_CurrentAudio))
     drop = true;
-  else if (m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) && cut.action == CEdl::MUTE // Inside EDL mute
+  else if (m_Edl->InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) && cut.action == CEdl::MUTE // Inside EDL mute
   &&      !m_EdlAutoSkipMarkers.mute) // Mute not already triggered
   {
     m_dvdPlayerAudio->SendMessage(new CDVDMsgBool(CDVDMsg::AUDIO_SILENCE, true));
     m_EdlAutoSkipMarkers.mute = true;
   }
-  else if (!m_Edl.InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) // Outside of any EDL
+  else if (!m_Edl->InCut(DVD_TIME_TO_MSEC(m_CurrentAudio.dts + m_offset_pts), &cut) // Outside of any EDL
   &&        m_EdlAutoSkipMarkers.mute) // But the mute hasn't been removed yet
   {
     m_dvdPlayerAudio->SendMessage(new CDVDMsgBool(CDVDMsg::AUDIO_SILENCE, false));
@@ -2168,7 +2169,7 @@ void CDVDPlayer::CheckContinuity(CCurrentStream& current, DemuxPacket* pPacket)
 
 bool CDVDPlayer::CheckSceneSkip(CCurrentStream& current)
 {
-  if(!m_Edl.HasCut())
+  if(!m_Edl->HasCut())
     return false;
 
   if(current.dts == DVD_NOPTS_VALUE)
@@ -2178,12 +2179,12 @@ bool CDVDPlayer::CheckSceneSkip(CCurrentStream& current)
     return false;
 
   CEdl::Cut cut;
-  return m_Edl.InCut(DVD_TIME_TO_MSEC(current.dts + m_offset_pts), &cut) && cut.action == CEdl::CUT;
+  return m_Edl->InCut(DVD_TIME_TO_MSEC(current.dts + m_offset_pts), &cut) && cut.action == CEdl::CUT;
 }
 
 void CDVDPlayer::CheckAutoSceneSkip()
 {
-  if(!m_Edl.HasCut())
+  if(!m_Edl->HasCut())
     return;
 
   /*
@@ -2208,7 +2209,7 @@ void CDVDPlayer::CheckAutoSceneSkip()
   const int64_t clock = m_omxplayer_mode ? GetTime() : DVD_TIME_TO_MSEC(std::min(m_CurrentAudio.dts, m_CurrentVideo.dts) + m_offset_pts);
 
   CEdl::Cut cut;
-  if(!m_Edl.InCut(clock, &cut))
+  if(!m_Edl->InCut(clock, &cut))
     return;
 
   if(cut.action == CEdl::CUT
@@ -2390,7 +2391,7 @@ void CDVDPlayer::HandleMessages()
 
         double start = DVD_NOPTS_VALUE;
 
-        int time = msg.GetRestore() ? m_Edl.RestoreCutTime(msg.GetTime()) : msg.GetTime();
+        int time = msg.GetRestore() ? m_Edl->RestoreCutTime(msg.GetTime()) : msg.GetTime();
 
         // if input streams doesn't support seektime we must convert back to clock
         if(dynamic_cast<CDVDInputStream::ISeekTime*>(m_pInputStream) == NULL)
@@ -2624,7 +2625,7 @@ void CDVDPlayer::HandleMessages()
           SAFE_DELETE(m_pDemuxer);
           m_playSpeed = DVD_PLAYSPEED_NORMAL;
 #ifdef HAS_VIDEO_PLAYBACK
-          // when using fast channel switching some shortcuts are taken which 
+          // when using fast channel switching some shortcuts are taken which
           // means we'll have to update the view mode manually
           g_renderManager.SetViewMode(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
 #endif
@@ -2690,7 +2691,7 @@ void CDVDPlayer::HandleMessages()
 
               g_infoManager.SetDisplayAfterSeek();
 #ifdef HAS_VIDEO_PLAYBACK
-              // when using fast channel switching some shortcuts are taken which 
+              // when using fast channel switching some shortcuts are taken which
               // means we'll have to update the view mode manually
               g_renderManager.SetViewMode(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
 #endif
@@ -2932,7 +2933,7 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
   }
 
   bool restore = true;
-  if (m_Edl.HasCut())
+  if (m_Edl->HasCut())
   {
     /*
      * Alter the standard seek position based on whether any commercial breaks have been
@@ -2997,7 +2998,7 @@ void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
 
 bool CDVDPlayer::SeekScene(bool bPlus)
 {
-  if (!m_Edl.HasSceneMarker())
+  if (!m_Edl->HasSceneMarker())
     return false;
 
   /*
@@ -3009,7 +3010,7 @@ bool CDVDPlayer::SeekScene(bool bPlus)
     clock -= 5 * 1000;
 
   int iScenemarker;
-  if (m_Edl.GetNextSceneMarker(bPlus, clock, &iScenemarker))
+  if (m_Edl->GetNextSceneMarker(bPlus, clock, &iScenemarker))
   {
     /*
      * Seeking is flushed and inaccurate, just like Seek()
@@ -3053,7 +3054,7 @@ void CDVDPlayer::GetGeneralInfo(std::string& strGeneralInfo)
         dDiff = (apts - vpts) / DVD_TIME_BASE;
 
       std::string strEDL;
-      strEDL += StringUtils::Format(", edl:%s", m_Edl.GetInfo().c_str());
+      strEDL += StringUtils::Format(", edl:%s", m_Edl->GetInfo().c_str());
 
       std::string strBuf;
       CSingleLock lock(m_StateSection);
@@ -3089,7 +3090,7 @@ void CDVDPlayer::GetGeneralInfo(std::string& strGeneralInfo)
       if( apts != DVD_NOPTS_VALUE && vpts != DVD_NOPTS_VALUE )
         dDiff = (apts - vpts) / DVD_TIME_BASE;
 
-      std::string strEDL = StringUtils::Format(", edl:%s", m_Edl.GetInfo().c_str());
+      std::string strEDL = StringUtils::Format(", edl:%s", m_Edl->GetInfo().c_str());
 
       std::string strBuf;
       CSingleLock lock(m_StateSection);
@@ -4596,10 +4597,10 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     }
   }
 
-  if (m_Edl.HasCut())
+  if (m_Edl->HasCut())
   {
-    state.time        = (double) m_Edl.RemoveCutTime(llrint(state.time));
-    state.time_total  = (double) m_Edl.RemoveCutTime(llrint(state.time_total));
+    state.time        = (double) m_Edl->RemoveCutTime(llrint(state.time));
+    state.time_total  = (double) m_Edl->RemoveCutTime(llrint(state.time_total));
   }
 
   state.disptime = state.time;
@@ -4727,11 +4728,11 @@ bool CDVDPlayer::GetStreamDetails(CStreamDetails &details)
       p.m_strLanguage = subs[i].language;
       extSubDetails.push_back(p);
     }
-    
+
     bool result = CDVDFileInfo::DemuxerToStreamDetails(m_pInputStream, m_pDemuxer, extSubDetails, details);
     if (result && details.GetStreamCount(CStreamDetail::VIDEO) > 0) // this is more correct (dvds in particular)
     {
-      /* 
+      /*
        * We can only obtain the aspect & duration from dvdplayer when the Process() thread is running
        * and UpdatePlayState() has been called at least once. In this case dvdplayer duration/AR will
        * return 0 and we'll have to fallback to the (less accurate) info from the demuxer.
