@@ -40,6 +40,8 @@ namespace PVR
 class CAction;
 class CPlayerOptions;
 class CStreamDetails;
+class CEdl;
+typedef std::shared_ptr<CEdl> CEdlPtr;
 
 struct SPlayerAudioStreamInfo;
 struct SPlayerVideoStreamInfo;
@@ -155,4 +157,7 @@ public:
   void  SetVolume(float volume);
   bool  SwitchChannel(const PVR::CPVRChannelPtr &channel);
   void  ToFFRW(int iSpeed = 0);
+  bool  CanCut();
+  bool  HandleCut();
+  CEdlPtr GetEdl();
 };

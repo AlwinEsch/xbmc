@@ -42,9 +42,11 @@ public:
 
   bool            CanSeek()  { return m_can_seek; }
   bool            CanPause() { return m_can_pause; }
+  bool            CanCut()   { return m_can_cut; }
 
 protected:
   bool m_can_pause;
   bool m_can_seek;
+  bool m_can_cut;
   bool m_aborted;
 };

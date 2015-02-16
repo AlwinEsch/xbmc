@@ -20,6 +20,7 @@
  *
  */
 
+#include <memory>
 #include "system.h" // until we get sane int types used here
 #include <memory>
 #include "IPlayerCallback.h"
@@ -32,6 +33,8 @@ struct TextCacheStruct_t;
 class TiXmlElement;
 class CStreamDetails;
 class CAction;
+class CEdl;
+typedef std::shared_ptr<CEdl> CEdlPtr;
 
 namespace PVR
 {
@@ -254,6 +257,29 @@ public:
   virtual std::string GetPlayingTitle() { return ""; };
 
   virtual bool SwitchChannel(const PVR::CPVRChannelPtr &channel) { return false; }
+
+  /*!
+   \@name File cutting functions
+   */
+  //@{
+  /*!
+   \brief Used to ask player for possible cut playback
+   \return true if possible
+   */
+  virtual bool CanCut() { return false; }
+
+  /*!
+   \brief If file cut becomes handled from source it must be true
+   \return if handled (example PVR addon stream)
+   */
+  virtual bool HandleCut() { return false; }
+
+  /*!
+   \brief Get the edit decision list class
+   \return shared pointer to Edl
+   */
+  virtual CEdlPtr GetEdl() { CEdlPtr empty; return empty; }
+  //@}
 
   // Note: the following "OMX" methods are deprecated and will be removed in the future
   // They should be handled by the video renderer, not the player

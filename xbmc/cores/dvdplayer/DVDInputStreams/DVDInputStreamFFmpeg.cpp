@@ -30,6 +30,7 @@ CDVDInputStreamFFmpeg::CDVDInputStreamFFmpeg()
   : CDVDInputStream(DVDSTREAM_TYPE_FFMPEG)
   , m_can_pause(false)
   , m_can_seek(false)
+  , m_can_cut(false)
   , m_aborted(false)
 {
 
@@ -50,6 +51,7 @@ bool CDVDInputStreamFFmpeg::IsEOF()
 
 bool CDVDInputStreamFFmpeg::Open(const char* strFile, const std::string& content, bool contentLookup)
 {
+  m_can_cut = true;
   CFileItem item(strFile, false);
   std::string selected;
   if (item.IsInternetStream() && (item.IsType(".m3u8") || content == "application/vnd.apple.mpegurl"))
@@ -64,6 +66,7 @@ bool CDVDInputStreamFFmpeg::Open(const char* strFile, const std::string& content
       CLog::Log(LOGINFO, "CDVDInputStreamFFmpeg: Auto-selecting %s based on configured bandwidth.", selected.c_str());
       strFile = selected.c_str();
     }
+    m_can_cut = false;
   }
 
   if (!CDVDInputStream::Open(strFile, content, contentLookup))
@@ -78,12 +81,14 @@ bool CDVDInputStreamFFmpeg::Open(const char* strFile, const std::string& content
   {
     m_can_pause = false;
     m_can_seek  = false;
+    m_can_cut   = false;
   }
 
   if(strnicmp(strFile, "tcp://", 6) == 0)
   {
     m_can_pause = true;
     m_can_seek  = false;
+    m_can_cut   = false;
   }
   return true;
 }

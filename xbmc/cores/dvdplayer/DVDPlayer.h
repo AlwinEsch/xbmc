@@ -310,6 +310,10 @@ public:
 
   virtual bool ControlsVolume() {return m_omxplayer_mode;}
 
+  virtual bool CanCut();
+  virtual bool HandleCut();
+  virtual CEdlPtr GetEdl();
+
 protected:
   friend class CSelectionStreams;
 
@@ -494,6 +498,8 @@ protected:
       recording     = false;
       canpause      = false;
       canseek       = false;
+      cancut        = false;
+      handlecut     = false;
       demux_video   = "";
       demux_audio   = "";
       cache_bytes   = 0;
@@ -523,6 +529,8 @@ protected:
 
     bool canpause;            // pvr: can pause the current playing item
     bool canseek;             // pvr: can seek in the current playing item
+    bool cancut;              // can cut in the current playing item
+    bool handlecut;           // The related source allow to cut the playing item
 
     std::string demux_video;
     std::string demux_audio;

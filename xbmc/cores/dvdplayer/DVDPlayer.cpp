@@ -2888,6 +2888,24 @@ bool CDVDPlayer::CanSeek()
   return m_State.canseek;
 }
 
+bool CDVDPlayer::CanCut()
+{
+  CSingleLock lock(m_StateSection);
+  return m_State.cancut;
+}
+
+bool CDVDPlayer::HandleCut()
+{
+  CSingleLock lock(m_StateSection);
+  return m_State.handlecut;
+}
+
+CEdlPtr CDVDPlayer::GetEdl()
+{
+  CSingleLock lock(m_StateSection);
+  return m_Edl;
+}
+
 void CDVDPlayer::Seek(bool bPlus, bool bLargeStep, bool bChapterOverride)
 {
   if( m_playSpeed == DVD_PLAYSPEED_PAUSE && bPlus && !bLargeStep)
@@ -4558,6 +4576,8 @@ void CDVDPlayer::UpdatePlayState(double timeout)
 
   state.canpause     = true;
   state.canseek      = true;
+  state.cancut       = false;
+  state.handlecut    = false;
 
   if(m_pInputStream)
   {
@@ -4595,6 +4615,12 @@ void CDVDPlayer::UpdatePlayState(double timeout)
       state.canpause = ptr->CanPause();
       state.canseek  = ptr->CanSeek();
     }
+
+    if (CDVDInputStream::ICutable* ptr = dynamic_cast<CDVDInputStream::ICutable*>(m_pInputStream))
+    {
+      state.cancut = ptr->CanCut();
+      state.handlecut = ptr->HandleCut();
+    }
   }
 
   if (m_Edl->HasCut())
@@ -4614,7 +4640,11 @@ void CDVDPlayer::UpdatePlayState(double timeout)
   }
 
   if(state.time_total <= 0)
+  {
     state.canseek  = false;
+    state.cancut   = false;
+    state.handlecut= false;
+  }
 
   if (state.time_src == ETIMESOURCE_CLOCK)
     state.time_offset = m_offset_pts;

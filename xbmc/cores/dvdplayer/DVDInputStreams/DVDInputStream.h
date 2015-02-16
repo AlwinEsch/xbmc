@@ -140,6 +140,15 @@ public:
     virtual bool CanPause() = 0;
   };
 
+  /// TODO: Need to be finished
+  class ICutable
+  {
+    public:
+    virtual ~ICutable() {};
+    virtual bool CanCut() { return false; };
+    virtual bool HandleCut() { return false; };
+  };
+
   enum ENextStream
   {
     NEXTSTREAM_NONE,

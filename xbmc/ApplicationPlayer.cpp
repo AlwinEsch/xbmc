@@ -737,3 +737,25 @@ int CApplicationPlayer::GetPlaySpeed() const
 {
   return m_iPlaySpeed;
 }
+
+bool CApplicationPlayer::CanCut()
+{
+  std::shared_ptr<IPlayer> player = GetInternal();
+  return (player && player->CanCut());
+}
+    
+bool CApplicationPlayer::HandleCut()
+{
+  std::shared_ptr<IPlayer> player = GetInternal();
+  return (player && player->HandleCut());
+}
+
+CEdlPtr CApplicationPlayer::GetEdl()
+{
+  std::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->GetEdl();
+
+  CEdlPtr empty;
+  return empty;
+}
