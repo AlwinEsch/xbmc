@@ -590,7 +590,8 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* = 
         // If the addon is a special, call the disabled handler
         AddonPtr addon;
         if ((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_SERVICE, false)
-          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)) && addon)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false)) && addon)
           addon->OnDisabled();
 
         return true;
@@ -608,7 +609,8 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* = 
         // If the addon is a special, call the enabled handler
         AddonPtr addon;
         if ((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_SERVICE, false)
-          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)) && addon)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false)) && addon)
           addon->OnEnabled();
       }
     }

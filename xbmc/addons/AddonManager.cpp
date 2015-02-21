@@ -36,6 +36,8 @@
 #ifdef HAS_SCREENSAVER
 #include "ScreenSaver.h"
 #endif
+#include "DllAudioDSP.h"
+#include "cores/AudioEngine/DSPAddons/ActiveAEDSP.h"
 #ifdef HAS_PVRCLIENTS
 #include "DllPVRClient.h"
 #include "pvr/addons/PVRClient.h"
@@ -113,6 +115,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_VIZ:
     case ADDON_SCREENSAVER:
     case ADDON_PVRDLL:
+    case ADDON_ADSPDLL:
     case ADDON_AUDIOENCODER:
       { // begin temporary platform handling for Dlls
         // ideally platforms issues will be handled by C-Pluff
@@ -159,6 +162,10 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
 #ifdef HAS_PVRCLIENTS
           return AddonPtr(new PVR::CPVRClient(props));
 #endif
+        }
+        else if (type == ADDON_ADSPDLL)
+        {
+          return AddonPtr(new ActiveAE::CActiveAEDSPAddon(props));
         }
         else if (type == ADDON_AUDIOENCODER)
           return AddonPtr(new CAudioEncoder(props));
@@ -675,6 +682,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new CAddonLibrary(addonProps));
     case ADDON_PVRDLL:
       return AddonPtr(new PVR::CPVRClient(addonProps));
+    case ADDON_ADSPDLL:
+      return AddonPtr(new ActiveAE::CActiveAEDSPAddon(addonProps));
     case ADDON_AUDIOENCODER:
       return AddonPtr(new CAudioEncoder(addonProps));
     case ADDON_REPOSITORY:
