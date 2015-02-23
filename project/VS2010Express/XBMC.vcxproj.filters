@@ -3161,6 +3161,12 @@
     <ClCompile Include="..\..\xbmc\video\jobs\VideoLibraryProgressJob.cpp">
       <Filter>video\jobs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6149,6 +6155,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\video\jobs\VideoLibraryProgressJob.h">
       <Filter>video\jobs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h">
+      <Filter>settings\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h">
+      <Filter>settings\dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
