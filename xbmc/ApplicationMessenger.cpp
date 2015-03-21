@@ -851,6 +851,14 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
       g_peripherals.ToggleDeviceState(STATE_STANDBY);
       break;
     }
+    case TMSG_SETAUDIODSPSTATE:
+    {
+      if (pMsg->param1 != 0)
+        g_application.StartAudioDSPEngine();
+      else
+        g_application.StopAudioDSPEngine();
+      break;
+    }
     case TMSG_START_ANDROID_ACTIVITY:
     {
 #if defined(TARGET_ANDROID)
@@ -1423,6 +1431,13 @@ void CApplicationMessenger::CECStandby()
 void CApplicationMessenger::SetPVRManagerState(bool onOff)
 {
   ThreadMessage tMsg = {TMSG_SETPVRMANAGERSTATE};
+  tMsg.param1 = onOff ? 1 : 0;
+  SendMessage(tMsg, false);
+}
+
+void CApplicationMessenger::SetAudioDSPEngineState(bool onOff)
+{
+  ThreadMessage tMsg = {TMSG_SETAUDIODSPSTATE};
   tMsg.param1 = onOff ? 1 : 0;
   SendMessage(tMsg, false);
 }

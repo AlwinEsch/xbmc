@@ -644,7 +644,8 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* = 
         AddonPtr addon;
         if ((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_SERVICE, false)
           || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)
-          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false)) && addon)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false)) && addon)
           addon->OnDisabled();
 
         return true;
@@ -663,7 +664,8 @@ bool CAddonDatabase::DisableAddon(const std::string &addonID, bool disable /* = 
         AddonPtr addon;
         if ((CAddonMgr::Get().GetAddon(addonID, addon, ADDON_SERVICE, false)
           || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false)
-          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false)) && addon)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_CONTEXT_ITEM, false)
+          || CAddonMgr::Get().GetAddon(addonID, addon, ADDON_ADSPDLL, false)) && addon)
           addon->OnEnabled();
       }
     }
