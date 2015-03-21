@@ -3122,6 +3122,9 @@
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp">
       <Filter>settings\dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6042,6 +6045,9 @@
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h">
       <Filter>settings\dialogs</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
