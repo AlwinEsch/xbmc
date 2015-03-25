@@ -135,3 +135,6 @@
 
 // Sent to text field to support 'input method'
 #define GUI_MSG_INPUT_TEXT_EDIT       GUI_MSG_USER + 38
+
+// Send to RDS Radiotext handlers to inform about changed data
+#define GUI_MSG_UPDATE_RADIOTEXT      GUI_MSG_USER + 39
