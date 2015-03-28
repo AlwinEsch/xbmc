@@ -146,6 +146,8 @@ config.log
 /lib/addons/library.kodi.guilib/Makefile
 /lib/addons/library.kodi.guilib/project/VS2010Express/Release
 /lib/addons/library.kodi.guilib/project/VS2010Express/Debug
+/lib/addons/library.xbmc.gui/project/VS2010Express/Debug/
+/lib/addons/library.xbmc.gui/project/VS2010Express/Release/
 /lib/addons/library.xbmc.addon/Makefile
 /lib/addons/library.kodi.adsp/Makefile
 /lib/addons/library.xbmc.pvr/Makefile
@@ -158,6 +160,8 @@ config.log
 /lib/addons/library.xbmc.codec/project/VS2010Express/Debug
 /lib/addons/library.xbmc.pvr/project/VS2010Express/Release
 /lib/addons/library.xbmc.pvr/project/VS2010Express/Debug
+/lib/addons/library.xbmc.adsp/project/VS2010Express/Debug/
+/lib/addons/library.xbmc.adsp/project/VS2010Express/Release/
 
 # /lib/cpluff/
 /lib/cpluff/ABOUT-NLS
@@ -931,6 +935,11 @@ lib/cpluff/stamp-h1
 /lib/libXDAAP/libXDAAP_win32/Debug
 /lib/libXDAAP/libXDAAP_win32/Release
 
+# /lib/cmyth/
+/system/libcmyth.dll
+/lib/cmyth/Win32/Release/
+/lib/cmyth/Win32/Debug/
+
 # /portable_data
 /portable_data
 
@@ -944,6 +953,12 @@ lib/cpluff/stamp-h1
 /addons/library.kodi.guilib/libKODI_guilib.lib
 /addons/library.xbmc.pvr/libXBMC_pvr.dll
 /addons/library.xbmc.pvr/libXBMC_pvr.lib
+addons/library.xbmc.adsp/libXBMC_adsp.dll
+addons/library.xbmc.adsp/libXBMC_adsp.lib
+addons/library.xbmc.gui/libXBMC_gui.dll
+addons/library.xbmc.gui/libXBMC_gui.lib
 
 /pvr-addons
 /adsp-addons
+
+
