@@ -99,7 +99,7 @@ const int CGUIDialogAudioDSPSettings::m_StreamTypeNameTable[] =
   14061   //!< "Auto"
 };
 
-CGUIDialogAudioDSPSettings::CGUIDialogAudioDSPSettings()
+CGUIDialogAudioDSPSettings::CGUIDialogAudioDSPSettings(void)
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_AUDIO_DSP_OSD_SETTINGS, "DialogAudioDSPSettings.xml")
 {
   m_ActiveStreamId                                = 0;
@@ -113,7 +113,7 @@ CGUIDialogAudioDSPSettings::CGUIDialogAudioDSPSettings()
   m_MenuPositions[SETTING_AUDIO_CAT_PROC_INFO]    = CONTROL_SETTINGS_START_CONTROL+1;
 }
 
-CGUIDialogAudioDSPSettings::~CGUIDialogAudioDSPSettings()
+CGUIDialogAudioDSPSettings::~CGUIDialogAudioDSPSettings(void)
 { }
 
 int CGUIDialogAudioDSPSettings::FindCategoryIndex(const std::string &catId)

@@ -27,7 +27,7 @@ namespace ActiveAE
   class CGUIDialogAudioDSPSettings : public CGUIDialogSettingsManualBase
   {
   public:
-    CGUIDialogAudioDSPSettings();
+    CGUIDialogAudioDSPSettings(void);
     virtual ~CGUIDialogAudioDSPSettings();
 
     // specializations of CGUIControl
