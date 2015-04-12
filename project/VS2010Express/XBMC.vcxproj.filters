@@ -3105,6 +3105,9 @@
       <Filter>music</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\filesystem\NFSDirectory.cpp" />
+    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp">
+      <Filter>settings\dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\test\TestUtil.cpp">
       <Filter>test</Filter>
     </ClCompile>
@@ -6012,6 +6015,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\music\EmbeddedArt.h">
       <Filter>music</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h">
+      <Filter>settings\dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
