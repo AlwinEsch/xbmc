@@ -993,7 +993,7 @@
     <ClInclude Include="..\..\xbmc\profiles\windows\GUIWindowSettingsProfile.h" />
     <ClInclude Include="..\..\xbmc\settings\AudioDSPSettings.h" />
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h" />
-    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h" />
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h" />
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogContentSettings.h" />
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogSettingsBase.h" />
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogSettingsManagerBase.h" />
