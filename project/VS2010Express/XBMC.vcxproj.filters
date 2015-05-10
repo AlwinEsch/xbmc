@@ -3105,14 +3105,14 @@
       <Filter>music</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\filesystem\NFSDirectory.cpp" />
+    <ClCompile Include="..\..\xbmc\test\TestUtil.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.cpp">
       <Filter>settings\dialogs</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.cpp">
       <Filter>settings\dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\test\TestUtil.cpp">
-      <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6022,9 +6022,9 @@
     <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPManager.h">
       <Filter>settings\dialogs</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h">
+    <ClInclude Include="..\..\xbmc\settings\dialogs\GUIDialogAudioDSPSettings.h">
       <Filter>settings\dialogs</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
