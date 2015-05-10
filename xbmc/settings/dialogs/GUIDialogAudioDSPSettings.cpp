@@ -99,7 +99,7 @@ const int CGUIDialogAudioDSPSettings::m_StreamTypeNameTable[] =
   14061   //!< "Auto"
 };
 
-CGUIDialogAudioDSPSettings::CGUIDialogAudioDSPSettings(void)
+CGUIDialogAudioDSPSettings::CGUIDialogAudioDSPSettings()
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_AUDIO_DSP_OSD_SETTINGS, "DialogAudioDSPSettings.xml")
 {
   m_ActiveStreamId                                = 0;
