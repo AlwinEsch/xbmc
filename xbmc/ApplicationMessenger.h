@@ -92,6 +92,7 @@ namespace MUSIC_INFO
 #define TMSG_CECSTANDBY           318
 #define TMSG_SETVIDEORESOLUTION   319
 #define TMSG_SETPVRMANAGERSTATE   320
+#define TMSG_SETAUDIODSPSTATE     321
 
 #define TMSG_NETWORKMESSAGE         500
 
@@ -257,7 +258,12 @@ public:
    \param onOff if true it becomes switched on otherwise off
    */
   void SetPVRManagerState(bool onOff);
-  
+
+  /*! \brief Used to enable/disable audio DSP system without waiting.
+   \param onOff if true it becomes switched on otherwise off
+   */
+  void SetAudioDSPEngineState(bool onOff);
+
   bool SetupDisplay();
   bool DestroyDisplay();
   void StartAndroidActivity(const std::vector<std::string> &params);
