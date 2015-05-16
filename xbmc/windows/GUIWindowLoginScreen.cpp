@@ -275,6 +275,9 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
   // stop PVR related services
   g_application.StopPVRManager();
 
+  // stop audio DSP related services
+  g_application.StopAudioDSPEngine();
+
   if (profile != 0 || !CProfilesManager::Get().IsMasterProfile())
   {
     g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
@@ -328,6 +331,9 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 
   g_application.UpdateLibraries();
   CStereoscopicsManager::Get().Initialize();
+
+  // start audio DSP related services
+  g_application.StartAudioDSPEngine();
 
   // if the user interfaces has been fully initialized let everyone know
   if (uiInitializationFinished)
