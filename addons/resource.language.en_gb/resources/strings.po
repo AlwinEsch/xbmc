@@ -16311,13 +16311,13 @@ msgstr ""
 #. Description of setting "System -> Audio output -> Reset the Audio DSP database..." with label 311
 #: system/settings/settings.xml
 msgctxt "#36439"
-msgid "All data (add-on settings and audio DSP manager settings) in the audio DSP database is being erased."
+msgid "Erasing all DSP add-on and audio DSP manager settings in the audio DSP database."
 msgstr ""
 
 #. Used in confirm on dialog to erase database
 #: xbmc/cores/AudioEngine/DSPAddons/ActiveAEDSP.cpp
 msgctxt "#36440"
-msgid "Erasing all DSP add-on and audio DSP manager settings in the audio DSP database."
+msgid "All data in the audio DSP database is being erased"
 msgstr ""
 
 #. Settings boolean value name
