@@ -19,6 +19,8 @@
  *
  */
 
+#include <sys/stat.h>
+
 namespace AddOnLIB
 {
 namespace V2
@@ -92,6 +94,14 @@ namespace V2
 
   #define KODI_INVALID_CODEC_ID   0
   #define KODI_INVALID_CODEC      { KODI_CODEC_TYPE_UNKNOWN, KODI_INVALID_CODEC_ID }
+
+  #if !defined(__stat64)
+    #if defined(__APPLE__)
+      #define __stat64 stat
+    #else
+      #define __stat64 stat64
+    #endif
+  #endif
 
 }; /* namespace V2 */
 }; /* namespace AddOnLIB */
