@@ -37,7 +37,12 @@
 
 #include "xbmc_addon_types.h"
 #include "xbmc_epg_types.h"
-#include "xbmc_codec_types.h"
+
+#ifdef BUILD_KODI_ADDON
+  #include "kodi/addon.api2/definations.h"
+#else
+  #include "addons/library.kodi.addon/addon.api2/definations.h"
+#endif
 
 /*! @note Define "USE_DEMUX" at compile time if demuxing in the PVR add-on is used.
  *        Also XBMC's "DVDDemuxPacket.h" file must be in the include path of the add-on,
@@ -248,8 +253,8 @@ extern "C" {
     struct PVR_STREAM
     {
       unsigned int      iPhysicalId;        /*!< @brief (required) physical index */
-      xbmc_codec_type_t iCodecType;         /*!< @brief (required) codec type this stream */
-      xbmc_codec_id_t   iCodecId;           /*!< @brief (required) codec id of this stream */
+      AddOnLIB::V2::kodi_codec_type_t iCodecType;         /*!< @brief (required) codec type this stream */
+      AddOnLIB::V2::kodi_codec_id_t   iCodecId;           /*!< @brief (required) codec id of this stream */
       char              strLanguage[4];     /*!< @brief (required) language id */
       int               iIdentifier;        /*!< @brief (required) stream id */
       int               iFPSScale;          /*!< @brief (required) scale of 1000 and a rate of 29970 will result in 29.97 fps */

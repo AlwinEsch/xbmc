@@ -97,7 +97,7 @@ public:
     }
 
     GUI_register_me = (void* (*)(void *HANDLE))
-      dlsym(m_libKODI_guilib, "GUI_register_me");
+      dlsym(m_libKODI_guilib, "GUI_register_level");
     if (GUI_register_me == NULL) { fprintf(stderr, "Unable to assign function %s\n", dlerror()); return false; }
 
     GUI_unregister_me = (void (*)(void *HANDLE, void *CB))

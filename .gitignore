@@ -132,24 +132,36 @@ config.log
 
 
 # /lib/addons/
-/lib/addons/library.kodi.guilib/Makefile
-/lib/addons/library.kodi.guilib/project/VS2010Express/Release
-/lib/addons/library.kodi.guilib/project/VS2010Express/Debug
-/lib/addons/library.xbmc.addon/Makefile
-/lib/addons/library.kodi.adsp/Makefile
-/lib/addons/library.xbmc.pvr/Makefile
-/lib/addons/library.xbmc.codec/Makefile
-/lib/addons/library.xbmc.addon/project/VS2010Express/Release
-/lib/addons/library.xbmc.addon/project/VS2010Express/Debug
-/lib/addons/library.kodi.adsp/project/VS2010Express/Release
-/lib/addons/library.kodi.adsp/project/VS2010Express/Debug
-/lib/addons/library.xbmc.codec/project/VS2010Express/Release
-/lib/addons/library.xbmc.codec/project/VS2010Express/Debug
-/lib/addons/library.xbmc.pvr/project/VS2010Express/Release
-/lib/addons/library.xbmc.pvr/project/VS2010Express/Debug
-/lib/addons/library.kodi.audioengine/Makefile
-/lib/addons/library.kodi.audioengine/project/VS2010Express/Release/
-/lib/addons/library.kodi.audioengine/project/VS2010Express/Debug/
+/lib/addons/library.xbmc.addon/api-level-1/Makefile
+/lib/addons/library.xbmc.addon/api-level-1/project/VS2010Express/Release
+/lib/addons/library.xbmc.addon/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.addon/api-level-2/Makefile
+/lib/addons/library.kodi.addon/api-level-2/project/VS2010Express/Release
+/lib/addons/library.kodi.addon/api-level-2/project/VS2010Express/Debug
+/lib/addons/library.kodi.adsp/api-level-1/Makefile
+/lib/addons/library.kodi.adsp/api-level-1/project/VS2010Express/Release
+/lib/addons/library.kodi.adsp/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.audioengine/api-level-1/Makefile
+/lib/addons/library.kodi.audioengine/api-level-1/project/VS2010Express/Release
+/lib/addons/library.kodi.audioengine/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.audioengine/api-level-2/Makefile
+/lib/addons/library.kodi.audioengine/api-level-2/project/VS2010Express/Release
+/lib/addons/library.kodi.audioengine/api-level-2/project/VS2010Express/Debug
+/lib/addons/library.xbmc.codec/api-level-1/Makefile
+/lib/addons/library.xbmc.codec/api-level-1/project/VS2010Express/Release
+/lib/addons/library.xbmc.codec/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.guilib/api-level-1/Makefile
+/lib/addons/library.kodi.guilib/api-level-1/project/VS2010Express/Release
+/lib/addons/library.kodi.guilib/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.guilib/api-level-2/Makefile
+/lib/addons/library.kodi.guilib/api-level-2/project/VS2010Express/Release
+/lib/addons/library.kodi.guilib/api-level-2/project/VS2010Express/Debug
+/lib/addons/library.xbmc.pvr/api-level-1/Makefile
+/lib/addons/library.xbmc.pvr/api-level-1/project/VS2010Express/Release
+/lib/addons/library.xbmc.pvr/api-level-1/project/VS2010Express/Debug
+/lib/addons/library.kodi.pvr/api-level-2/Makefile
+/lib/addons/library.kodi.pvr/api-level-2/project/VS2010Express/Release
+/lib/addons/library.kodi.pvr/api-level-2/project/VS2010Express/Debug
 
 # /lib/cpluff/
 /lib/cpluff/ABOUT-NLS

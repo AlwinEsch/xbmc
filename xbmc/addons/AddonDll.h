@@ -25,7 +25,7 @@
 #include "DllAddon.h"
 #include "AddonManager.h"
 #include "AddonStatusHandler.h"
-#include "AddonCallbacks.h"
+#include "addons/binary/callbacks/AddonCallbacks.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
@@ -215,7 +215,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
 {
   /* ensure that a previous instance is destroyed */
   Destroy();
-
+fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   ADDON_STATUS status(ADDON_STATUS_UNKNOWN);
   CLog::Log(LOGDEBUG, "ADDON: Dll Initializing - %s", Name().c_str());
   m_initialized = false;
@@ -299,6 +299,7 @@ template<class TheDll, typename TheStruct, typename TheProps>
 void CAddonDll<TheDll, TheStruct, TheProps>::Destroy()
 {
   ANNOUNCEMENT::CAnnouncementManager::GetInstance().RemoveAnnouncer(this);
+fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
 
   /* Unload library file */
   try
@@ -313,6 +314,7 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Destroy()
   {
     HandleException(e, "m_pDll->Unload");
   }
+
   delete m_pHelpers;
   m_pHelpers = NULL;
   free(m_pStruct);

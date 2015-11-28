@@ -192,7 +192,7 @@ std::string CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false *
     URIUtils::RemoveExtension(strFilename);
     return strFilename;
   }
-  
+
   // URLDecode since the original path may be an URL
   strFilename = CURL::Decode(strFilename);
   return strFilename;
@@ -641,7 +641,7 @@ std::string CUtil::GetNextPathname(const std::string &path_template, int max)
 {
   if (path_template.find("%04d") == std::string::npos)
     return "";
-  
+
   for (int i = 0; i <= max; i++)
   {
     std::string name = StringUtils::Format(path_template.c_str(), i);
@@ -860,7 +860,7 @@ std::string CUtil::MakeLegalPath(const std::string &strPathAndFile, int LegalTyp
   std::vector<std::string> dirs = URIUtils::SplitPath(strPathAndFile);
   if (dirs.empty())
     return strPathAndFile;
-  // we just add first token to path and don't legalize it - possible values: 
+  // we just add first token to path and don't legalize it - possible values:
   // "X:" (local win32), "" (local unix - empty string before '/') or
   // "protocol://domain"
   std::string dir(dirs.front());
@@ -878,7 +878,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
   // Don't do any stuff on URLs containing %-characters or protocols that embed
   // filenames. NOTE: Don't use IsInZip or IsInRar here since it will infinitely
   // recurse and crash XBMC
-  if (URIUtils::IsURL(path) && 
+  if (URIUtils::IsURL(path) &&
       (path.find('%') != std::string::npos ||
       StringUtils::StartsWithNoCase(path, "apk:") ||
       StringUtils::StartsWithNoCase(path, "zip:") ||
@@ -1566,7 +1566,7 @@ int CUtil::LookupRomanDigit(char roman_digit)
 
 int CUtil::TranslateRomanNumeral(const char* roman_numeral)
 {
-  
+
   int decimal = -1;
 
   if (roman_numeral && roman_numeral[0])
@@ -1580,22 +1580,22 @@ int CUtil::TranslateRomanNumeral(const char* roman_numeral)
     {
       int digit = CUtil::LookupRomanDigit(*roman_numeral);
       int test  = last;
-      
+
       // General sanity checks
 
       // numeral not in LUT
       if (!digit)
         return -1;
-      
+
       while (test > 5)
         test /= 10;
-      
+
       // N = 10^n may not precede (N+1) > 10^(N+1)
       if (test == 1 && digit > last * 10)
         return -1;
-      
+
       // N = 5*10^n may not precede (N+1) >= N
-      if (test == 5 && digit >= last) 
+      if (test == 5 && digit >= last)
         return -1;
 
       // End general sanity checks
@@ -1603,11 +1603,11 @@ int CUtil::TranslateRomanNumeral(const char* roman_numeral)
       if (last < digit)
       {
         // smaller numerals may not repeat before a larger one
-        if (repeat) 
+        if (repeat)
           return -1;
 
         temp_sum += digit;
-        
+
         repeat  = 0;
         trend   = 0;
       }
@@ -1623,7 +1623,7 @@ int CUtil::TranslateRomanNumeral(const char* roman_numeral)
           decimal += 2 * last - temp_sum;
         else
           decimal += temp_sum;
-        
+
         temp_sum = digit;
 
         trend   = 1;
@@ -1664,7 +1664,7 @@ std::string CUtil::ResolveExecutablePath()
 
   CDarwinUtils::GetExecutablePath(given_path, &path_size);
   strExecutablePath = given_path;
-#elif defined(TARGET_FREEBSD)                                                                                                                                                                   
+#elif defined(TARGET_FREEBSD)
   char buf[PATH_MAX];
   size_t buflen;
   int mib[4];
@@ -2216,4 +2216,3 @@ int CUtil::GetRandomNumber()
 
   return rand();
 }
-

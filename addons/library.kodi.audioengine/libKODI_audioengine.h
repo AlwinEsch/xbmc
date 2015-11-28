@@ -319,7 +319,7 @@ public:
   * @param ratio the new sample rate ratio, calculated by ((double)desiredRate / (double)GetSampleRate())
   */
   virtual bool SetResampleRatio(double Ratio);
-  
+
   /**
   * Sginal a clock change
   */

@@ -1103,7 +1103,7 @@ bool CApplication::Initialize()
   {
     CDirectory::Create("special://xbmc/addons");
   }
-
+//sleep(10);
   // load the language and its translated strings
   if (!LoadLanguage(false))
     return false;

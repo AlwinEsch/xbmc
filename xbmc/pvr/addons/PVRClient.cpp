@@ -189,6 +189,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
 
 bool CPVRClient::DllLoaded(void) const
 {
+fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   try { return CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::DllLoaded(); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
@@ -204,6 +205,7 @@ void CPVRClient::Destroy(void)
   /* reset 'ready to use' to false */
   CLog::Log(LOGDEBUG, "PVR - %s - destroying PVR add-on '%s'", __FUNCTION__, GetFriendlyName().c_str());
 
+fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   /* destroy the add-on */
   try { CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::Destroy(); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
@@ -343,22 +345,22 @@ void CPVRClient::WriteClientChannelInfo(const CPVRChannelPtr &xbmcChannel, PVR_C
 
 bool CPVRClient::IsCompatibleAPIVersion(const ADDON::AddonVersion &minVersion, const ADDON::AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(XBMC_PVR_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(XBMC_PVR_API_VERSION);
+  AddonVersion myMinVersion = AddonVersion(CAddonCallbacks::PVRLib_MinVersion());
+  AddonVersion myVersion = AddonVersion(CAddonCallbacks::PVRLib_Version());
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
 bool CPVRClient::IsCompatibleGUIAPIVersion(const ADDON::AddonVersion &minVersion, const ADDON::AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(KODI_GUILIB_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(KODI_GUILIB_API_VERSION);
+  AddonVersion myMinVersion = AddonVersion(CAddonCallbacks::GUILib_MinVersion());
+  AddonVersion myVersion = AddonVersion(CAddonCallbacks::GUILib_Version());
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
 bool CPVRClient::CheckAPIVersion(void)
 {
   /* check the API version */
-  AddonVersion minVersion = AddonVersion(XBMC_PVR_MIN_API_VERSION);
+  AddonVersion minVersion = AddonVersion(CAddonCallbacks::PVRLib_MinVersion());
   try { m_apiVersion = AddonVersion(m_pStruct->GetPVRAPIVersion()); }
   catch (std::exception &e) { LogException(e, "GetPVRAPIVersion()"); return false;  }
 
@@ -370,7 +372,7 @@ bool CPVRClient::CheckAPIVersion(void)
 
   /* check the GUI API version */
   AddonVersion guiVersion = AddonVersion("0.0.0");
-  minVersion = AddonVersion(KODI_GUILIB_MIN_API_VERSION);
+  minVersion = AddonVersion(CAddonCallbacks::GUILib_MinVersion());
   try { guiVersion = AddonVersion(m_pStruct->GetGUIAPIVersion()); }
   catch (std::exception &e) { LogException(e, "GetGUIAPIVersion()"); return false;  }
 
@@ -1947,7 +1949,7 @@ bool CPVRClient::Autoconfigure(void)
         std::string strLogLine(StringUtils::Format(g_localizeStrings.Get(19689).c_str(), (*it).GetName().c_str(), (*it).GetIP().c_str()));
         CLog::Log(LOGDEBUG, "%s - %s", __FUNCTION__, strLogLine.c_str());
 
-        if (DialogResponse::YES != 
+        if (DialogResponse::YES !=
           HELPERS::ShowYesNoDialogLines(CVariant{19688}, // Scanning for PVR services
                                         CVariant{strLogLine},
                                         CVariant{19690})) // Do you want to use this service?

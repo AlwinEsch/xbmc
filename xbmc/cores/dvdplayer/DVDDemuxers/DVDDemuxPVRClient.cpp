@@ -322,7 +322,7 @@ void CDVDDemuxPVRClient::RequestStreams()
   {
     CDemuxStream *stm = m_streams[i];
 
-    if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_AUDIO)
+    if (props.stream[i].iCodecType == AddOnLIB::V2::KODI_CODEC_TYPE_AUDIO)
     {
       CDemuxStreamAudioPVRClient* st = NULL;
       if (stm)
@@ -347,7 +347,7 @@ void CDVDDemuxPVRClient::RequestStreams()
       st->m_parser_split = true;
       st->changes++;
     }
-    else if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_VIDEO)
+    else if (props.stream[i].iCodecType == AddOnLIB::V2::KODI_CODEC_TYPE_VIDEO)
     {
       CDemuxStreamVideoPVRClient* st = NULL;
       if (stm)
@@ -385,7 +385,7 @@ void CDVDDemuxPVRClient::RequestStreams()
       if (!m_streams[i])
         m_streams[i] = new CDemuxStreamTeletext();
     }
-    else if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_RDS &&
+    else if (props.stream[i].iCodecType == AddOnLIB::V2::KODI_CODEC_TYPE_RDS &&
              CSettings::GetInstance().GetBool("pvrplayback.enableradiords"))
     {
       CDemuxStreamRadioRDS* st = NULL;
@@ -398,7 +398,7 @@ void CDVDDemuxPVRClient::RequestStreams()
       if (!m_streams[i])
         m_streams[i] = new CDemuxStreamRadioRDS();
     }
-    else if (props.stream[i].iCodecType == XBMC_CODEC_TYPE_SUBTITLE)
+    else if (props.stream[i].iCodecType == AddOnLIB::V2::KODI_CODEC_TYPE_SUBTITLE)
     {
       CDemuxStreamSubtitlePVRClient* st = NULL;
       if (stm)

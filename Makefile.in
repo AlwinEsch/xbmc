@@ -28,6 +28,21 @@ DVDPLAYER_ARCHIVES=xbmc/cores/dvdplayer/DVDPlayer.a \
 
 DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
                    xbmc/addons/addons.a \
+                   xbmc/addons/binary/callbacks/addon-callbacks.a \
+                   xbmc/addons/binary/callbacks/Addon/addon-callbacks-addon-base.a \
+                   xbmc/addons/binary/callbacks/Addon/api-level-1/addon-callbacks-addon.a \
+                   xbmc/addons/binary/callbacks/Addon/api-level-2/addon-callbacks-addon.a \
+                   xbmc/addons/binary/callbacks/AudioEngine/addon-callbacks-audioengine-base.a \
+                   xbmc/addons/binary/callbacks/AudioEngine/api-level-1/addon-callbacks-audioengine.a \
+                   xbmc/addons/binary/callbacks/AudioEngine/api-level-2/addon-callbacks-audioengine.a \
+                   xbmc/addons/binary/callbacks/GUI/addon-callbacks-gui-base.a \
+                   xbmc/addons/binary/callbacks/GUI/api-level-1/addon-callbacks-gui.a \
+                   xbmc/addons/binary/callbacks/GUI/api-level-2/addon-callbacks-gui.a \
+                   xbmc/addons/binary/callbacks/PVR/addon-callbacks-pvr-base.a \
+                   xbmc/addons/binary/callbacks/PVR/api-level-1/addon-callbacks-pvr.a \
+                   xbmc/addons/binary/callbacks/PVR/api-level-2/addon-callbacks-pvr.a \
+                   xbmc/addons/binary/callbacks/AudioDSP/api-level-1/addon-callbacks-audiodsp.a \
+                   xbmc/addons/binary/callbacks/Codec/api-level-1/addon-callbacks-codec.a \
                    xbmc/cdrip/cdrip.a \
                    xbmc/contrib/kissfft/kissfft.a \
                    xbmc/cores/AudioEngine/audioengine.a \
@@ -193,12 +208,12 @@ LIB_DIRS=\
 	lib/xbmc-dll-symbols
 
 LIBADDON_DIRS=\
-	lib/addons/library.xbmc.addon \
-	lib/addons/library.kodi.adsp \
-	lib/addons/library.kodi.audioengine \
-	lib/addons/library.xbmc.codec \
-	lib/addons/library.xbmc.pvr \
-	lib/addons/library.kodi.guilib \
+	lib/addons/library.xbmc.addon/api-level-1 \
+	lib/addons/library.kodi.adsp/api-level-1 \
+	lib/addons/library.kodi.audioengine/api-level-1 \
+	lib/addons/library.xbmc.codec/api-level-1 \
+	lib/addons/library.kodi.guilib/api-level-1 \
+	lib/addons/library.xbmc.pvr/api-level-1 \
 
 CONFLUENCE_MEDIA=addons/skin.confluence/media
 SKIN_DIRS=$(CONFLUENCE_MEDIA)
@@ -328,15 +343,16 @@ endif
 
 exports: xbmc/cores/DllLoader/exports/exports.a xbmc/cores/DllLoader/exports/util/exports_utils.a
 	$(MAKE) -C xbmc/cores/DllLoader/exports wrapper.def
-dllloader: exports xbmc/cores/DllLoader/dllloader.a
+dllloader: exports xbmc/cores/DllLoader/dllloader.a \
+                   xbmc/addons/binary/callbacks/Addon/addon-callbacks-addon-base.a
 
 libaddon: exports
-	$(MAKE) -C lib/addons/library.xbmc.addon
-	$(MAKE) -C lib/addons/library.kodi.adsp
-	$(MAKE) -C lib/addons/library.kodi.audioengine
-	$(MAKE) -C lib/addons/library.xbmc.codec
-	$(MAKE) -C lib/addons/library.kodi.guilib
-	$(MAKE) -C lib/addons/library.xbmc.pvr
+	$(MAKE) -C lib/addons/library.xbmc.addon/api-level-1
+	$(MAKE) -C lib/addons/library.kodi.adsp/api-level-1
+	$(MAKE) -C lib/addons/library.kodi.audioengine/api-level-1
+	$(MAKE) -C lib/addons/library.xbmc.codec/api-level-1
+	$(MAKE) -C lib/addons/library.kodi.guilib/api-level-1
+	$(MAKE) -C lib/addons/library.xbmc.pvr/api-level-1
 dvdpcodecs: dllloader
 	$(MAKE) -C lib/libdvd
 
@@ -371,6 +387,7 @@ xcode_depends: \
 	codecs libs eventclients skins libaddon
 
 DYNOBJSXBMC= \
+	xbmc/addons/binary/callbacks/Addon/api-level-2/addon-callbacks-addon.a \
 	xbmc/linux/linux.a \
 	xbmc/network/network.a \
 	xbmc/video/windows/videowindows.a \
@@ -567,6 +584,9 @@ endif
 	@install -d $(DESTDIR)$(includedir)/@APP_NAME_LC@
 	@for f in $(BINDINGS); do \
 	  install -m 0644 $$f $(DESTDIR)$(includedir)/@APP_NAME_LC@ ; \
+	done
+	@for d in $(BINDINGS_DIR); do \
+	  install -d $$d ; \
 	done
 	@for f in project/cmake/*.cmake; do \
 	  install -m 0644 $$f $(DESTDIR)$(libdir)/@APP_NAME_LC@; \

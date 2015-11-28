@@ -287,7 +287,7 @@ std::vector<SBackend> CPVRClients::GetBackendProperties() const
 
     if (client->GetDriveSpace(&properties.diskTotal, &properties.diskUsed) == PVR_ERROR_NO_ERROR)
     {
-      properties.diskTotal *= 1024;  
+      properties.diskTotal *= 1024;
       properties.diskUsed *= 1024;
     }
 
@@ -1740,4 +1740,3 @@ time_t CPVRClients::GetBufferTimeEnd() const
 
   return time;
 }
-

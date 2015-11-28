@@ -234,22 +234,22 @@ bool CActiveAEDSPAddon::IsInUse() const
 
 bool CActiveAEDSPAddon::IsCompatibleAPIVersion(const ADDON::AddonVersion &minVersion, const ADDON::AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(KODI_AE_DSP_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(KODI_AE_DSP_API_VERSION);
+  AddonVersion myMinVersion = AddonVersion(CAddonCallbacks::AudioEngineLib_MinVersion());
+  AddonVersion myVersion = AddonVersion(CAddonCallbacks::AudioEngineLib_Version());
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
 bool CActiveAEDSPAddon::IsCompatibleGUIAPIVersion(const ADDON::AddonVersion &minVersion, const ADDON::AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(KODI_GUILIB_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(KODI_GUILIB_API_VERSION);
+  AddonVersion myMinVersion = AddonVersion(CAddonCallbacks::GUILib_MinVersion());
+  AddonVersion myVersion = AddonVersion(CAddonCallbacks::GUILib_Version());
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
 bool CActiveAEDSPAddon::CheckAPIVersion(void)
 {
   /* check the API version */
-  AddonVersion minVersion = AddonVersion(KODI_AE_DSP_MIN_API_VERSION);
+  AddonVersion minVersion = AddonVersion(CAddonCallbacks::PVRLib_MinVersion());
   try
   {
     m_apiVersion = AddonVersion(m_pStruct->GetAudioDSPAPIVersion());
@@ -269,7 +269,7 @@ bool CActiveAEDSPAddon::CheckAPIVersion(void)
 
   /* check the GUI API version */
   AddonVersion guiVersion = AddonVersion("0.0.0");
-  minVersion = AddonVersion(KODI_GUILIB_MIN_API_VERSION);
+  minVersion = AddonVersion(CAddonCallbacks::GUILib_MinVersion());
   try
   {
     guiVersion = AddonVersion(m_pStruct->GetGUIAPIVersion());

@@ -2389,12 +2389,21 @@ OUTPUT_FILES="Makefile \
     xbmc/filesystem/Makefile \
     xbmc/windowing/Makefile \
     xbmc/windowing/egl/Makefile \
-    lib/addons/library.xbmc.addon/Makefile \
-    lib/addons/library.kodi.adsp/Makefile \
-    lib/addons/library.kodi.audioengine/Makefile \
-    lib/addons/library.xbmc.codec/Makefile \
-    lib/addons/library.kodi.guilib/Makefile \
-    lib/addons/library.xbmc.pvr/Makefile \
+    lib/addons/library.xbmc.addon/api-level-1/Makefile \
+    lib/addons/library.kodi.adsp/api-level-1/Makefile \
+    lib/addons/library.kodi.audioengine/api-level-1/Makefile \
+    lib/addons/library.xbmc.codec/api-level-1/Makefile \
+    lib/addons/library.kodi.guilib/api-level-1/Makefile \
+    lib/addons/library.xbmc.pvr/api-level-1/Makefile \
+    xbmc/addons/binary/callbacks/Makefile \
+    xbmc/addons/binary/callbacks/Addon/Makefile \
+    xbmc/addons/binary/callbacks/Addon/api-level-2/Makefile \
+    xbmc/addons/binary/callbacks/AudioEngine/Makefile \
+    xbmc/addons/binary/callbacks/AudioEngine/api-level-2/Makefile \
+    xbmc/addons/binary/callbacks/GUI/Makefile \
+    xbmc/addons/binary/callbacks/GUI/api-level-2/Makefile \
+    xbmc/addons/binary/callbacks/PVR/Makefile \
+    xbmc/addons/binary/callbacks/PVR/api-level-2/Makefile \
     tools/Linux/${APP_NAME_LC}.sh \
     tools/Linux/${APP_NAME_LC}-standalone.sh \
     tools/Linux/${APP_NAME_LC}-xsession.desktop \
