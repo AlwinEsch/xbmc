@@ -36,7 +36,7 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
 {
   CAddonCB_Audio::Init(&m_callbacks->Audio);
   CAddonCB_Codec::Init(&m_callbacks->Codec);
-  CAddonCB_Directory::Init(&m_callbacks->Directory);
+  CAddonCB_Directory::Init(m_callbacks);
   CAddonCB_File::Init(&m_callbacks->File);
   CAddonCB_General::Init(&m_callbacks->General);
   CAddonCB_Network::Init(&m_callbacks->Network);

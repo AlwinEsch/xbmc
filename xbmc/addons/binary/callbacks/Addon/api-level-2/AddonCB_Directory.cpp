@@ -37,14 +37,21 @@ CAddonCB_Directory::CAddonCB_Directory()
 
 }
 
-void CAddonCB_Directory::Init(CB_AddOn_Directory *callbacks)
+void CAddonCB_Directory::Init(CB_AddOnLib *callbacks)
 {
-  callbacks->can_open_directory  = CAddonCB_Directory::can_open_directory;
-  callbacks->create_directory    = CAddonCB_Directory::create_directory;
-  callbacks->directory_exists    = CAddonCB_Directory::directory_exists;
-  callbacks->remove_directory    = CAddonCB_Directory::remove_directory;
+  callbacks->Directory.can_open_directory    = CAddonCB_Directory::can_open_directory;
+  callbacks->Directory.create_directory      = CAddonCB_Directory::create_directory;
+  callbacks->Directory.directory_exists      = CAddonCB_Directory::directory_exists;
+  callbacks->Directory.remove_directory      = CAddonCB_Directory::remove_directory;
+  callbacks->DirectoryVFS.get_vfs_directory  = CAddonCB_Directory::get_vfs_directory;
+  callbacks->DirectoryVFS.free_vfs_directory = CAddonCB_Directory::free_vfs_directory;
 }
 
+/*\_____________________________________________________________________________
+| |
+| |
+| |_____________________________________________________________________________
+\*/
 bool CAddonCB_Directory::can_open_directory(
         void*                     hdl,
         const char*               strURL)
@@ -79,6 +86,68 @@ bool CAddonCB_Directory::remove_directory(
 
   return CDirectory::Remove(strPath);
 }
+/*\____________________________________________________________________________/
+\*/
+
+/*\_____________________________________________________________________________
+| |
+| | C++ wrappers for Kodi's VFS operations
+| |_____________________________________________________________________________
+\*/
+bool CAddonCB_Directory::get_vfs_directory(
+        void*                     hdl,
+        const char*               strPath,
+        const char*               mask,
+        VFSDirEntry**             items,
+        unsigned int*             num_items)
+{
+  CFileItemList fileItems;
+  if (!CDirectory::GetDirectory(strPath, fileItems, mask, DIR_FLAG_NO_FILE_DIRS))
+    return false;
+
+  if (fileItems.Size() > 0)
+  {
+    *num_items = static_cast<unsigned int>(fileItems.Size());
+    *items = new VFSDirEntry[fileItems.Size()];
+  }
+  else
+  {
+    *num_items = 0;
+    *items = nullptr;
+  }
+
+  CFileItemListToVFSDirEntries(*items, fileItems);
+  return true;
+}
+
+void CAddonCB_Directory::free_vfs_directory(
+        void*                     hdl,
+        VFSDirEntry*              items,
+        unsigned int              num_items)
+{
+  for (unsigned int i = 0; i < num_items; ++i)
+  {
+    free(items[i].label);
+    free(items[i].path);
+  }
+  delete[] items;
+}
+
+void CAddonCB_Directory::CFileItemListToVFSDirEntries(
+        VFSDirEntry*              entries,
+        const CFileItemList&      items)
+{
+  for (int i = 0; i < items.Size(); ++i)
+  {
+    entries[i].label  = strdup(items[i]->GetLabel().c_str());
+    entries[i].path   = strdup(items[i]->GetPath().c_str());
+    entries[i].size   = items[i]->m_dwSize;
+    entries[i].folder = items[i]->m_bIsFolder;
+  }
+}
+
+/*\____________________________________________________________________________/
+\*/
 
 }; /* namespace V2 */
 }; /* namespace AddOnLIB */

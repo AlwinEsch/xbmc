@@ -32,6 +32,7 @@
 #include "libKODI_addon_AudioHead.h"
 #include "libKODI_addon_CodecHead.h"
 #include "libKODI_addon_DirectoryHead.h"
+#include "libKODI_addon_DirectoryVFSHead.h"
 #include "libKODI_addon_FileHead.h"
 #include "libKODI_addon_NetworkHead.h"
 
@@ -99,16 +100,20 @@ namespace AddOnLIB
 {
 namespace V2
 {
+extern "C"
+{
+
   class CAddonSoundPlay;
 
   typedef struct CB_AddOnLib
   {
-    CB_AddOnLib_General     General;
-    CB_AddOnLib_Audio       Audio;
-    CB_AddOnLib_Codec       Codec;
-    CB_AddOnLib_Directory   Directory;
-    CB_AddOnLib_File        File;
-    CB_AddOnLib_Network     Network;
+    CB_AddOnLib_General         General;
+    CB_AddOnLib_Audio           Audio;
+    CB_AddOnLib_Codec           Codec;
+    CB_AddOnLib_Directory       Directory;
+    CB_AddOnLib_DirectoryVFS    DirectoryVFS;
+    CB_AddOnLib_File            File;
+    CB_AddOnLib_Network         Network;
   } CB_AddOnLib;
 
   typedef CB_AddOnLib*  _register_level(void *HANDLE, int level);
@@ -166,9 +171,7 @@ namespace V2
         m_libKODI_addon = nullptr;
       }
     }
-    /*\
-    | |_________________________________________________________________________
-    | |
+    /*\_________________________________________________________________________
     \*/
     bool GetSetting(const std::string& settingName, void *settingValue)
     {
@@ -257,9 +260,7 @@ namespace V2
       language.shrink_to_fit();
       return language;
     }
-    /*\
-    | |_________________________________________________________________________
-    | |
+    /*\_________________________________________________________________________
     \*/
     bool WakeOnLan(const char* mac)
     {
@@ -293,9 +294,7 @@ namespace V2
       m_Callbacks->General.free_string(m_Handle, string);
       return retString;
     }
-    /*\
-    | |_________________________________________________________________________
-    | |
+    /*\_________________________________________________________________________
     \*/
     void* OpenFile(const std::string& strFileName, unsigned int flags)
     {
@@ -371,9 +370,7 @@ namespace V2
     {
       return m_Callbacks->File.delete_file(m_Handle, strFileName.c_str());
     }
-    /*\
-    | |_________________________________________________________________________
-    | |
+    /*\_________________________________________________________________________
     \*/
     bool CanOpenDirectory(const std::string& strUrl)
     {
@@ -394,10 +391,39 @@ namespace V2
     {
       return m_Callbacks->Directory.remove_directory(m_Handle, strPath.c_str());
     }
-    /*\
-    | |_________________________________________________________________________
+
+    /*\_________________________________________________________________________
     | |
+    | | C++ wrappers for Kodi's VFS operations
+    | |_________________________________________________________________________
     \*/
+
+    /*!
+     * @brief Lists a directory.
+     * @param strPath Path to the directory.
+     * @param mask File mask
+     * @param items The directory entries
+     * @param num_items Number of entries in directory
+     * @return True if listing was successful, false otherwise.
+     */
+    bool GetVFSDirectory(const char *strPath, const char* mask, VFSDirEntry** items, unsigned int* num_items)
+    {
+      return m_Callbacks->DirectoryVFS.get_vfs_directory(m_Handle, strPath, mask, items, num_items);
+    }
+
+    /*!
+     * @brief Free a directory list
+     * @param items The directory entries
+     * @param num_items Number of entries in directory
+     */
+    void FreeVFSDirectory(VFSDirEntry* items, unsigned int num_items)
+    {
+      return m_Callbacks->DirectoryVFS.free_vfs_directory(m_Handle, items, num_items);
+    }
+
+    /*\_________________________________________________________________________
+    \*/
+
     kodi_codec_t GetCodecByName(const char* strCodecName)
     {
       return m_Callbacks->Codec.get_codec_by_name(m_Handle, strCodecName);
@@ -412,9 +438,7 @@ namespace V2
     {
       return m_Callbacks->Codec.free_demux_packet(m_Handle, pPacket);
     }
-    /*\
-    | |_________________________________________________________________________
-    | |
+    /*\_________________________________________________________________________
     \*/
 
   protected:
@@ -433,5 +457,6 @@ namespace V2
     };
   };
 
+}; /* extern "C" */
 }; /* namespace V2 */
 }; /* namespace AddOnLIB */

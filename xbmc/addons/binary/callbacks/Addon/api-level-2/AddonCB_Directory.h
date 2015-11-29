@@ -22,6 +22,8 @@
 #include "PlatformDefs.h" // for __stat64, ssize_t
 #include "addon.api2/AddonLib.h"
 
+class CFileItemList;
+
 extern "C"
 {
 namespace AddOnLIB
@@ -34,8 +36,14 @@ class CAddonCB_Directory
 public:
   CAddonCB_Directory();
 
-  void Init(CB_AddOn_Directory *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
+/*\_____________________________________________________________________________
+| |
+| |
+| |_____________________________________________________________________________
+\*/
+public:
   static bool can_open_directory(
         void*                     hdl,
         const char*               strURL);
@@ -51,7 +59,33 @@ public:
   static bool remove_directory(
         void*                     hdl,
         const char*               strPath);
+/*\____________________________________________________________________________/
+\*/
 
+/*\_____________________________________________________________________________
+| |
+| | C++ wrappers for Kodi's VFS operations
+| |_____________________________________________________________________________
+\*/
+public:
+  static bool get_vfs_directory(
+        void*                     hdl,
+        const char*               strPath,
+        const char*               mask,
+        VFSDirEntry**             items,
+        unsigned int*             num_items);
+
+  static void free_vfs_directory(
+        void*                     hdl,
+        VFSDirEntry*              items,
+        unsigned int              num_items);
+
+private:
+  static void CFileItemListToVFSDirEntries(
+        VFSDirEntry*              entries,
+        const CFileItemList&      items);
+/*\__________________________________________________________________________/
+\*/
 };
 
 }; /* namespace V2 */
