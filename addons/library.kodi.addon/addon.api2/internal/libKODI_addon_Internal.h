@@ -50,9 +50,6 @@
 #else
   #include <dlfcn.h>              // linux+osx
 #endif
-#if defined(ANDROID)
-  #include <sys/stat.h>
-#endif
 
 #ifdef LOG_DEBUG
 #undef LOG_DEBUG
