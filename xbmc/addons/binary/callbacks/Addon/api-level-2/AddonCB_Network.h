@@ -53,7 +53,6 @@ public:
   static char* url_encode(
         void*                     hdl,
         const char*               url);
-
 };
 
 }; /* namespace V2 */

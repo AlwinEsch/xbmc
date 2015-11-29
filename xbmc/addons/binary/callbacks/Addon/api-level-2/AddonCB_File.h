@@ -21,7 +21,6 @@
 
 #include "PlatformDefs.h" // for __stat64, ssize_t
 #include "addon.api2/AddonLib.h"
-#include "filesystem/File.h"
 
 extern "C"
 {
