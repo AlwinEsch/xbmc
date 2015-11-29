@@ -43,8 +43,8 @@ void CAddonCB_Directory::Init(CB_AddOnLib *callbacks)
   callbacks->Directory.create_directory      = CAddonCB_Directory::create_directory;
   callbacks->Directory.directory_exists      = CAddonCB_Directory::directory_exists;
   callbacks->Directory.remove_directory      = CAddonCB_Directory::remove_directory;
-  callbacks->DirectoryVFS.get_vfs_directory  = CAddonCB_Directory::get_vfs_directory;
-  callbacks->DirectoryVFS.free_vfs_directory = CAddonCB_Directory::free_vfs_directory;
+  callbacks->VFS.get_vfs_directory           = CAddonCB_Directory::get_vfs_directory;
+  callbacks->VFS.free_vfs_directory          = CAddonCB_Directory::free_vfs_directory;
 }
 
 /*\_____________________________________________________________________________

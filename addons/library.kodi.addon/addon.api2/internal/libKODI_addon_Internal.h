@@ -108,7 +108,7 @@ extern "C"
     CB_AddOnLib_Audio           Audio;
     CB_AddOnLib_Codec           Codec;
     CB_AddOnLib_Directory       Directory;
-    CB_AddOnLib_DirectoryVFS    DirectoryVFS;
+    CB_AddOnLib_VFS             VFS;
     CB_AddOnLib_File            File;
     CB_AddOnLib_Network         Network;
   } CB_AddOnLib;
@@ -405,7 +405,7 @@ extern "C"
      */
     bool GetVFSDirectory(const char *strPath, const char* mask, VFSDirEntry** items, unsigned int* num_items)
     {
-      return m_Callbacks->DirectoryVFS.get_vfs_directory(m_Handle, strPath, mask, items, num_items);
+      return m_Callbacks->VFS.get_vfs_directory(m_Handle, strPath, mask, items, num_items);
     }
 
     /*!
@@ -415,7 +415,7 @@ extern "C"
      */
     void FreeVFSDirectory(VFSDirEntry* items, unsigned int num_items)
     {
-      return m_Callbacks->DirectoryVFS.free_vfs_directory(m_Handle, items, num_items);
+      return m_Callbacks->VFS.free_vfs_directory(m_Handle, items, num_items);
     }
 
     /*\_________________________________________________________________________

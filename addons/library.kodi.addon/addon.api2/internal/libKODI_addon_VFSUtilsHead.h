@@ -56,11 +56,11 @@ extern "C"
         VFSDirEntry*              items,
         unsigned int              num_items);
 
-  typedef struct CB_AddOn_DirectoryVFS
+  typedef struct CB_AddOn_VFS
   {
     _get_vfs_directory*  get_vfs_directory;
     _free_vfs_directory* free_vfs_directory;
-  } CB_AddOnLib_DirectoryVFS;
+  } CB_AddOnLib_VFS;
 
   /*\___________________________________________________________________________
   \*/
