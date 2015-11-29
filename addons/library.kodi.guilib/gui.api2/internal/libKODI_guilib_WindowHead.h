@@ -218,28 +218,28 @@ namespace V2
 
   } CB_GUILib_Window;
 
-class CAddonGUIWindow;
+  class CAddonGUIWindow;
 
-#define IMPLEMENT_ADDON_GUI_WINDOW                                             \
-  protected:                                                                   \
-    GUIHANDLE         m_WindowHandle;                                          \
-    ADDON::AddonCB*   m_Handle;                                                \
-    CB_GUILib*        m_cb;                                                    \
-  private:                                                                     \
-    static bool OnInitCB(GUIHANDLE cbhdl);                                     \
-    static bool OnClickCB(GUIHANDLE cbhdl, int controlId);                     \
-    static bool OnFocusCB(GUIHANDLE cbhdl, int controlId);                     \
-    static bool OnActionCB(GUIHANDLE cbhdl, int actionId);                     \
-    friend class CAddonGUIButtonControl;                                       \
-    friend class CAddonGUICheckMarkControl;                                    \
-    friend class CAddonGUIEditControl;                                         \
-    friend class CAddonGUILabelControl;                                        \
-    friend class CAddonGUISpinControl;                                         \
-    friend class CAddonGUIProgressControl;                                     \
-    friend class CAddonGUIRadioButtonControl;                                  \
-    friend class CAddonGUIRenderingControl;                                    \
-    friend class CAddonGUISliderControl;                                       \
-    friend class CAddonGUISettingsSliderControl;
+  #define IMPLEMENT_ADDON_GUI_WINDOW                                           \
+    protected:                                                                 \
+      GUIHANDLE         m_WindowHandle;                                        \
+      ADDON::AddonCB*   m_Handle;                                              \
+      CB_GUILib*        m_cb;                                                  \
+    private:                                                                   \
+      static bool OnInitCB(GUIHANDLE cbhdl);                                   \
+      static bool OnClickCB(GUIHANDLE cbhdl, int controlId);                   \
+      static bool OnFocusCB(GUIHANDLE cbhdl, int controlId);                   \
+      static bool OnActionCB(GUIHANDLE cbhdl, int actionId);                   \
+      friend class CAddonGUIButtonControl;                                     \
+      friend class CAddonGUICheckMarkControl;                                  \
+      friend class CAddonGUIEditControl;                                       \
+      friend class CAddonGUILabelControl;                                      \
+      friend class CAddonGUISpinControl;                                       \
+      friend class CAddonGUIProgressControl;                                   \
+      friend class CAddonGUIRadioButtonControl;                                \
+      friend class CAddonGUIRenderingControl;                                  \
+      friend class CAddonGUISliderControl;                                     \
+      friend class CAddonGUISettingsSliderControl;
 
 }; /* namespace V2 */
 }; /* namespace GUILIB */
