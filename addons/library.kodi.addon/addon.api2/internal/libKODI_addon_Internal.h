@@ -32,9 +32,9 @@
 #include "libKODI_addon_AudioHead.h"
 #include "libKODI_addon_CodecHead.h"
 #include "libKODI_addon_DirectoryHead.h"
-#include "libKODI_addon_DirectoryVFSHead.h"
 #include "libKODI_addon_FileHead.h"
 #include "libKODI_addon_NetworkHead.h"
+#include "libKODI_addon_VFSUtilsHead.h"
 
 #ifdef _WIN32                   // windows
   #ifndef _SSIZE_T_DEFINED
@@ -49,6 +49,9 @@
   #endif
 #else
   #include <dlfcn.h>              // linux+osx
+#endif
+#if defined(ANDROID)
+  #include <sys/stat.h>
 #endif
 
 #ifdef LOG_DEBUG

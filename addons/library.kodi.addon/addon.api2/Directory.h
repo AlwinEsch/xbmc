@@ -29,62 +29,6 @@ namespace V2
 {
   /*\___________________________________________________________________________
   | |
-  | | C++ wrappers for Kodi's VFS operations
-  | |___________________________________________________________________________
-  \*/
-  class CVFSProperty
-  {
-  public:
-    CVFSProperty(const char* name, const char* value);
-
-    const std::string& Name(void) const;
-    const std::string& Value(void) const;
-
-    void SetName(const std::string& name);
-    void SetValue(const std::string& value);
-
-    IMPL_VFS_PROPERTY;
-  };
-
-  class CVFSDirEntry
-  {
-  public:
-    CVFSDirEntry(
-        const std::string&  label   = "",
-        const std::string&  path    = "",
-        bool                bFolder = false,
-        int64_t             size    = -1);
-
-    CVFSDirEntry(const VFSDirEntry&  dirEntry);
-
-    const std::string& Label(void) const;
-    const std::string& Path(void) const;
-    bool IsFolder(void) const;
-    int64_t Size(void) const;
-    const std::vector<CVFSDirEntry>& Properties(void);
-
-    void SetLabel(const std::string& label);
-    void SetPath(const std::string& path);
-    void SetFolder(bool bFolder);
-    void SetSize(int64_t size);
-    std::vector<CVFSDirEntry>& Properties(void);
-
-    IMPL_VFS_DIR_ENTRY;
-  };
-
-  class VFSUtils
-  {
-  public:
-    static bool GetDirectory(
-               const std::string&          path,
-               const std::string&          mask,
-               std::vector<CVFSDirEntry>&  items);
-  };
-  /*\__________________________________________________________________________/
-  \*/
-
-  /*\___________________________________________________________________________
-  | |
   | |
   | |___________________________________________________________________________
   \*/
