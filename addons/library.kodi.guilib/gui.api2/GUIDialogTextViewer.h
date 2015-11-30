@@ -32,8 +32,8 @@ namespace V2
   {
   public:
     static void Show(
-          const std::string& heading,
-          const std::string& text);
+      const std::string& heading,
+      const std::string& text);
   };
 
 }; /* namespace V2 */

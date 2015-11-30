@@ -33,10 +33,10 @@ namespace V2
   {
   public:
     CAddonGUIWindow(
-        const std::string&          xmlFilename,
-        const std::string&          defaultSkin,
-        bool                        forceFallback,
-        bool                        asDialog);
+      const std::string&          xmlFilename,                //!< @param XML file for the skin
+      const std::string&          defaultSkin,                //!< @param default skin to use if needed not available
+      bool                        forceFallback,              //!< @param 
+      bool                        asDialog);                  //!< @param Use window as dialog if set
     virtual ~CAddonGUIWindow();
 
     virtual bool Show();
@@ -90,11 +90,11 @@ namespace V2
      * callback from Kodi to add-on overdriven with own functions!
      */
     void SetIndependentCallbacks(
-      GUIHANDLE     cbhdl,                                          //!< @param The pointer to own handle data structure / class
-      bool          (*CBOnInit)  (GUIHANDLE cbhdl),                 //!< @param Own defined window init function
-      bool          (*CBOnFocus) (GUIHANDLE cbhdl, int controlId),  //!< @param Own defined focus function
-      bool          (*CBOnClick) (GUIHANDLE cbhdl, int controlId),  //!< @param Own defined click function
-      bool          (*CBOnAction)(GUIHANDLE cbhdl, int actionId));  //!< @param Own defined action function
+      GUIHANDLE             cbhdl,                            //!< @param The pointer to own handle data structure / class
+      bool    (*CBOnInit)  (GUIHANDLE cbhdl),                 //!< @param Own defined window init function
+      bool    (*CBOnFocus) (GUIHANDLE cbhdl, int controlId),  //!< @param Own defined focus function
+      bool    (*CBOnClick) (GUIHANDLE cbhdl, int controlId),  //!< @param Own defined click function
+      bool    (*CBOnAction)(GUIHANDLE cbhdl, int actionId));  //!< @param Own defined action function
 
     IMPLEMENT_ADDON_GUI_WINDOW;
   };

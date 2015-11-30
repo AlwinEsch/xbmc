@@ -30,11 +30,12 @@ namespace V2
   class CAddonGUIListItem
   {
   public:
-    CAddonGUIListItem(const std::string&      label,
-                      const std::string&      label2,
-                      const std::string&      iconImage,
-                      const std::string&      thumbnailImage,
-                      const std::string&      path);
+    CAddonGUIListItem(
+      const std::string&      label,
+      const std::string&      label2,
+      const std::string&      iconImage,
+      const std::string&      thumbnailImage,
+      const std::string&      path);
     virtual ~CAddonGUIListItem();
 
     virtual std::string GetLabel();

@@ -27,6 +27,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUISliderControl::CAddonGUISliderControl(CAddonGUIWindow* window, int controlId)
    : m_Window(window),
      m_ControlId(controlId),

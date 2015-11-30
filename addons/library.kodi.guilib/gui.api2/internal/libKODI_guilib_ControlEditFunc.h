@@ -27,6 +27,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUIEditControl::CAddonGUIEditControl(CAddonGUIWindow* window, int controlId)
    : m_Window(window),
      m_ControlId(controlId),

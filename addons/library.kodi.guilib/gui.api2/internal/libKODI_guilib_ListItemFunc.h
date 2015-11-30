@@ -28,13 +28,15 @@ namespace GUILIB
 {
 namespace V2
 {
-  inline CAddonGUIListItem::CAddonGUIListItem(const std::string&      label,
-                    const std::string&      label2,
-                    const std::string&      iconImage,
-                    const std::string&      thumbnailImage,
-                    const std::string&      path)
-   : m_Handle((ADDON::AddonCB*)CGUILib::g_libKODI_Internal->m_Handle)
-   , m_cb(CGUILib::g_libKODI_Internal->m_Callbacks)
+
+  inline CAddonGUIListItem::CAddonGUIListItem(
+    const std::string&      label,
+    const std::string&      label2,
+    const std::string&      iconImage,
+    const std::string&      thumbnailImage,
+    const std::string&      path)
+   : m_Handle((ADDON::AddonCB*)CGUILib::g_libKODI_Internal->m_Handle),
+     m_cb(CGUILib::g_libKODI_Internal->m_Callbacks)
   {
     m_ListItemHandle = m_cb->ListItem.Create(m_Handle->addonData, label.c_str(),
                                              label2.c_str(), iconImage.c_str(),

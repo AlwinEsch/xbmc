@@ -24,6 +24,19 @@ namespace AddOnLIB
 namespace V2
 {
 
+  inline CVFSProperty::CVFSProperty(
+    const std::string& name,
+    const std::string& value)
+    : m_name(name),
+      m_value(value)
+  {
+  }
+
+  inline CVFSProperty::~CVFSProperty()
+  {
+
+  }
+
   inline const std::string& CVFSProperty::Name(void) const
   {
     return m_name;
@@ -48,22 +61,22 @@ namespace V2
   \*/
 
   inline CVFSDirEntry::CVFSDirEntry(
-               const std::string& label,
-               const std::string& path,
-               bool               bFolder,
-               int64_t            size)
-   : m_label(label),
-     m_path(path),
-     m_bFolder(bFolder),
-     m_size(size)
+    const std::string& label,
+    const std::string& path,
+    bool               bFolder,
+    int64_t            size)
+    : m_label(label),
+      m_path(path),
+      m_bFolder(bFolder),
+      m_size(size)
   {
   }
 
   inline CVFSDirEntry::CVFSDirEntry(const VFSDirEntry& dirEntry)
-   : m_label(dirEntry.label ? dirEntry.label : ""),
-     m_path(dirEntry.path   ? dirEntry.path  : ""),
-     m_bFolder(dirEntry.folder),
-     m_size(dirEntry.size)
+    : m_label(dirEntry.label ? dirEntry.label : ""),
+      m_path(dirEntry.path   ? dirEntry.path  : ""),
+      m_bFolder(dirEntry.folder),
+      m_size(dirEntry.size)
   {
     for (unsigned int i = 0; i < dirEntry.num_props; ++i)
       m_properties.push_back(CVFSDirEntry(dirEntry.properties[i].name, dirEntry.properties[i].val));
@@ -123,9 +136,9 @@ namespace V2
   \*/
 
   inline bool VFSUtils::GetDirectory(
-               const std::string&          path,
-               const std::string&          mask,
-               std::vector<CVFSDirEntry>&  items)
+    const std::string&          path,
+    const std::string&          mask,
+    std::vector<CVFSDirEntry>&  items)
   {
     VFSDirEntry* dir_list  = nullptr;
     unsigned int num_items = 0;

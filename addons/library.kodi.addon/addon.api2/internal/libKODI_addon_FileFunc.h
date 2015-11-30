@@ -86,17 +86,17 @@ namespace V2
 
   inline bool CAddOnLib_File::FileExists(const std::string& strFileName, bool bUseCache)
   {
-    return CAddonLib::g_libKODI_Internal->FileExists(strFileName, bUseCache);
+    return CAddonLib::g_libKODI_Internal->FileExists(strFileName.c_str(), bUseCache);
   }
 
   inline int CAddOnLib_File::StatFile(const std::string& strFileName, struct __stat64* buffer)
   {
-    return CAddonLib::g_libKODI_Internal->StatFile(strFileName, buffer);
+    return CAddonLib::g_libKODI_Internal->StatFile(strFileName.c_str(), buffer);
   }
 
   inline bool CAddOnLib_File::DeleteFile(const std::string& strFileName)
   {
-    return CAddonLib::g_libKODI_Internal->DeleteFile(strFileName);
+    return CAddonLib::g_libKODI_Internal->DeleteFile(strFileName.c_str());
   }
 
 }; /* namespace V2 */

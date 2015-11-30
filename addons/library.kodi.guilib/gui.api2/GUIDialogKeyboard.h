@@ -32,53 +32,53 @@ namespace V2
   {
   public:
     static bool ShowAndGetInput(
-          std::string&            strText,
-          const std::string&      strHeading,
-          bool                    allowEmptyResult,
-          bool                    hiddenInput,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strText,
+      const std::string&      strHeading,
+      bool                    allowEmptyResult,
+      bool                    hiddenInput,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndGetInput(
-          std::string&            strText,
-          bool                    allowEmptyResult,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strText,
+      bool                    allowEmptyResult,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndGetNewPassword(
-          std::string&            strNewPassword,
-          const std::string&      strHeading,
-          bool                    allowEmptyResult,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strNewPassword,
+      const std::string&      strHeading,
+      bool                    allowEmptyResult,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndGetNewPassword(
-          std::string&            strNewPassword,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strNewPassword,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndVerifyNewPassword(
-          std::string&            strNewPassword,
-          const std::string&      strHeading,
-          bool                    allowEmptyResult,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strNewPassword,
+      const std::string&      strHeading,
+      bool                    allowEmptyResult,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndVerifyNewPassword(
-          std::string&            strNewPassword,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strNewPassword,
+      unsigned int            autoCloseMs = 0);
 
     static int ShowAndVerifyPassword(
-          std::string&            strPassword,
-          const std::string&      strHeading,
-          int                     iRetries,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strPassword,
+      const std::string&      strHeading,
+      int                     iRetries,
+      unsigned int            autoCloseMs = 0);
 
     static bool ShowAndGetFilter(
-          std::string&            strText,
-          bool                    searching,
-          unsigned int            autoCloseMs = 0);
+      std::string&            strText,
+      bool                    searching,
+      unsigned int            autoCloseMs = 0);
 
     static bool SendTextToActiveKeyboard(
-          const std::string&      aTextString,
-          bool                    closeKeyboard = false);
+      const std::string&      aTextString,
+      bool                    closeKeyboard = false);
 
-    static bool isKeyboardActivated(CHelper_libKODI_guilib* lib);
+    static bool isKeyboardActivated();
   };
 
 }; /* namespace V2 */

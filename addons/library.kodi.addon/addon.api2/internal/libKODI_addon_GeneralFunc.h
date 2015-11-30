@@ -43,33 +43,33 @@ namespace V2
     CAddonLib::g_libKODI_Internal->QueueNotification(type, format, args);
   }
 
-  inline void CAddOnLib_General::QueueNotification
-                        (const queue_msg_t  type,
-                         const std::string& aCaption,
-                         const std::string& aDescription,
-                         unsigned int       displayTime,
-                         bool               withSound,
-                         unsigned int       messageTime)
+  inline void CAddOnLib_General::QueueNotification(
+    const queue_msg_t  type,
+    const std::string& aCaption,
+    const std::string& aDescription,
+    unsigned int       displayTime,
+    bool               withSound,
+    unsigned int       messageTime)
   {
     CAddonLib::g_libKODI_Internal->QueueNotification(
                           type, aCaption, aDescription,
                           displayTime, withSound, messageTime);
   }
 
-  inline void CAddOnLib_General::QueueNotification
-                        (const std::string& aCaption,
-                         const std::string& aDescription)
+  inline void CAddOnLib_General::QueueNotification(
+    const std::string& aCaption,
+    const std::string& aDescription)
   {
     CAddonLib::g_libKODI_Internal->QueueNotification(aCaption, aDescription);
   }
 
-  inline void CAddOnLib_General::QueueNotification
-                        (const std::string& aImageFile,
-                         const std::string& aCaption,
-                         const std::string& aDescription,
-                         unsigned int       displayTime,
-                         bool               withSound,
-                         unsigned int       messageTime)
+  inline void CAddOnLib_General::QueueNotification(
+    const std::string& aImageFile,
+    const std::string& aCaption,
+    const std::string& aDescription,
+    unsigned int       displayTime,
+    bool               withSound,
+    unsigned int       messageTime)
   {
     CAddonLib::g_libKODI_Internal->QueueNotification(
                           aImageFile, aCaption, aDescription,

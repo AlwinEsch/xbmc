@@ -31,7 +31,7 @@ namespace V2
   class CAddonGUIDialogExtendedProgress
   {
   public:
-    CAddonGUIDialogExtendedProgress(const std::string& title);
+    CAddonGUIDialogExtendedProgress(const std::string& title = "");
     virtual ~CAddonGUIDialogExtendedProgress();
 
     virtual std::string Title() const;

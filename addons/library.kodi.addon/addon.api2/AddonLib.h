@@ -25,10 +25,20 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   class CAddonLib : protected CAddonLib_Internal
   {
   public:
+    /*!
+     * @brief Resolve all callback methods
+     * @param handle Pointer to the add-on
+     * @return True when all methods were resolved, false otherwise.
+     */
     static bool RegisterMe(void *handle);
+
+    /*!
+     * @brief Release all callback methods and close handling with them
+     */
     static void UnRegisterMe();
 
     KODI_ADDON_LIBRARY;

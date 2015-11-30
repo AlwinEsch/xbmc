@@ -144,8 +144,8 @@ namespace V2
   {
   public:
     CGUILib_Internal()
-      : m_libKODI_gui(nullptr),
-        m_Handle(nullptr) { }
+     : m_libKODI_gui(nullptr),
+       m_Handle(nullptr) { }
 
     virtual ~CGUILib_Internal()
     {
@@ -180,7 +180,6 @@ namespace V2
       }
 
       m_Callbacks = KODI_register(m_Handle, 2);
-      fprintf(stderr, "%s ---- %p\n", __PRETTY_FUNCTION__, m_Callbacks);
       return m_Callbacks != nullptr;
     }
 

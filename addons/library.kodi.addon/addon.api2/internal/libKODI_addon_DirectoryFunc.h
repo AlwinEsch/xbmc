@@ -24,24 +24,24 @@ namespace AddOnLIB
 namespace V2
 {
 
-  inline bool CAddOnLib_Directory::CanOpenDirectory(const char* strUrl)
+  inline bool CAddOnLib_Directory::CanOpenDirectory(const std::string& strUrl)
   {
-    return CAddonLib::g_libKODI_Internal->CanOpenDirectory(strUrl);
+    return CAddonLib::g_libKODI_Internal->CanOpenDirectory(strUrl.c_str());
   }
 
-  inline bool CAddOnLib_Directory::CreateDirectory(const char *strPath)
+  inline bool CAddOnLib_Directory::CreateDirectory(const std::string& strPath)
   {
-    return CAddonLib::g_libKODI_Internal->CreateDirectory(strPath);
+    return CAddonLib::g_libKODI_Internal->CreateDirectory(strPath.c_str());
   }
 
-  inline bool CAddOnLib_Directory::DirectoryExists(const char *strPath)
+  inline bool CAddOnLib_Directory::DirectoryExists(const std::string& strPath)
   {
-    return CAddonLib::g_libKODI_Internal->DirectoryExists(strPath);
+    return CAddonLib::g_libKODI_Internal->DirectoryExists(strPath.c_str());
   }
 
-  inline bool CAddOnLib_Directory::RemoveDirectory(const char *strPath)
+  inline bool CAddOnLib_Directory::RemoveDirectory(const std::string& strPath)
   {
-    return CAddonLib::g_libKODI_Internal->RemoveDirectory(strPath);
+    return CAddonLib::g_libKODI_Internal->RemoveDirectory(strPath.c_str());
   }
 
 }; /* namespace V2 */

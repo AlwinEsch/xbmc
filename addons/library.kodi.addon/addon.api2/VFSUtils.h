@@ -35,7 +35,7 @@ namespace V2
   class CVFSProperty
   {
   public:
-    CVFSProperty(const char* name, const char* value);
+    CVFSProperty(const std::string& name, const std::string& value);
 
     const std::string& Name(void) const;
     const std::string& Value(void) const;

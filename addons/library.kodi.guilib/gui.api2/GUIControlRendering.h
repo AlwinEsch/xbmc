@@ -31,9 +31,7 @@ namespace V2
   class CAddonGUIRenderingControl
   {
   public:
-    CAddonGUIRenderingControl(
-        CAddonGUIWindow*      window,
-        int                   controlId);
+    CAddonGUIRenderingControl(CAddonGUIWindow* window, int controlId);
     virtual ~CAddonGUIRenderingControl();
 
     /*

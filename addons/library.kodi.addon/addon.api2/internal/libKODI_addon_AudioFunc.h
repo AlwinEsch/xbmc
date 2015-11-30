@@ -23,7 +23,7 @@ namespace AddOnLIB
 {
 namespace V2
 {
-  inline CAddonSoundPlay::CAddonSoundPlay(const char *filename)
+  inline CAddonSoundPlay::CAddonSoundPlay(const std::string& filename)
    : m_PlayHandle(nullptr),
      m_Handle(g_libKODI_Internal->hdl),
      m_Callbacks(g_libKODI_Internal->cb)
@@ -32,7 +32,7 @@ namespace V2
       fprintf(stderr, "libKODI_addon-ERROR: CAddonSoundPlay is called with NULL handle !!!\n");
     else
     {
-      m_PlayHandle = m_Callbacks->Audio.soundplay_get_handle(m_Handle, filename);
+      m_PlayHandle = m_Callbacks->Audio.soundplay_get_handle(m_Handle, filename.c_str());
       if (!m_PlayHandle)
         fprintf(stderr, "libKODI_addon-ERROR: CAddonSoundPlay can't get callback table from KODI !!!\n");
     }
@@ -41,7 +41,7 @@ namespace V2
   inline CAddonSoundPlay::~CAddonSoundPlay()
   {
     if (m_PlayHandle)
-      m_Callbacks->Audio.soundplay_release_handle(m_Handle, m_PlayHandle);   
+      m_Callbacks->Audio.soundplay_release_handle(m_Handle, m_PlayHandle);
   }
 
   inline void CAddonSoundPlay::Play()

@@ -29,79 +29,79 @@ namespace GUILIB
 namespace V2
 {
 
-inline bool CAddonGUIDialogFileBrowser::ShowAndGetDirectory(
-        const std::string&      shares,
-        const std::string&      heading,
-        std::string&            path,
-        bool                    bWriteOnly)
-{
-  path.resize(1024);
-  unsigned int size = (unsigned int)path.capacity();
-  bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetDirectory(shares.c_str(), heading.c_str(), path[0], size, bWriteOnly);
-  path.resize(size);
-  path.shrink_to_fit();
-  return ret;
-}
+  inline bool CAddonGUIDialogFileBrowser::ShowAndGetDirectory(
+          const std::string&      shares,
+          const std::string&      heading,
+          std::string&            path,
+          bool                    bWriteOnly)
+  {
+    path.resize(1024);
+    unsigned int size = (unsigned int)path.capacity();
+    bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetDirectory(shares.c_str(), heading.c_str(), path[0], size, bWriteOnly);
+    path.resize(size);
+    path.shrink_to_fit();
+    return ret;
+  }
 
-inline bool CAddonGUIDialogFileBrowser::ShowAndGetFile(
-        const std::string&      shares,
-        const std::string&      mask,
-        const std::string&      heading,
-        std::string&            file,
-        bool                    useThumbs,
-        bool                    useFileDirectories)
-{
-  file.resize(1024);
-  unsigned int size = (unsigned int)file.capacity();;
-  bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetFile(shares.c_str(), mask.c_str(), heading.c_str(), file[0], size, useThumbs, useFileDirectories);
-  file.resize(size);
-  file.shrink_to_fit();
-  return ret;
-}
+  inline bool CAddonGUIDialogFileBrowser::ShowAndGetFile(
+          const std::string&      shares,
+          const std::string&      mask,
+          const std::string&      heading,
+          std::string&            file,
+          bool                    useThumbs,
+          bool                    useFileDirectories)
+  {
+    file.resize(1024);
+    unsigned int size = (unsigned int)file.capacity();;
+    bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetFile(shares.c_str(), mask.c_str(), heading.c_str(), file[0], size, useThumbs, useFileDirectories);
+    file.resize(size);
+    file.shrink_to_fit();
+    return ret;
+  }
 
-inline bool CAddonGUIDialogFileBrowser::ShowAndGetFileFromDir(
-        const std::string&      directory,
-        const std::string&      mask,
-        const std::string&      heading,
-        std::string&            path,
-        bool                    useThumbs,
-        bool                    useFileDirectories,
-        bool                    singleList)
-{
-  path.resize(1024);
-  unsigned int size = (unsigned int)path.capacity();
-  bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetFileFromDir(directory.c_str(), mask.c_str(), heading.c_str(), path[0], size, useThumbs, useFileDirectories, singleList);
-  path.resize(size);
-  path.shrink_to_fit();
-  return ret;
-}
+  inline bool CAddonGUIDialogFileBrowser::ShowAndGetFileFromDir(
+          const std::string&      directory,
+          const std::string&      mask,
+          const std::string&      heading,
+          std::string&            path,
+          bool                    useThumbs,
+          bool                    useFileDirectories,
+          bool                    singleList)
+  {
+    path.resize(1024);
+    unsigned int size = (unsigned int)path.capacity();
+    bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetFileFromDir(directory.c_str(), mask.c_str(), heading.c_str(), path[0], size, useThumbs, useFileDirectories, singleList);
+    path.resize(size);
+    path.shrink_to_fit();
+    return ret;
+  }
 
-inline bool CAddonGUIDialogFileBrowser::ShowAndGetSource(
-        std::string&            path,
-        bool                    allowNetworkShares,
-        const std::string&      additionalShare,
-        const std::string&      strType)
-{
-  path.resize(1024);
-  unsigned int size = (unsigned int)path.capacity();
-  bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetSource(path[0], size, allowNetworkShares, additionalShare.c_str(), strType.c_str());
-  path.resize(size);
-  path.shrink_to_fit();
-  return ret;
-}
+  inline bool CAddonGUIDialogFileBrowser::ShowAndGetSource(
+          std::string&            path,
+          bool                    allowNetworkShares,
+          const std::string&      additionalShare,
+          const std::string&      strType)
+  {
+    path.resize(1024);
+    unsigned int size = (unsigned int)path.capacity();
+    bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetSource(path[0], size, allowNetworkShares, additionalShare.c_str(), strType.c_str());
+    path.resize(size);
+    path.shrink_to_fit();
+    return ret;
+  }
 
-inline bool CAddonGUIDialogFileBrowser::ShowAndGetImage(
-        const std::string&      shares,
-        const std::string&      heading,
-        std::string&            path)
-{
-  path.resize(1024);
-  unsigned int size = (unsigned int)path.capacity();
-  bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetImage(shares.c_str(), heading.c_str(), path[0], size);
-  path.resize(size);
-  path.shrink_to_fit();
-  return ret;
-}
+  inline bool CAddonGUIDialogFileBrowser::ShowAndGetImage(
+          const std::string&      shares,
+          const std::string&      heading,
+          std::string&            path)
+  {
+    path.resize(1024);
+    unsigned int size = (unsigned int)path.capacity();
+    bool ret = CGUILib::g_libKODI_Internal->Dialogs.FileBrowser.ShowAndGetImage(shares.c_str(), heading.c_str(), path[0], size);
+    path.resize(size);
+    path.shrink_to_fit();
+    return ret;
+  }
 
 }; /* namespace V2 */
 }; /* namespace GUILIB */

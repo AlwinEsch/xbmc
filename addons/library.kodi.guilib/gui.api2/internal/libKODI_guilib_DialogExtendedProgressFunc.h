@@ -28,6 +28,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUIDialogExtendedProgress::CAddonGUIDialogExtendedProgress(const std::string& title)
    : m_Handle((ADDON::AddonCB*)CGUILib::g_libKODI_Internal->m_Handle),
      m_cb(CGUILib::g_libKODI_Internal->m_Callbacks)

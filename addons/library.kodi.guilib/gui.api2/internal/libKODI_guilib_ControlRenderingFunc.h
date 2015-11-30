@@ -28,6 +28,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUIRenderingControl::CAddonGUIRenderingControl(
         CAddonGUIWindow*      window,
         int                   controlId)

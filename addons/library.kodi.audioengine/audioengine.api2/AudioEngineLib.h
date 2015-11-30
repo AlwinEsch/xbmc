@@ -40,6 +40,7 @@ namespace V2
      * @brief Release all callback methods and close handling with them
      */
     static void UnRegisterMe();
+
     /*\_________________________________________________________________________
     \*/
 
@@ -54,6 +55,7 @@ namespace V2
      * @param hook The hook to remove
      */
     static void RemoveDSPMenuHook(AE_DSP_MENUHOOK* hook);
+
     /*\_________________________________________________________________________
     \*/
 
@@ -69,6 +71,7 @@ namespace V2
      * @param mode The Mode to remove
      */
     static void UnregisterDSPMode(AE_DSP_MODES::AE_DSP_MODE* mode);
+
     /*\_________________________________________________________________________
     \*/
 

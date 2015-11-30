@@ -32,28 +32,28 @@ namespace V2
   {
   public:
     static bool ShowAndGetInput(
-          const std::string&      heading,
-          const std::string&      text,
-          bool&                   bCanceled,
-          const std::string&      noLabel = "",
-          const std::string&      yesLabel = "");
+      const std::string&      heading,
+      const std::string&      text,
+      bool&                   bCanceled,
+      const std::string&      noLabel = "",
+      const std::string&      yesLabel = "");
 
     static bool ShowAndGetInput(
-          const std::string&      heading,
-          const std::string&      line0,
-          const std::string&      line1,
-          const std::string&      line2,
-          const std::string&      noLabel = "",
-          const std::string&      yesLabel = "");
+      const std::string&      heading,
+      const std::string&      line0,
+      const std::string&      line1,
+      const std::string&      line2,
+      const std::string&      noLabel = "",
+      const std::string&      yesLabel = "");
 
     static bool ShowAndGetInput(
-          const std::string&      heading,
-          const std::string&      line0,
-          const std::string&      line1,
-          const std::string&      line2,
-          bool&                   bCanceled,
-          const std::string&      noLabel = "",
-          const std::string&      yesLabel = "");
+      const std::string&      heading,
+      const std::string&      line0,
+      const std::string&      line1,
+      const std::string&      line2,
+      bool&                   bCanceled,
+      const std::string&      noLabel = "",
+      const std::string&      yesLabel = "");
   };
 
 }; /* namespace V2 */

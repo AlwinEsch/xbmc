@@ -28,6 +28,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUISpinControl::CAddonGUISpinControl(CAddonGUIWindow* window, int controlId)
    : m_Window(window),
      m_ControlId(controlId),

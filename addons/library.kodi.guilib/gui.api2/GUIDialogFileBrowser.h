@@ -32,38 +32,38 @@ namespace V2
   {
   public:
     static bool ShowAndGetDirectory(
-          const std::string&      shares,
-          const std::string&      heading,
-          std::string&            path,
-          bool                    bWriteOnly = false);
+      const std::string&      shares,
+      const std::string&      heading,
+      std::string&            path,
+      bool                    bWriteOnly = false);
 
     static bool ShowAndGetFile(
-          const std::string&      shares,
-          const std::string&      mask,
-          const std::string&      heading,
-          std::string&            file,
-          bool                    useThumbs = false,
-          bool                    useFileDirectories = false);
+      const std::string&      shares,
+      const std::string&      mask,
+      const std::string&      heading,
+      std::string&            file,
+      bool                    useThumbs = false,
+      bool                    useFileDirectories = false);
 
     static bool ShowAndGetFileFromDir(
-          const std::string&      directory,
-          const std::string&      mask,
-          const std::string&      heading,
-          std::string&            strPath,
-          bool                    useThumbs = false,
-          bool                    useFileDirectories = false,
-          bool                    singleList = false);
+      const std::string&      directory,
+      const std::string&      mask,
+      const std::string&      heading,
+      std::string&            strPath,
+      bool                    useThumbs = false,
+      bool                    useFileDirectories = false,
+      bool                    singleList = false);
 
     static bool ShowAndGetSource(
-          std::string&            path,
-          bool                    allowNetworkShares,
-          const std::string&      additionalShare = nullptr,
-          const std::string&      strType = "");
+      std::string&            path,
+      bool                    allowNetworkShares,
+      const std::string&      additionalShare = nullptr,
+      const std::string&      strType = "");
 
     static bool ShowAndGetImage(
-          const std::string&      shares,
-          const std::string&      heading,
-          std::string&            strPath);
+        const std::string&      shares,
+        const std::string&      heading,
+        std::string&            strPath);
   };
 
 }; /* namespace V2 */

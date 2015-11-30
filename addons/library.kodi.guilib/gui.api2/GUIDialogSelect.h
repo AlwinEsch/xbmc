@@ -32,10 +32,10 @@ namespace V2
   {
   public:
     static int Show(
-          const std::string&      heading,
-          const char*             entries[],
-          unsigned int            size,
-          int                     selected = -1);
+      const std::string&      heading,
+      const char*             entries[],
+      unsigned int            size,
+      int                     selected = -1);
   };
 
 }; /* namespace V2 */

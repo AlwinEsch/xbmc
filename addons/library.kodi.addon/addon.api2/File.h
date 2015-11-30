@@ -27,6 +27,7 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   class CAddOnLib_File
   {
   public:

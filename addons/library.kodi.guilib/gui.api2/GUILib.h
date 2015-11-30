@@ -40,12 +40,36 @@ namespace V2
      */
     static void UnRegisterMe();
 
+    /*\_________________________________________________________________________
+    \*/
+
+    /*!
+     * @brief Performs a graphical lock of rendering engine
+     */
     static void Lock();
+
+    /*!
+     * @brief Performs a graphical unlock of previous locked rendering engine
+     */
     static void Unlock();
 
-    static int  GetScreenHeight();
-    static int  GetScreenWidth();
-    static int  GetVideoResolution();
+    /*\_________________________________________________________________________
+    \*/
+
+    /*!
+     * @brief Return the the current screen height with pixel
+     */
+    static int GetScreenHeight();
+
+    /*!
+     * @brief Return the the current screen width with pixel
+     */
+    static int GetScreenWidth();
+
+    /*!
+     * @brief Return the the current screen rendering resolution
+     */
+    static int GetVideoResolution();
 
     KODI_GUI_LIBRARY;
   };

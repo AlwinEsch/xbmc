@@ -45,9 +45,9 @@ namespace V2
     return CPVRLib::g_libKODI_Internal->AddMenuHook(hook);
   }
 
-  inline void CPVRLib::Recording(const char* strRecordingName, const char* strFileName, bool bOn)
+  inline void CPVRLib::Recording(const std::string& strRecordingName, const std::string& strFileName, bool bOn)
   {
-    return CPVRLib::g_libKODI_Internal->Recording(strRecordingName, strFileName, bOn);
+    return CPVRLib::g_libKODI_Internal->Recording(strRecordingName.c_str(), strFileName.c_str(), bOn);
   }
   /*\___________________________________________________________________________
   \*/

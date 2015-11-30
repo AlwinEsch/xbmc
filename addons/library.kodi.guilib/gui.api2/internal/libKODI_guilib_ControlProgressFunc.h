@@ -27,6 +27,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline CAddonGUIProgressControl::CAddonGUIProgressControl(CAddonGUIWindow* window, int controlId)
    : m_Window(window),
      m_ControlId(controlId),

@@ -27,10 +27,11 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   class CAddonSoundPlay
   {
   public:
-    CAddonSoundPlay(const char *filename);
+    CAddonSoundPlay(const std::string& filename);
     virtual ~CAddonSoundPlay(void);
 
     virtual void Play();

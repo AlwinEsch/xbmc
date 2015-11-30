@@ -32,14 +32,14 @@ namespace V2
   {
   public:
     static void ShowAndGetInput(
-          const std::string&      heading,
-          const std::string&      text);
+      const std::string&      heading,
+      const std::string&      text);
 
     static void ShowAndGetInput(
-          const std::string&      heading,
-          const std::string&      line0,
-          const std::string&      line1,
-          const std::string&      line2);
+      const std::string&      heading,
+      const std::string&      line0,
+      const std::string&      line1,
+      const std::string&      line2);
   };
 
 }; /* namespace V2 */

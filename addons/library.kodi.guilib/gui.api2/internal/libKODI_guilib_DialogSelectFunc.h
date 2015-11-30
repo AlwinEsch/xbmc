@@ -28,6 +28,7 @@ namespace GUILIB
 {
 namespace V2
 {
+
   inline int CAddonGUIDialogSelect::Show(
           const std::string&      heading,
           const char*             entries[],

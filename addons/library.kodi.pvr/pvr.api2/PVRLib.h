@@ -44,6 +44,9 @@ namespace V2
      */
     static void UnRegisterMe();
 
+    /*\_________________________________________________________________________
+    \*/
+
     /*!
      * @brief Add or replace a menu hook for the context menu for this add-on
      * @param hook The hook to add
@@ -59,14 +62,16 @@ namespace V2
      * @param bOn True when recording started, false when it stopped
      */
     static void Recording(
-                         const char*        strRecordingName,
-                         const char*        strFileName,
+                         const std::string& strRecordingName,
+                         const std::string& strFileName,
                          bool               bOn);
 
     KODI_PVR_LIBRARY;
   };
+
   /*\___________________________________________________________________________
   \*/
+
   class CPVRLib_Transfer
   {
   public:
@@ -132,8 +137,10 @@ namespace V2
                          const ADDON_HANDLE handle,
                          const PVR_CHANNEL_GROUP_MEMBER* entry);
   };
+
   /*\___________________________________________________________________________
   \*/
+
   class CPVRLib_Trigger
   {
   public:
@@ -153,15 +160,15 @@ namespace V2
     static void ChannelUpdate(void);
 
     /*!
+     * @brief Request Kodi to update it's list of channel groups
+     */
+    static void ChannelGroupsUpdate(void);
+
+    /*!
      * @brief Schedule an EPG update for the given channel channel
      * @param iChannelUid The unique id of the channel for this add-on
      */
     static void EpgUpdate(unsigned int iChannelUid);
-
-    /*!
-     * @brief Request Kodi to update it's list of channel groups
-     */
-    static void ChannelGroupsUpdate(void);
   };
   /*\___________________________________________________________________________
   \*/

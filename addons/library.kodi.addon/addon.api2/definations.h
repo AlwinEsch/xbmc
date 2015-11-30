@@ -25,6 +25,7 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   typedef enum addon_log
   {
     LOG_DEBUG,

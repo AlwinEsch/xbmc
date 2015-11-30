@@ -29,6 +29,7 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   class CAddOnLib_General
   {
   public:
@@ -38,9 +39,9 @@ namespace V2
      * @param format The format of the message to pass to KODI.
      */
     static void Log(
-                         const addon_log_t  loglevel,
-                         const char*        format,
-                         ... );
+      const addon_log_t  loglevel,
+      const char*        format,
+      ... );
 
     /*!
      * @brief Get a settings value for this add-on.
@@ -49,8 +50,8 @@ namespace V2
      * @return True if the settings was fetched successfully, false otherwise.
      */
     static bool GetSetting(
-                         const std::string& settingName,
-                         void*              settingValue);
+      const std::string& settingName,
+      void*              settingValue);
 
     /*!
      * @brief Queue a notification in the GUI.
@@ -58,9 +59,9 @@ namespace V2
      * @param format The format of the message to pass to display in KODI.
      */
     static void QueueNotification(
-                         const queue_msg_t  type,
-                         const char*        format,
-                         ... );
+      const queue_msg_t  type,
+      const char*        format,
+      ... );
 
     /*!
      * @brief Queue a notification in the GUI.
@@ -72,12 +73,12 @@ namespace V2
      * @param messageTime in how many milli seconds start show of notification
      */
     static void QueueNotification(
-                         const queue_msg_t  type,
-                         const std::string& aCaption,
-                         const std::string& aDescription,
-                         unsigned int       displayTime = 5000,
-                         bool               withSound   = true,
-                         unsigned int       messageTime = 1000);
+      const queue_msg_t  type,
+      const std::string& aCaption,
+      const std::string& aDescription,
+      unsigned int       displayTime = 5000,
+      bool               withSound   = true,
+      unsigned int       messageTime = 1000);
 
     /*!
      * @brief Queue a notification in the GUI.
@@ -85,8 +86,8 @@ namespace V2
      * @param aDescription Message to display on Kodi
      */
     static void QueueNotification(
-                         const std::string& aCaption,
-                         const std::string& aDescription);
+      const std::string& aCaption,
+      const std::string& aDescription);
 
     /*!
      * @brief Queue a notification in the GUI.
@@ -98,12 +99,12 @@ namespace V2
      * @param messageTime in how many milli seconds start show of notification
      */
     static void QueueNotification(
-                         const std::string& aImageFile,
-                         const std::string& aCaption,
-                         const std::string& aDescription,
-                         unsigned int       displayTime = 5000,
-                         bool               withSound   = true,
-                         unsigned int       messageTime = 1000);
+      const std::string& aImageFile,
+      const std::string& aCaption,
+      const std::string& aDescription,
+      unsigned int       displayTime = 5000,
+      bool               withSound   = true,
+      unsigned int       messageTime = 1000);
 
     /*!
      * @brief Translate a string with an unknown encoding to UTF8.
@@ -113,9 +114,9 @@ namespace V2
      * @return true if OK
      */
     static bool UnknownToUTF8(
-                         const std::string& stringSrc,
-                         std::string&       utf8StringDst,
-                         bool               failOnBadChar = false);
+      const std::string& stringSrc,
+      std::string&       utf8StringDst,
+      bool               failOnBadChar = false);
 
     /*!
      * @brief Get a localised message.
@@ -123,7 +124,7 @@ namespace V2
      * @return The message.
      */
     static std::string GetLocalizedString(
-                         uint32_t labelId);
+      uint32_t            labelId);
 
     /*!
      * @brief Get the DVD menu language.

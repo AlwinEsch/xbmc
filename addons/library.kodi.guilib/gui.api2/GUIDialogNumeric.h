@@ -32,38 +32,38 @@ namespace V2
   {
   public:
     static bool ShowAndVerifyNewPassword(
-          std::string&            strNewPassword);
+      std::string&            strNewPassword);
 
     static int ShowAndVerifyPassword(
-          std::string&            strPassword,
-          const std::string&      strHeading,
-          int                     iRetries);
+      std::string&            strPassword,
+      const std::string&      strHeading,
+      int                     iRetries);
 
     static bool ShowAndVerifyInput(
-          std::string&            strPassword,
-          const std::string&      strHeading,
-          bool                    bGetUserInput);
+      std::string&            strPassword,
+      const std::string&      strHeading,
+      bool                    bGetUserInput);
 
     static bool ShowAndGetTime(
-          tm&                     time,
-          const std::string&      strHeading);
+      tm&                     time,
+      const std::string&      strHeading);
 
     static bool ShowAndGetDate(
-          tm&                     date,
-          const std::string&      strHeading);
+      tm&                     date,
+      const std::string&      strHeading);
 
     static bool ShowAndGetIPAddress(
-          std::string&            strIPAddress,
-          const std::string&      strHeading);
+      std::string&            strIPAddress,
+      const std::string&      strHeading);
 
     static bool ShowAndGetNumber(
-          std::string&            strInput,
-          const std::string&      strHeading,
-          unsigned int            iAutoCloseTimeoutMs = 0);
+      std::string&            strInput,
+      const std::string&      strHeading,
+      unsigned int            iAutoCloseTimeoutMs = 0);
 
     static bool ShowAndGetSeconds(
-          std::string&            strTime,
-          const std::string&      strHeading);
+      std::string&            strTime,
+      const std::string&      strHeading);
   };
 
 }; /* namespace V2 */

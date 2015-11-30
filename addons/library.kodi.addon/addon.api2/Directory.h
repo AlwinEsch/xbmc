@@ -27,6 +27,7 @@ namespace AddOnLIB
 {
 namespace V2
 {
+
   /*\___________________________________________________________________________
   | |
   | |
@@ -40,28 +41,28 @@ namespace V2
      * @param strUrl The URL of the directory to check.
      * @return True when it can be opened, false otherwise.
      */
-    static bool CanOpenDirectory(const char* strUrl);
+    static bool CanOpenDirectory(const std::string& strUrl);
 
     /*!
      * @brief Creates a directory.
      * @param strPath Path to the directory.
      * @return True when it was created, false otherwise.
      */
-    static bool CreateDirectory(const char *strPath);
+    static bool CreateDirectory(const std::string& strPath);
 
     /*!
      * @brief Checks if a directory exists.
      * @param strPath Path to the directory.
      * @return True when it exists, false otherwise.
      */
-    static bool DirectoryExists(const char *strPath);
+    static bool DirectoryExists(const std::string& strPath);
 
     /*!
      * @brief Removes a directory.
      * @param strPath Path to the directory.
      * @return True when it was removed, false otherwise.
      */
-    static bool RemoveDirectory(const char *strPath);
+    static bool RemoveDirectory(const std::string& strPath);
   }; /* class CAddOnLib_Directory */
   /*\__________________________________________________________________________/
   \*/
