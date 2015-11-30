@@ -44,7 +44,7 @@ namespace V2
      * @brief Returns the current ip address as a string.
      * @return The ip.
      */
-    static const std::string GetIPAddress();
+    static std::string GetIPAddress();
 
     /*!
      * @brief Encode an URL

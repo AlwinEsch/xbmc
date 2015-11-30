@@ -233,17 +233,24 @@ extern "C"
     {
       bool ret = false;
       char* retString = m_Callbacks->General.unknown_to_utf8(m_Handle, stringSrc.c_str(), ret, failOnBadChar);
-      if (ret)
-        utf8StringDst = retString;
-      m_Callbacks->General.free_string(m_Handle, retString);
+      if (retString != nullptr)
+      {
+        if (ret)
+          utf8StringDst = retString;
+        m_Callbacks->General.free_string(m_Handle, retString);
+      }
       return ret;
     }
 
     std::string GetLocalizedString(uint32_t labelId)
     {
+      std::string retString;
       char* string = m_Callbacks->General.get_localized_string(m_Handle, labelId);
-      std::string retString = string;
-      m_Callbacks->General.free_string(m_Handle, string);
+      if (string != nullptr)
+      {
+        retString = string;
+        m_Callbacks->General.free_string(m_Handle, string);
+      }
       return retString;
     }
 
@@ -286,20 +293,32 @@ extern "C"
 
     void KodiVersion(kodi_version_t& version)
     {
-      char* compile_name;
-      char* revision;
-      char* tag;
-      char* tag_revision;
+      char* compile_name = nullptr;
+      char* revision     = nullptr;
+      char* tag          = nullptr;
+      char* tag_revision = nullptr;
+
       m_Callbacks->General.kodi_version(m_Handle, compile_name, version.major, version.minor, revision, tag, tag_revision);
-      version.compile_name  = compile_name;
-      version.revision      = revision;
-      version.tag           = tag;
-      version.tag_revision  = tag_revision;
-      fprintf(stderr, "3 - %s\n", __PRETTY_FUNCTION__);
-      m_Callbacks->General.free_string(m_Handle, compile_name);
-      m_Callbacks->General.free_string(m_Handle, revision);
-      m_Callbacks->General.free_string(m_Handle, tag);
-      m_Callbacks->General.free_string(m_Handle, tag_revision);
+      if (compile_name != nullptr)
+      {
+        version.compile_name  = compile_name;
+        m_Callbacks->General.free_string(m_Handle, compile_name);
+      }
+      if (revision != nullptr)
+      {
+        version.revision = revision;
+        m_Callbacks->General.free_string(m_Handle, revision);
+      }
+      if (tag != nullptr)
+      {
+        version.tag = tag;
+        m_Callbacks->General.free_string(m_Handle, tag);
+      }
+      if (tag_revision != nullptr)
+      {
+        version.tag_revision = tag_revision;
+        m_Callbacks->General.free_string(m_Handle, tag_revision);
+      }
     }
 
     void KodiQuit()
@@ -314,7 +333,7 @@ extern "C"
       return m_Callbacks->Network.wake_on_lan(m_Handle, mac);
     }
 
-    const std::string GetIPAddress()
+    std::string GetIPAddress()
     {
       std::string ip;
       ip.resize(32);
@@ -329,16 +348,23 @@ extern "C"
     {
       bool ret = false;
       char* ipAddress = m_Callbacks->Network.dns_lookup(m_Handle, strHostName.c_str(), ret);
-      strIpAddress = ipAddress;
-      m_Callbacks->General.free_string(m_Handle, ipAddress);
+      if (ipAddress != nullptr)
+      {
+        strIpAddress = ipAddress;
+        m_Callbacks->General.free_string(m_Handle, ipAddress);
+      }
       return ret;
     }
 
     std::string URLEncode(const std::string& url)
     {
+      std::string retString;
       char* string = m_Callbacks->Network.url_encode(m_Handle, url.c_str());
-      std::string retString = string;
-      m_Callbacks->General.free_string(m_Handle, string);
+      if (string != nullptr)
+      {
+        retString = string;
+        m_Callbacks->General.free_string(m_Handle, string);
+      }
       return retString;
     }
     /*\_________________________________________________________________________

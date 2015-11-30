@@ -29,7 +29,7 @@ namespace V2
     return CAddonLib::g_libKODI_Internal->WakeOnLan(mac);
   }
 
-  inline const std::string CAddOnLib_Network::GetIPAddress()
+  inline std::string CAddOnLib_Network::GetIPAddress()
   {
     return CAddonLib::g_libKODI_Internal->GetIPAddress();
   }
