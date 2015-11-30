@@ -257,6 +257,56 @@ extern "C"
       language.shrink_to_fit();
       return language;
     }
+
+    float GetVolume(bool percentage) const
+    {
+      return m_Callbacks->General.get_volume(m_Handle, percentage);
+    }
+
+    void SetVolume(float value, bool isPercentage)
+    {
+      m_Callbacks->General.set_volume(m_Handle, value, isPercentage);
+    }
+
+    bool IsMuted() const
+    {
+      return m_Callbacks->General.is_muted(m_Handle);
+    }
+
+    void ToggleMute(void)
+    {
+      m_Callbacks->General.toggle_mute(m_Handle);
+    }
+
+    void SetMute(bool mute)
+    {
+      if (m_Callbacks->General.is_muted(m_Handle) != mute)
+        m_Callbacks->General.toggle_mute(m_Handle);
+    }
+
+    void KodiVersion(kodi_version_t& version)
+    {
+      char* compile_name;
+      char* revision;
+      char* tag;
+      char* tag_revision;
+      m_Callbacks->General.kodi_version(m_Handle, compile_name, version.major, version.minor, revision, tag, tag_revision);
+      version.compile_name  = compile_name;
+      version.revision      = revision;
+      version.tag           = tag;
+      version.tag_revision  = tag_revision;
+      fprintf(stderr, "3 - %s\n", __PRETTY_FUNCTION__);
+      m_Callbacks->General.free_string(m_Handle, compile_name);
+      m_Callbacks->General.free_string(m_Handle, revision);
+      m_Callbacks->General.free_string(m_Handle, tag);
+      m_Callbacks->General.free_string(m_Handle, tag_revision);
+    }
+
+    void KodiQuit()
+    {
+      m_Callbacks->General.kodi_quit(m_Handle);
+    }
+
     /*\_________________________________________________________________________
     \*/
     bool WakeOnLan(const char* mac)

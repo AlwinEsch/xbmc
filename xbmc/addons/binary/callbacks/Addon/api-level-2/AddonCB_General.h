@@ -87,6 +87,33 @@ public:
   static void free_string(
         void*                     hdl,
         char*                     str);
+
+  static float get_volume(
+        void*                     hdl,
+        bool                      percentage);
+
+  static void set_volume(
+        void*                     hdl,
+        float                     value,
+        bool                      isPercentage);
+
+  static bool is_muted(
+        void*                     hdl);
+
+  static void toggle_mute(
+        void*                     hdl);
+
+  static void kodi_version(
+        void*                     hdl,
+        char*&                    compile_name,
+        int&                      major,
+        int&                      minor,
+        char*&                    revision,
+        char*&                    tag,
+        char*&                    tagversion);
+
+  static void kodi_quit(
+        void*                     hdl);
 };
 
 }; /* namespace V2 */

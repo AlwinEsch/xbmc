@@ -91,5 +91,40 @@ namespace V2
     return CAddonLib::g_libKODI_Internal->GetDVDMenuLanguage();
   }
 
+  inline float CAddOnLib_General::GetVolume(bool percentage)
+  {
+    return CAddonLib::g_libKODI_Internal->GetVolume(percentage);
+  }
+
+  inline void CAddOnLib_General::SetVolume(float value, bool isPercentage)
+  {
+    CAddonLib::g_libKODI_Internal->SetVolume(value, isPercentage);
+  }
+
+  inline bool CAddOnLib_General::IsMuted()
+  {
+    return CAddonLib::g_libKODI_Internal->IsMuted();
+  }
+
+  inline void CAddOnLib_General::ToggleMute(void)
+  {
+    CAddonLib::g_libKODI_Internal->ToggleMute();
+  }
+
+  inline void CAddOnLib_General::SetMute(bool mute)
+  {
+    CAddonLib::g_libKODI_Internal->SetMute(mute);
+  }
+
+  inline void CAddOnLib_General::KodiVersion(kodi_version_t& version)
+  {
+    CAddonLib::g_libKODI_Internal->KodiVersion(version);
+  }
+
+  inline void CAddOnLib_General::KodiQuit()
+  {
+    CAddonLib::g_libKODI_Internal->KodiQuit();
+  }
+
 }; /* namespace V2 */
 }; /* namespace AddOnLIB */

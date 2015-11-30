@@ -43,8 +43,6 @@ CAddonCallbacks::CAddonCallbacks(CAddon* addon)
     m_helperGUI(nullptr),
     m_helperPVR(nullptr)
 {
-fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
-
   m_callbacks->libBasePath                  = strdup(CSpecialProtocol::TranslatePath("special://xbmcbin/addons").c_str());
   m_callbacks->addonData                    = this;
 
@@ -76,8 +74,6 @@ fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
 
 CAddonCallbacks::~CAddonCallbacks()
 {
-  fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
-
   CAddonCallbacksAddonBase::DestroyHelper(this);
   CAddonCallbacksAudioEngineBase::DestroyHelper(this);
   CAddonCallbacksGUIBase::DestroyHelper(this);

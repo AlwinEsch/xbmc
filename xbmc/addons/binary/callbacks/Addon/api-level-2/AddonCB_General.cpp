@@ -22,9 +22,11 @@
 #include "AddonCallbacksAddon.h"
 
 #include "Application.h"
+#include "CompileInfo.h"
 #include "LangInfo.h"
 #include "addons/Addon.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "messaging/ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -55,6 +57,12 @@ void CAddonCB_General::Init(CB_AddOnLib_General *callbacks)
   callbacks->get_localized_string           = CAddonCB_General::get_localized_string;
   callbacks->get_dvd_menu_language          = CAddonCB_General::get_dvd_menu_language;
   callbacks->free_string                    = CAddonCB_General::free_string;
+  callbacks->get_volume                     = CAddonCB_General::get_volume;
+  callbacks->set_volume                     = CAddonCB_General::set_volume;
+  callbacks->is_muted                       = CAddonCB_General::is_muted;
+  callbacks->toggle_mute                    = CAddonCB_General::toggle_mute;
+  callbacks->kodi_version                   = CAddonCB_General::kodi_version;
+  callbacks->kodi_quit                      = CAddonCB_General::kodi_quit;
 }
 
 bool CAddonCB_General::get_setting(
@@ -372,6 +380,74 @@ void CAddonCB_General::free_string(
         char*                     str)
 {
   free(str);
+}
+
+float CAddonCB_General::get_volume(
+        void*                     hdl,
+        bool                      percentage)
+{
+  return g_application.GetVolume(percentage);
+}
+
+void CAddonCB_General::set_volume(
+        void*                     hdl,
+        float                     value,
+        bool                      isPercentage)
+{
+  g_application.SetVolume(value, isPercentage);
+}
+
+bool CAddonCB_General::is_muted(
+        void*                     hdl)
+{
+  return g_application.IsMutedInternal();
+}
+
+void CAddonCB_General::toggle_mute(
+        void*                     hdl)
+{
+  g_application.ToggleMute();
+}
+
+void CAddonCB_General::kodi_version(
+      void*                     hdl,
+      char*&                    compile_name,
+      int&                      major,
+      int&                      minor,
+      char*&                    revision,
+      char*&                    tag,
+      char*&                    tagversion)
+{
+  compile_name = strdup(CCompileInfo::GetAppName());
+  major        = CCompileInfo::GetMajor();
+  minor        = CCompileInfo::GetMinor();
+  revision     = strdup(CCompileInfo::GetSCMID());
+  std::string tagStr = CCompileInfo::GetSuffix();
+  if (StringUtils::StartsWithNoCase(tagStr, "alpha"))
+  {
+    tag = strdup("alpha");
+    tagversion = strdup(StringUtils::Mid(tagStr, 5).c_str());
+  }
+  else if (StringUtils::StartsWithNoCase(tagStr, "beta"))
+  {
+    tag = strdup("beta");
+    tagversion = strdup(StringUtils::Mid(tagStr, 4).c_str());
+  }
+  else if (StringUtils::StartsWithNoCase(tagStr, "rc"))
+  {
+    tag = strdup("releasecandidate");
+    tagversion = strdup(StringUtils::Mid(tagStr, 2).c_str());
+  }
+  else if (tagStr.empty())
+    tag = strdup("stable");
+  else
+    tag = strdup("prealpha");
+}
+
+void CAddonCB_General::kodi_quit(
+        void*                     hdl)
+{
+  KODI::MESSAGING::CApplicationMessenger::GetInstance().PostMsg(TMSG_QUIT);
 }
 
 }; /* extern "C" */

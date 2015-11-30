@@ -19,6 +19,7 @@
  *
  */
 
+#include <string>
 #include <sys/stat.h>
 
 namespace AddOnLIB
@@ -43,6 +44,17 @@ namespace V2
     QUEUE_WARNING,
     QUEUE_ERROR
   } queue_msg_t;
+
+  typedef struct kodi_version
+  {
+    std::string compile_name;
+
+    int         major;
+    int         minor;
+    std::string revision;
+    std::string tag;
+    std::string tag_revision;
+  } kodi_version_t;
 
   typedef enum audio_channel
   {

@@ -131,6 +131,60 @@ namespace V2
      * @return The language.
      */
     static const std::string GetDVDMenuLanguage();
+
+    /*!
+     * @brief Get the current global Kodi audio volume
+     * @param percentage if set to false becomes amplication level returned
+     * @return The volume value
+     */
+    static float GetVolume(bool percentage = true);
+
+    /*!
+     * @brief Set the current global Kodi audio volume
+     * @param isPercentage if set to false becomes amplication level use
+     * @param value the volume to use
+     */
+    static void SetVolume(float value, bool isPercentage = true);
+
+    /*!
+     * @brief Ask if Kodi audio is muted
+     * @return true if audio is muted
+     */
+    static bool IsMuted();
+
+    /*!
+     * @brief Toggle the audio volume between on and off
+     */
+    static void ToggleMute(void);
+
+    /*!
+     * @brief Ask if Kodi audio is muted
+     * @param mute with set to true becomes it muted otherwise audio is present
+     */
+    static void SetMute(bool mute);
+
+    /*!
+     * @brief Get current Kodi informations and versions,
+     * returned data from the following
+     *   kodi_version_t version;
+     *   CAddOnLib_General::KodiVersion(version);
+     * is e.g.:
+     *   version.compile_name = Kodi
+     *   version.major        = 16
+     *   version.minor        = 0
+     *   version.revision     = 2015-11-30-74edffb-dirty
+     *   version.tag          = beta
+     *   version.tag_revision = 1
+     *
+     * @param version structure to store data from kodi
+     */
+    static void KodiVersion(kodi_version_t& version);
+
+    /*!
+     * @brief Tell Kodi to stop work, go to exit and stop his work.
+     * WARNING: Kodi is really quited!
+     */
+    static void KodiQuit();
   }; /* class CAddOnLib_General */
 
 }; /* namespace V2 */
