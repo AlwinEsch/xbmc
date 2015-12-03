@@ -111,18 +111,18 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
     * Ask if Kodi audio is muted
 		* <b>return:</b> true if audio is muted
 
-*  <b>```void CAddOnLib_General::ToggleMute(void);```</b><a id="CAddOnLib_General_ToggleMute"></a>
+*  <a id="CAddOnLib_General_ToggleMute"></a><b>```void CAddOnLib_General::ToggleMute(void);```</b>
     * Toggle the audio volume between on and off
 
-*  <b>```void CAddOnLib_General::SetMute(bool mute);```</b><a id="CAddOnLib_General_SetMute"></a>
+*  <a id="CAddOnLib_General_SetMute"></a><b>```void CAddOnLib_General::SetMute(bool mute);```</b>
     * Set Kodi's mute
 	    * <b>```mute```</b>with set to true becomes it muted otherwise audio is present
 
-*  <b>```bool CAddOnLib_General::EjectOpticalDrive();```</b><a id="CAddOnLib_General_EjectOpticalDrive"></a>
+*  <a id="CAddOnLib_General_EjectOpticalDrive"></a><b>```bool CAddOnLib_General::EjectOpticalDrive();```</b>
     * Send eject signal to optical drive
 		* <b>return:</b> true if successfull done
 
-*  <b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);```</b> <a id="CAddOnLib_General_KodiVersion"></a>
+*  <a id="CAddOnLib_General_KodiVersion"></a><b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);```</b>
 	```C++
 	  typedef struct kodi_version
 	  {
