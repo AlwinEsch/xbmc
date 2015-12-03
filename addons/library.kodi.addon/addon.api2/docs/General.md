@@ -8,7 +8,7 @@ Functions
 
 The with ```#include <kodi/addon.api2/General.h``` given functions are basically used to allow add-on access to Kodi's general functions
 
-*  <b>```void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);```</b> <a id="CAddOnLib_General_Log"></a>
+*  <a id="CAddOnLib_General_Log"></a><b>```void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);```</b>
     * Add a message to KODI's log.
 	    * <b>```loglevel```</b>The log level of the message.
 		    *     LOG_DEBUG,
@@ -21,31 +21,31 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    * <b>```format```</b>The format of the message to pass to KODI.
 	    * <b>```...```</b>Added string values
 
-*  <b>```bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);```</b><a id="CAddOnLib_General_GetSettingString"></a>
+*  <a id="CAddOnLib_General_GetSettingString"></a><b>```bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);```</b>
     * Get a string settings value for this add-on.
 	    * <b>```settingName```</b>The name of the setting to get.
 	    * <b>```settingValue```</b>The value.
 		* <b>return:</b> true if successfull done
 
-*  <b>```bool CAddOnLib_General::GetSettingInt(const std::string& settingName, int& settingValue);```</b><a id="CAddOnLib_General_GetSettingInt"></a>
+*  <a id="CAddOnLib_General_GetSettingInt"></a><b>```bool CAddOnLib_General::GetSettingInt(const std::string& settingName, int& settingValue);```</b>
     * Get a integer settings value for this add-on.
 	    * <b>```settingName```</b>The name of the setting to get.
 	    * <b>```settingValue```</b>The value.
 		* <b>return:</b> true if successfull done
 
-*  <b>```bool CAddOnLib_General::GetSettingBoolean(const std::string& settingName, bool& settingValue);```</b><a id="CAddOnLib_General_GetSettingBoolean"></a>
+*  <a id="CAddOnLib_General_GetSettingBoolean"></a><b>```bool CAddOnLib_General::GetSettingBoolean(const std::string& settingName, bool& settingValue);```</b>
     * Get a boolean settings value for this add-on.
 	    * <b>```settingName```</b>The name of the setting to get.
 	    * <b>```settingValue```</b>The value.
 		* <b>return:</b> true if successfull done
 
-*  <b>```bool CAddOnLib_General::GetSettingFloat(const std::string& settingName, float& settingValue);```</b><a id="CAddOnLib_General_GetSettingFloat"></a>
+*  <a id="CAddOnLib_General_GetSettingFloat"></a><b>```bool CAddOnLib_General::GetSettingFloat(const std::string& settingName, float& settingValue);```</b>
     * Get a float settings value for this add-on.
 	    * <b>```settingName```</b>The name of the setting to get.
 	    * <b>```settingValue```</b>The value.
 		* <b>return:</b> true if successful done
 
-*  <b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const char* format, ...);```</b><a id="CAddOnLib_General_QueueNotification_1"></a>
+*  <a id="CAddOnLib_General_QueueNotification_1"></a><b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const char* format, ...);```</b>
     * Queue a notification in the GUI.
 	    * <b>```type```</b>The message type.
 		    *     QUEUE_INFO,
@@ -54,7 +54,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    * <b>```format```</b>The format of the message to pass to display in Kodi.
 	    * <b>```...```</b>Added string values
 
-*  <b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b><a id="CAddOnLib_General_QueueNotification_2"></a>
+*  <a id="CAddOnLib_General_QueueNotification_2"></a><b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b>
     * Queue a notification in the GUI.
 	    * <b>```type```</b>The message type.
 		    *     QUEUE_INFO,
@@ -66,12 +66,12 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    * <b>```withSound```</b>if true also warning sound becomes played
 	    * <b>```messageTime```</b>how many milli seconds start show of notification
 
-*  <b>```void CAddOnLib_General::QueueNotification(const std::string& aCaption, const std::string& aDescription);```</b><a id="CAddOnLib_General_QueueNotification_3"></a>
+*  <a id="CAddOnLib_General_QueueNotification_3"></a><b>```void CAddOnLib_General::QueueNotification(const std::string& aCaption, const std::string& aDescription);```</b>
     * Queue a notification in the GUI.
 	    * <b>```aCaption```</b>Header Name
 	    * <b>```aDescription```</b>Message to display on Kodi
 
-*  <b>```void CAddOnLib_General::QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b><a id="CAddOnLib_General_QueueNotification_4"></a>
+*  <a id="CAddOnLib_General_QueueNotification_4"></a><b>```void CAddOnLib_General::QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b>
     * Queue a notification in the GUI.
 	    * <b>```aImageFile```</b>The image file to show on message
 	    * <b>```aCaption```</b>Header Name
@@ -80,7 +80,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    * <b>```withSound```</b> true also warning sound becomes played
 	    * <b>```messageTime```</b>in how many milli seconds start show of notification
 
-*  <b>```bool CAddOnLib_General::UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);```</b><a id="CAddOnLib_General_UnknownToUTF8"></a>
+*  <a id="CAddOnLib_General_UnknownToUTF8"></a><b>```bool CAddOnLib_General::UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);```</b>
     * Translate a string with an unknown encoding to UTF8.
 	    * <b>```stringSrc```</b>The string to translate.
 	    * <b>```utf8StringDst```</b>The translated string.
@@ -163,11 +163,11 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    	    version.compile_name.c_str(), version.major, version.minor,
 	    	    version.revision.c_str(), version.tag.c_str(), version.tag_revision.c_str());
 	```
-*  <b>```void CAddOnLib_General::KodiQuit();```</b><a id="CAddOnLib_General_KodiQuit"></a>
+*  <a id="CAddOnLib_General_KodiQuit"></a><b>```void CAddOnLib_General::KodiQuit();```</b>
     * Tell Kodi to stop work, go to exit and stop his work.
       <b>WARNING:</b> Kodi is really quited!
 
-*  <b>```std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);```</b><a id="CAddOnLib_General_TranslateAddonStatus"></a>
+*  <a id="CAddOnLib_General_TranslateAddonStatus"></a><b>```std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);```</b>
     * Translate an add-on status return code into a human-readable string
 	    * <b>```status```</b> The return code
 		* <b>return:</b> A human-readable string suitable for logging
