@@ -91,7 +91,7 @@ demonstration code is inserted there.
   * [std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);](docs/General.md)
     - Become string about error
 - [CAddOnLib_Codec](docs/Codec.md) - Codec functions
-  1. [kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);](docs/Codec.md) 
+  * [kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);](docs/Codec.md) 
     - Get the codec id used by Kodi
   * [DemuxPacket* CAddOnLib_Codec::AllocateDemuxPacket(int iDataSize);](docs/Codec.md) 
     - Allocate a demux packet. Free with FreeDemuxPacket
