@@ -42,7 +42,7 @@ void ADDON_Destroy()
 ```
 
 <b>Note:</b>
-To use the add-on on Windows must be the ```dlfcn-win32.cpp``` inserted on them. Is required to have translation functions from Windows to ```dlfcn```, requested for access to Kodi!
+To use the add-on on Windows must be the [```dlfcn-win32.cpp```](dlfcn-win32.cpp) inserted on them. Is required to have translation functions from Windows to ```dlfcn```, requested for access to Kodi!
 
 -------------
 
