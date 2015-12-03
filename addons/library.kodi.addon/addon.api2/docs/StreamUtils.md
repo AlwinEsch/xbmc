@@ -59,7 +59,7 @@ Classes
     * Compares this stream based on another stream
 	    * <b>```other```</b>  The other stream to compare
 		* <b>return:</b> true if equal
-		* 
+
 *  <b>``` bool operator<(const CPVRStream &other) const;```</b>
     * Compares this stream with another one so that video streams are sorted before any other streams and the others are sorted by the physical ID
 	    * <b>```other```</b>  The other stream to compare
@@ -69,4 +69,5 @@ Classes
     * Clears the stream
 
 *  <b>```bool IsCleared() const;```</b>
-		* <b>return:</b> True if cleared
+    * Checks whether the stream has been cleared
+	* <b>return:</b> True if cleared
