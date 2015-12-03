@@ -6,7 +6,7 @@
 Functions
 -------------
 
-The with ```#include <kodi/addon.api2/Codec.h``` given functions are required if demux becomes done on add-on itself and stream packet is requested from Kodi, e.g. on PVR ```DemuxPacket* DemuxRead(void);```.
+The with ```#include <kodi/addon.api2/Codec.h>``` given functions are required if demux becomes done on add-on itself and stream packet is requested from Kodi, e.g. on PVR ```DemuxPacket* DemuxRead(void);```.
 
 *  <b>```kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);```</b>
     * Get the codec id used by Kodi
