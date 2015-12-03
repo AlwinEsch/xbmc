@@ -44,7 +44,7 @@ Classes
 	    * <b>```newStreams```</b>  Pointer to pass to set streams array
 
 -------------
-#### Class: ```CStreamProperties::CStreamProperties(...);```
+#### Class: ```CPVRStream::CPVRStream(...);```
 
 *  <b>```CPVRStream()```</b>
     * Constructor
