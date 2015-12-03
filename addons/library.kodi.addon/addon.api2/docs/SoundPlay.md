@@ -3,6 +3,8 @@
 
 ----------
 
+The with ```#include <kodi/addon.api2/SoundPlay.h>``` given functions are basically used to allow add-on access to Kodi's functions
+
 Classes
 -------------
 
