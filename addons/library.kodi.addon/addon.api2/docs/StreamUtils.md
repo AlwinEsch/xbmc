@@ -51,7 +51,7 @@ Classes
 
 *  <b>```CPVRStream(const CPVRStream &other)```</b>
     * Constructor to generate copy of given class
-    * 
+
 *  <b>```~CPVRStream();```</b>
     * Destructor
 
