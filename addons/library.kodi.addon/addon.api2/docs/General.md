@@ -154,5 +154,5 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 
 *  <b>```std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);```</b>
     * Translate an add-on status return code into a human-readable string
-	    * <b>```bUseCache```</b> The return code
+	    * <b>```status```</b> The return code
 		* <b>return:</b> A human-readable string suitable for logging
