@@ -10,7 +10,7 @@ The with ```#include <kodi/addon.api2/Codec.h``` given functions are required if
 
 *  <b>```kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);```</b>
     * Get the codec id used by Kodi
-	    * <b>```strCodecName```</b> The name of the codec
+	    * <b>```strCodecName```</b> The name of the codec, normally the from ffmpeg used ones
 		* <b>return:</b> The codec_id, or a codec_id with 0 values when not supported
 
 *  <b>```DemuxPacket* CAddOnLib_Codec::AllocateDemuxPacket(int iDataSize);```</b>
