@@ -3,10 +3,10 @@
 
 ----------
 
+The with ```#include <kodi/addon.api2/Directory.h>``` given functions are basically used to allow add-on access to kodi's directory system.
+
 Functions
 -------------
-
-The with ```#include <kodi/addon.api2/Directory.h``` given functions are basically used to allow add-on access to kodi's directory system.
 
 *  <b>```bool CAddOnLib_Directory::CanOpenDirectory(const std::string& strUrl);```</b>
     * Checks whether a directory can be opened.
