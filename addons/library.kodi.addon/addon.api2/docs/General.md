@@ -87,27 +87,26 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 	    * <b>```failOnBadChar```</b>return failed if bad character is inside
 		* <b>return:</b> true if OK
 
-*  <b>```std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string&  strDefault = "");```</b><a id="CAddOnLib_General_GetLocalizedString"></a>
+*  <a id="CAddOnLib_General_GetLocalizedString"></a><b>```std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string&  strDefault = "");```</b>
     * Get a localized message.
 	    * <b>```labelId```</b>The code of the message to get.
 	    * <b>```strDefault```</b>The default message, also helps to identify the code that is used
 		* <b>return:</b> The localized message, or strDefault if the add-on helper fails to return a message
 
-*  <b>```std::string CAddOnLib_General::GetDVDMenuLanguage();```</b><a id="CAddOnLib_General_GetDVDMenuLanguage"></a>
-    * Get the DVD menu language.
+*  <a id="CAddOnLib_General_GetDVDMenuLanguage"></a><b>```std::string CAddOnLib_General::GetDVDMenuLanguage();```</b>
 		* <b>return:</b> The DVD menu langauge, or empty if unknown
 
-*  <b>```float CAddOnLib_General::GetVolume(bool percentage = true);```</b><a id="CAddOnLib_General_GetVolume"></a>
+*  <a id="CAddOnLib_General_GetVolume"></a><b>```float CAddOnLib_General::GetVolume(bool percentage = true);```</b>
     * Get the current global Kodi audio volume
 	    * <b>```percentage```</b>if set to false becomes amplication level returned
 		* <b>return:</b> The volume value
 
-*  <b>```void CAddOnLib_General::SetVolume(float value, bool isPercentage = true);```</b><a id="CAddOnLib_General_SetVolume"></a>
+*  <a id="CAddOnLib_General_SetVolume"></a><b>```void CAddOnLib_General::SetVolume(float value, bool isPercentage = true);```</b>
     * Set the current global Kodi audio volume
 	    * <b>```value```</b>the volume to use
 	    * <b>```isPercentage```</b>if set to false becomes amplication level use
 
-*  <b>```bool CAddOnLib_General::IsMuted();```</b><a id="CAddOnLib_General_IsMuted"></a>
+*  <a id="CAddOnLib_General_IsMuted"></a><b>```bool CAddOnLib_General::IsMuted();```</b>
     * Ask if Kodi audio is muted
 		* <b>return:</b> true if audio is muted
 
