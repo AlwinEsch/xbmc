@@ -147,7 +147,22 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 		version.tag_revision = 1
 	```
 	*  <b>```version```</b>version structure to store data from kodi
-
+	*  Example:
+	```C++
+  kodi_version_t version;
+  CAddOnLib_General::KodiVersion(version);
+  fprintf(stderr,
+	    "kodi_version_t version;\n"
+	    "CAddOnLib_General::KodiVersion(version);\n"
+	    " - version.compile_name = %s\n"
+	    " - version.major        = %i\n"
+	    " - version.minor        = %i\n"
+	    " - version.revision     = %s\n"
+	    " - version.tag          = %s\n"
+	    " - version.tag_revision = %s\n",
+	    	    version.compile_name.c_str(), version.major, version.minor,
+	    	    version.revision.c_str(), version.tag.c_str(), version.tag_revision.c_str());
+	```
 *  <b>```void CAddOnLib_General::KodiQuit();```</b>
     * Tell Kodi to stop work, go to exit and stop his work.
       <b>WARNING:</b> Kodi is really quited!
