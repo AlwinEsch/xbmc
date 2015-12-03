@@ -122,7 +122,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
     * Send eject signal to optical drive
 		* <b>return:</b> true if successfull done
 
-*  <b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);```</b>
+*  <b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);``` </b> <a id="CAddOnLib_General_KodiVersion"></a>
 	```C++
 	  typedef struct kodi_version
 	  {
