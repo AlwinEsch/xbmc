@@ -26,6 +26,7 @@
 #include "LangInfo.h"
 #include "addons/Addon.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "interfaces/builtins/Builtins.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
@@ -46,23 +47,24 @@ CAddonCB_General::CAddonCB_General()
 
 }
 
-void CAddonCB_General::Init(CB_AddOnLib_General *callbacks)
+void CAddonCB_General::Init(CB_AddOnLib *callbacks)
 {
-  callbacks->get_setting                    = CAddonCB_General::get_setting;
-  callbacks->addon_log                      = CAddonCB_General::addon_log;
-  callbacks->queue_notification             = CAddonCB_General::queue_notification;
-  callbacks->queue_notification_from_type   = CAddonCB_General::queue_notification_from_type;
-  callbacks->queue_notification_with_image  = CAddonCB_General::queue_notification_with_image;
-  callbacks->unknown_to_utf8                = CAddonCB_General::unknown_to_utf8;
-  callbacks->get_localized_string           = CAddonCB_General::get_localized_string;
-  callbacks->get_dvd_menu_language          = CAddonCB_General::get_dvd_menu_language;
-  callbacks->free_string                    = CAddonCB_General::free_string;
-  callbacks->get_volume                     = CAddonCB_General::get_volume;
-  callbacks->set_volume                     = CAddonCB_General::set_volume;
-  callbacks->is_muted                       = CAddonCB_General::is_muted;
-  callbacks->toggle_mute                    = CAddonCB_General::toggle_mute;
-  callbacks->kodi_version                   = CAddonCB_General::kodi_version;
-  callbacks->kodi_quit                      = CAddonCB_General::kodi_quit;
+  callbacks->General.get_setting                    = CAddonCB_General::get_setting;
+  callbacks->General.addon_log                      = CAddonCB_General::addon_log;
+  callbacks->General.queue_notification             = CAddonCB_General::queue_notification;
+  callbacks->General.queue_notification_from_type   = CAddonCB_General::queue_notification_from_type;
+  callbacks->General.queue_notification_with_image  = CAddonCB_General::queue_notification_with_image;
+  callbacks->General.unknown_to_utf8                = CAddonCB_General::unknown_to_utf8;
+  callbacks->General.get_localized_string           = CAddonCB_General::get_localized_string;
+  callbacks->General.get_dvd_menu_language          = CAddonCB_General::get_dvd_menu_language;
+  callbacks->General.free_string                    = CAddonCB_General::free_string;
+  callbacks->General.get_volume                     = CAddonCB_General::get_volume;
+  callbacks->General.set_volume                     = CAddonCB_General::set_volume;
+  callbacks->General.is_muted                       = CAddonCB_General::is_muted;
+  callbacks->General.toggle_mute                    = CAddonCB_General::toggle_mute;
+  callbacks->General.eject_optical_drive            = CAddonCB_General::eject_optical_drive;
+  callbacks->General.kodi_version                   = CAddonCB_General::kodi_version;
+  callbacks->General.kodi_quit                      = CAddonCB_General::kodi_quit;
 }
 
 bool CAddonCB_General::get_setting(
@@ -407,6 +409,12 @@ void CAddonCB_General::toggle_mute(
         void*                     hdl)
 {
   g_application.ToggleMute();
+}
+
+bool CAddonCB_General::eject_optical_drive(
+      void*                     hdl)
+{
+  return CBuiltins::GetInstance().Execute("EjectTray") == 0 ? true : false;
 }
 
 void CAddonCB_General::kodi_version(

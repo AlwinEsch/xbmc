@@ -34,7 +34,7 @@ class CAddonCB_Codec
 public:
   CAddonCB_Codec();
 
-  void Init(CB_AddOnLib_Codec *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
   static kodi_codec_t get_codec_by_name(void* addonData, const char* strCodecName);
   static DemuxPacket* allocate_demux_packet(void *addonData, int iDataSize);

@@ -44,7 +44,6 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
   : ADDON::IAddonCallback(addon, m_apiLevel, m_version),
     m_callbacks(new CB_AddOnLib)
 {
-fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   /* write XBMC addon-on specific add-on function addresses to the callback table */
   m_callbacks->Log                = AddOnLog;
   m_callbacks->QueueNotification  = QueueNotification;
@@ -80,7 +79,6 @@ fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
 CAddonCallbacksAddon::~CAddonCallbacksAddon()
 {
   /* delete the callback table */
-  fprintf(stderr, "---> %s\n", __PRETTY_FUNCTION__);
   delete m_callbacks;
 }
 

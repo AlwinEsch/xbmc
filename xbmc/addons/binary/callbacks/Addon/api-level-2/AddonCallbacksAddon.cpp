@@ -34,12 +34,12 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
   : ADDON::IAddonCallback(addon, m_apiLevel, m_version),
     m_callbacks(new CB_AddOnLib)
 {
-  CAddonCB_Audio::Init(&m_callbacks->Audio);
-  CAddonCB_Codec::Init(&m_callbacks->Codec);
+  CAddonCB_Audio::Init(m_callbacks);
+  CAddonCB_Codec::Init(m_callbacks);
   CAddonCB_Directory::Init(m_callbacks);
-  CAddonCB_File::Init(&m_callbacks->File);
-  CAddonCB_General::Init(&m_callbacks->General);
-  CAddonCB_Network::Init(&m_callbacks->Network);
+  CAddonCB_File::Init(m_callbacks);
+  CAddonCB_General::Init(m_callbacks);
+  CAddonCB_Network::Init(m_callbacks);
 }
 
 CAddonCallbacksAddon::~CAddonCallbacksAddon()

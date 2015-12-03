@@ -103,12 +103,12 @@ CAddonCB_Codec::CAddonCB_Codec()
 {
 
 }
-void CAddonCB_Codec::Init(CB_AddOnLib_Codec *callbacks)
+void CAddonCB_Codec::Init(CB_AddOnLib *callbacks)
 {
   /* write Kodi specific add-on function addresses to the callback table */
-  callbacks->get_codec_by_name      = get_codec_by_name;
-  callbacks->allocate_demux_packet  = allocate_demux_packet;
-  callbacks->free_demux_packet      = free_demux_packet;
+  callbacks->Codec.get_codec_by_name      = get_codec_by_name;
+  callbacks->Codec.allocate_demux_packet  = allocate_demux_packet;
+  callbacks->Codec.free_demux_packet      = free_demux_packet;
 }
 
 kodi_codec_t CAddonCB_Codec::get_codec_by_name(void* addonData, const char* strCodecName)

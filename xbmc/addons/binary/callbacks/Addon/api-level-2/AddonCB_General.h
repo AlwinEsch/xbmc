@@ -34,7 +34,7 @@ class CAddonCB_General
 public:
   CAddonCB_General();
 
-  void Init(CB_AddOnLib_General *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
   static void addon_log(
         void*                     hdl,
@@ -101,6 +101,9 @@ public:
         void*                     hdl);
 
   static void toggle_mute(
+        void*                     hdl);
+
+  static bool eject_optical_drive(
         void*                     hdl);
 
   static void kodi_version(

@@ -149,7 +149,7 @@ namespace V2
       bool               failOnBadChar = false);
 
     /*!
-     * @brief Get a localised message.
+     * @brief Get a localized message.
      * @param labelId The code of the message to get.
      * @param strDefault The default message, also helps to identify the code that is used
      * @return The localized message, or strDefault if the add-on helper fails to return a message
@@ -190,7 +190,7 @@ namespace V2
     static void ToggleMute(void);
 
     /*!
-     * @brief Ask if Kodi audio is muted
+     * @brief Set Kodi's mute
      * @param mute with set to true becomes it muted otherwise audio is present
      */
     static void SetMute(bool mute);

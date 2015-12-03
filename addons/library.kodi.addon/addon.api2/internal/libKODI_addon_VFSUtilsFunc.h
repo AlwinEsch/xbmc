@@ -34,7 +34,6 @@ namespace V2
 
   inline CVFSProperty::~CVFSProperty()
   {
-
   }
 
   inline const std::string& CVFSProperty::Name(void) const
@@ -79,7 +78,7 @@ namespace V2
       m_size(dirEntry.size)
   {
     for (unsigned int i = 0; i < dirEntry.num_props; ++i)
-      m_properties.push_back(CVFSDirEntry(dirEntry.properties[i].name, dirEntry.properties[i].val));
+      m_properties.push_back(CVFSProperty(dirEntry.properties[i].name, dirEntry.properties[i].val));
   }
 
   inline const std::string& CVFSDirEntry::Label(void) const
@@ -127,7 +126,7 @@ namespace V2
     m_size = size;
   }
 
-  inline std::vector<CVFSDirEntry>& CVFSDirEntry::Properties(void)
+  inline std::vector<CVFSProperty>& CVFSDirEntry::Properties(void)
   {
     return m_properties;
   }
@@ -135,7 +134,7 @@ namespace V2
   /*\___________________________________________________________________________
   \*/
 
-  inline bool VFSUtils::GetDirectory(
+  inline bool CAddOnLib_VFSUtils::GetDirectory(
     const std::string&          path,
     const std::string&          mask,
     std::vector<CVFSDirEntry>&  items)

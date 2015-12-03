@@ -34,7 +34,7 @@ class CAddonCB_File
 public:
   CAddonCB_File();
 
-  void Init(CB_AddOnLib_File *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
   static void* open_file(
         void*                     hdl,
@@ -106,6 +106,10 @@ public:
         struct __stat64*        buffer);
 
   static bool delete_file(
+        void*                     hdl,
+        const char*               strFileName);
+
+  static char* get_file_md5(
         void*                     hdl,
         const char*               strFileName);
 };

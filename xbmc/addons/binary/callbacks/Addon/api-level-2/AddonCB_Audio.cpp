@@ -40,17 +40,17 @@ CAddonCB_Audio::CAddonCB_Audio()
 
 }
 
-void CAddonCB_Audio::Init(CB_AddOnLib_Audio *callbacks)
+void CAddonCB_Audio::Init(CB_AddOnLib *callbacks)
 {
-  callbacks->soundplay_get_handle       = CAddonCB_Audio::soundplay_get_handle;
-  callbacks->soundplay_release_handle   = CAddonCB_Audio::soundplay_release_handle;
-  callbacks->soundplay_play             = CAddonCB_Audio::soundplay_play;
-  callbacks->soundplay_stop             = CAddonCB_Audio::soundplay_stop;
-  callbacks->soundplay_is_playing       = CAddonCB_Audio::soundplay_is_playing;
-  callbacks->soundplay_set_channel      = CAddonCB_Audio::soundplay_set_channel;
-  callbacks->soundplay_get_channel      = CAddonCB_Audio::soundplay_get_channel;
-  callbacks->soundplay_set_volume       = CAddonCB_Audio::soundplay_set_volume;
-  callbacks->soundplay_get_volume       = CAddonCB_Audio::soundplay_get_volume;
+  callbacks->Audio.soundplay_get_handle       = CAddonCB_Audio::soundplay_get_handle;
+  callbacks->Audio.soundplay_release_handle   = CAddonCB_Audio::soundplay_release_handle;
+  callbacks->Audio.soundplay_play             = CAddonCB_Audio::soundplay_play;
+  callbacks->Audio.soundplay_stop             = CAddonCB_Audio::soundplay_stop;
+  callbacks->Audio.soundplay_is_playing       = CAddonCB_Audio::soundplay_is_playing;
+  callbacks->Audio.soundplay_set_channel      = CAddonCB_Audio::soundplay_set_channel;
+  callbacks->Audio.soundplay_get_channel      = CAddonCB_Audio::soundplay_get_channel;
+  callbacks->Audio.soundplay_set_volume       = CAddonCB_Audio::soundplay_set_volume;
+  callbacks->Audio.soundplay_get_volume       = CAddonCB_Audio::soundplay_get_volume;
 }
 
 IAESound* CAddonCB_Audio::soundplay_get_handle(

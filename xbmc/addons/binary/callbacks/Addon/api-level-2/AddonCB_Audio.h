@@ -35,7 +35,7 @@ class CAddonCB_Audio
 public:
   CAddonCB_Audio();
 
-  void Init(CB_AddOnLib_Audio *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
   static IAESound* soundplay_get_handle(
       void*                     hdl,

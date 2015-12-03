@@ -53,7 +53,7 @@ namespace V2
   }; /* class CAddOnLib_Codec */
 
   /*!
-   * Adapter which converts codec names used by several backends into their.
+   * Adapter which converts codec names used by several backends into their
    * FFmpeg equivalents.
    */
   class CodecDescriptor

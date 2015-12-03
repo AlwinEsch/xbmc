@@ -48,7 +48,7 @@ namespace V2
 
     /*!
      * @brief Encode an URL
-     * @param dwCode The code of the message to get.
+     * @param url The code of the message to get.
      * @return Encoded URL string
      */
     static std::string URLEncode(const std::string& url);

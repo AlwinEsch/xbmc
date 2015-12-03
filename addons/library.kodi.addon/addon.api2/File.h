@@ -60,7 +60,6 @@ namespace V2
 
     /*!
      * @brief Read from an open file.
-     * @param file The file handle to read from.
      * @param lpBuf The buffer to store the data in.
      * @param uiBufSize The size of the buffer.
      * @return number of successfully read bytes if any bytes were read and stored in
@@ -71,16 +70,13 @@ namespace V2
 
     /*!
      * @brief Read a string from an open file.
-     * @param file The file handle to read from.
-     * @param szLine The buffer to store the data in.
-     * @param iLineLength The size of the buffer.
+     * @param strLine The buffer to store the data in.
      * @return True when a line was read, false otherwise.
      */
     bool ReadLine(std::string &strLine);
 
     /*!
      * @brief Write to a file opened in write mode.
-     * @param file The file handle to write to.
      * @param lpBuf The data to write.
      * @param uiBufSize Size of the data to write.
      * @return number of successfully written bytes if any bytes were written,
@@ -97,7 +93,6 @@ namespace V2
 
     /*!
      * @brief Seek in an open file.
-     * @param file The file handle to see in.
      * @param iFilePosition The new position.
      * @param iWhence Seek argument. See stdio.h for possible values.
      * @return The new position.
@@ -106,7 +101,6 @@ namespace V2
 
     /*!
      * @brief Truncate a file to the requested size.
-     * @param file The file handle to truncate.
      * @param iSize The new max size.
      * @return New size?
      */
@@ -114,27 +108,23 @@ namespace V2
 
     /*!
      * @brief The current position in an open file.
-     * @param file The file handle to get the position for.
      * @return The requested position.
      */
     int64_t GetPosition();
 
     /*!
      * @brief Get the file size of an open file.
-     * @param file The file to get the size for.
      * @return The requested size.
      */
     int64_t GetLength();
 
     /*!
      * @brief Close an open file.
-     * @param file The file handle to close.
      */
     void Close();
 
     /*!
      * @brief Get the chunk size for an open file.
-     * @param file the file handle to get the size for.
      * @return The requested size.
      */
     int GetChunkSize();
@@ -144,7 +134,7 @@ namespace V2
 
   /*\___________________________________________________________________________
   \*/
-  
+
   class CAddOnLib_File
   {
   public:

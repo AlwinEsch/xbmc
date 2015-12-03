@@ -34,7 +34,7 @@ class CAddonCB_Network
 public:
   CAddonCB_Network();
 
-  void Init(CB_AddOnLib_Network *callbacks);
+  void Init(CB_AddOnLib *callbacks);
 
   static bool wake_on_lan(
         void*                     hdl,

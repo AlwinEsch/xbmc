@@ -40,12 +40,12 @@ CAddonCB_Network::CAddonCB_Network()
 
 }
 
-void CAddonCB_Network::Init(CB_AddOnLib_Network *callbacks)
+void CAddonCB_Network::Init(CB_AddOnLib *callbacks)
 {
-  callbacks->wake_on_lan    = CAddonCB_Network::wake_on_lan;
-  callbacks->get_ip_address = CAddonCB_Network::get_ip_address;
-  callbacks->dns_lookup     = CAddonCB_Network::dns_lookup;
-  callbacks->url_encode     = CAddonCB_Network::url_encode;
+  callbacks->Network.wake_on_lan    = CAddonCB_Network::wake_on_lan;
+  callbacks->Network.get_ip_address = CAddonCB_Network::get_ip_address;
+  callbacks->Network.dns_lookup     = CAddonCB_Network::dns_lookup;
+  callbacks->Network.url_encode     = CAddonCB_Network::url_encode;
 }
 
 bool CAddonCB_Network::wake_on_lan(

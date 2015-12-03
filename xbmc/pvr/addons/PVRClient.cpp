@@ -189,7 +189,6 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
 
 bool CPVRClient::DllLoaded(void) const
 {
-fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   try { return CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::DllLoaded(); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
@@ -205,7 +204,6 @@ void CPVRClient::Destroy(void)
   /* reset 'ready to use' to false */
   CLog::Log(LOGDEBUG, "PVR - %s - destroying PVR add-on '%s'", __FUNCTION__, GetFriendlyName().c_str());
 
-fprintf(stderr, "---------------- %s\n", __PRETTY_FUNCTION__);
   /* destroy the add-on */
   try { CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::Destroy(); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }

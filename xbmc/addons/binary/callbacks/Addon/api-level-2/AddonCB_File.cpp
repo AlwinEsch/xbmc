@@ -22,6 +22,7 @@
 #include "AddonCallbacksAddon.h"
 
 #include "FileItem.h"
+#include "Util.h"
 #include "filesystem/File.h"
 
 using namespace XFILE;
@@ -36,23 +37,24 @@ CAddonCB_File::CAddonCB_File()
 
 }
 
-void CAddonCB_File::Init(CB_AddOnLib_File *callbacks)
+void CAddonCB_File::Init(CB_AddOnLib *callbacks)
 {
-  callbacks->open_file            = CAddonCB_File::open_file;
-  callbacks->open_file_for_write  = CAddonCB_File::open_file_for_write;
-  callbacks->read_file            = CAddonCB_File::read_file;
-  callbacks->read_file_string     = CAddonCB_File::read_file_string;
-  callbacks->write_file           = CAddonCB_File::write_file;
-  callbacks->flush_file           = CAddonCB_File::flush_file;
-  callbacks->seek_file            = CAddonCB_File::seek_file;
-  callbacks->truncate_file        = CAddonCB_File::truncate_file;
-  callbacks->get_file_position    = CAddonCB_File::get_file_position;
-  callbacks->get_file_length      = CAddonCB_File::get_file_length;
-  callbacks->close_file           = CAddonCB_File::close_file;
-  callbacks->get_file_chunk_size  = CAddonCB_File::get_file_chunk_size;
-  callbacks->file_exists          = CAddonCB_File::file_exists;
-  callbacks->stat_file            = CAddonCB_File::stat_file;
-  callbacks->delete_file          = CAddonCB_File::delete_file;
+  callbacks->File.open_file            = CAddonCB_File::open_file;
+  callbacks->File.open_file_for_write  = CAddonCB_File::open_file_for_write;
+  callbacks->File.read_file            = CAddonCB_File::read_file;
+  callbacks->File.read_file_string     = CAddonCB_File::read_file_string;
+  callbacks->File.write_file           = CAddonCB_File::write_file;
+  callbacks->File.flush_file           = CAddonCB_File::flush_file;
+  callbacks->File.seek_file            = CAddonCB_File::seek_file;
+  callbacks->File.truncate_file        = CAddonCB_File::truncate_file;
+  callbacks->File.get_file_position    = CAddonCB_File::get_file_position;
+  callbacks->File.get_file_length      = CAddonCB_File::get_file_length;
+  callbacks->File.close_file           = CAddonCB_File::close_file;
+  callbacks->File.get_file_chunk_size  = CAddonCB_File::get_file_chunk_size;
+  callbacks->File.file_exists          = CAddonCB_File::file_exists;
+  callbacks->File.stat_file            = CAddonCB_File::stat_file;
+  callbacks->File.delete_file          = CAddonCB_File::delete_file;
+  callbacks->File.get_file_md5         = CAddonCB_File::get_file_md5;
 }
 
 void* CAddonCB_File::open_file(
@@ -220,6 +222,19 @@ bool CAddonCB_File::delete_file(
         const char*               strFileName)
 {
   return CFile::Delete(strFileName);
+}
+
+char* CAddonCB_File::get_file_md5(
+        void*                     hdl,
+        const char*               strFileName)
+{
+  std::string string;
+  if (strFileName != nullptr)
+    string = CUtil::GetFileMD5(strFileName);
+  else
+    string = "";
+  char* buffer = strdup(string.c_str());
+  return buffer;
 }
 
 }; /* namespace V2 */

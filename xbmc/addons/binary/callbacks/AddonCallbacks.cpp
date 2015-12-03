@@ -104,7 +104,6 @@ void* CAddonCallbacks::AddOnLib_RegisterLevel(void *addonData, int level)
   }
 
   void* cb = CAddonCallbacksAddonBase::CreateHelper(addon, level);
-  fprintf(stderr, "-------55--- %s %p\n", __PRETTY_FUNCTION__, cb);
   if (!cb)
     CLog::Log(LOGERROR, "%s: %s/%s - called with not supported API level '%i'",
                           __FUNCTION__,
@@ -122,7 +121,6 @@ void CAddonCallbacks::AddOnLib_UnRegisterMe(void *addonData, void *cbTable)
     return;
   }
 
-  fprintf(stderr, "...---> %s\n", __PRETTY_FUNCTION__);
   CAddonCallbacksAddonBase::DestroyHelper(addon);
 }
 

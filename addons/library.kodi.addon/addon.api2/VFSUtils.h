@@ -61,20 +61,27 @@ namespace V2
     const std::string& Path(void) const;
     bool IsFolder(void) const;
     int64_t Size(void) const;
-    const std::vector<CVFSDirEntry>& Properties(void);
+    const std::vector<CVFSProperty>& Properties(void);
 
     void SetLabel(const std::string& label);
     void SetPath(const std::string& path);
     void SetFolder(bool bFolder);
     void SetSize(int64_t size);
-    std::vector<CVFSDirEntry>& Properties(void);
+    std::vector<CVFSProperty>& Properties(void);
 
     IMPL_VFS_DIR_ENTRY;
   };
 
-  class VFSUtils
+  class CAddOnLib_VFSUtils
   {
   public:
+    /*!
+     * @brief Lists a directory.
+     * @param path Path to the directory.
+     * @param mask File mask
+     * @param items The directory entries
+     * @return True if listing was successful, false otherwise.
+     */
     static bool GetDirectory(
                const std::string&          path,
                const std::string&          mask,
