@@ -1,9 +1,9 @@
 # *<p align="center">Kodi development</p>*
-#### *<p align="center">Group: ```Sound playback```</p>*
+#### *<p align="center">Group: ```Stream utilities```</p>*
 
 ----------
 
-The with #include ```<kodi/addon.api2/SoundUtils.h>``` given functions are basically used to allow add-on access to Kodi's functions
+The with #include ```<kodi/addon.api2/StreamUtils.h>``` given functions are basically used to allow add-on access to Kodi's functions
 
 Classes
 -------------
