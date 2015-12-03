@@ -87,7 +87,7 @@ demonstration code is inserted there.
     - Set mute
   * [bool CAddOnLib_General::EjectOpticalDrive();](docs/General.md)
     - Eject a drive
-  * [void CAddOnLib_General::KodiVersion(kodi_version_t& version);](docs/General.md)
+  * [void CAddOnLib_General::KodiVersion(kodi_version_t& version);](docs/General.md#CAddOnLib_General_KodiVersion)
     - Current version
   * [void CAddOnLib_General::KodiQuit();](docs/General.md)
     - Quit Kodi
