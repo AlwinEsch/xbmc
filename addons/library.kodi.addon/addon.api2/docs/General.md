@@ -1,5 +1,5 @@
 # *<p align="center">Kodi development</p>*
-#### *<p align="center">Group: ```File```</p>*
+#### *<p align="center">Group: ```General```</p>*
 
 ----------
 
