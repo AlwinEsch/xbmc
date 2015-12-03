@@ -8,7 +8,7 @@ The with #include ```<kodi/addon.api2/VFSUtils.h>``` given functions are basical
 Functions
 -------------
 
-*  <b>```bool VFSUtils::GetDirectory(const std::string& path, const std::string& mask, std::vector<CVFSDirEntry>& items);```</b>
+*  <b>```bool CAddOnLib_VFSUtils::GetDirectory(const std::string& path, const std::string& mask, std::vector<CVFSDirEntry>& items);```</b>
     * Lists a directory.
 	    * <b>```path```</b> Path to the directory.
 	    * <b>```mask```</b> File mask
