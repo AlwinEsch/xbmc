@@ -28,24 +28,35 @@ namespace AddOnLIB
 namespace V2
 {
 
-  class CAddOnLib_File
+  class CVFSFile
   {
   public:
+    /*!
+     * @brief Construct a new, unopened file
+     */
+    CVFSFile();
+
+    /*!
+     * @brief Close() is called from the destructor, so explicitly closing the
+     * file isn't required
+     */
+    virtual ~CVFSFile();
+
     /*!
      * @brief Open the file with filename via KODI's CFile. Needs to be closed by calling CloseFile() when done.
      * @param strFileName The filename to open.
      * @param flags The flags to pass. Documented in KODI's File.h
-     * @return A handle for the file, or NULL if it couldn't be opened.
+     * @return True on success or false on failure
      */
-    static void* OpenFile(const std::string& strFileName, unsigned int flags);
+    bool Open(const std::string& strFileName, unsigned int flags = 0);
 
     /*!
      * @brief Open the file with filename via KODI's CFile in write mode. Needs to be closed by calling CloseFile() when done.
      * @param strFileName The filename to open.
      * @param bOverWrite True to overwrite, false otherwise.
-     * @return A handle for the file, or NULL if it couldn't be opened.
+     * @return True on success or false on failure
      */
-    static void* OpenFileForWrite(const std::string& strFileName, bool bOverWrite);
+    bool OpenForWrite(const std::string& strFileName, bool bOverWrite = false);
 
     /*!
      * @brief Read from an open file.
@@ -56,7 +67,7 @@ namespace V2
      *         buffer, zero if no bytes are available to read (end of file was reached)
      *         or undetectable error occur, -1 in case of any explicit error
      */
-    static ssize_t ReadFile(void* file, void* lpBuf, size_t uiBufSize);
+    ssize_t Read(void* lpBuf, size_t uiBufSize);
 
     /*!
      * @brief Read a string from an open file.
@@ -65,7 +76,7 @@ namespace V2
      * @param iLineLength The size of the buffer.
      * @return True when a line was read, false otherwise.
      */
-    static bool ReadFileString(void* file, char *szLine, int iLineLength);
+    bool ReadLine(std::string &strLine);
 
     /*!
      * @brief Write to a file opened in write mode.
@@ -76,13 +87,13 @@ namespace V2
      *         zero if no bytes were written and no detectable error occur,
      *         -1 in case of any explicit error
      */
-    static ssize_t WriteFile(void* file, const void* lpBuf, size_t uiBufSize);
+    ssize_t Write(const void* lpBuf, size_t uiBufSize);
 
     /*!
      * @brief Flush buffered data.
      * @param file The file handle to flush the data for.
      */
-    static void FlushFile(void* file);
+    void Flush();
 
     /*!
      * @brief Seek in an open file.
@@ -91,7 +102,7 @@ namespace V2
      * @param iWhence Seek argument. See stdio.h for possible values.
      * @return The new position.
      */
-    static int64_t SeekFile(void* file, int64_t iFilePosition, int iWhence);
+    int64_t Seek(int64_t iFilePosition, int iWhence);
 
     /*!
      * @brief Truncate a file to the requested size.
@@ -99,35 +110,44 @@ namespace V2
      * @param iSize The new max size.
      * @return New size?
      */
-    static int TruncateFile(void* file, int64_t iSize);
+    int Truncate(int64_t iSize);
 
     /*!
      * @brief The current position in an open file.
      * @param file The file handle to get the position for.
      * @return The requested position.
      */
-    static int64_t GetFilePosition(void* file);
+    int64_t GetPosition();
 
     /*!
      * @brief Get the file size of an open file.
      * @param file The file to get the size for.
      * @return The requested size.
      */
-    static int64_t GetFileLength(void* file);
+    int64_t GetLength();
 
     /*!
      * @brief Close an open file.
      * @param file The file handle to close.
      */
-    static void CloseFile(void* file);
+    void Close();
 
     /*!
      * @brief Get the chunk size for an open file.
      * @param file the file handle to get the size for.
      * @return The requested size.
      */
-    static int GetFileChunkSize(void* file);
+    int GetChunkSize();
 
+    IMPL_FILE;
+  };
+
+  /*\___________________________________________________________________________
+  \*/
+  
+  class CAddOnLib_File
+  {
+  public:
     /*!
      * @brief Check if a file exists.
      * @param strFileName The filename to check.
@@ -150,6 +170,35 @@ namespace V2
      * @return The file was successfully deleted.
      */
     static bool DeleteFile(const std::string& strFileName);
+
+    /*!
+     * @brief retrieve MD5sum of a file
+     * @param strPath - path to the file to MD5sum
+     * @return md5 sum of the file
+     */
+    static std::string GetFileMD5(const std::string& strPath);
+
+    /*!
+     * @brief Return a size aligned to the chunk size at least as large as the chunk size.
+     * @param chunk The chunk size
+     * @param minimum The minimum size (or maybe the minimum number of chunks?)
+     * @return The aligned size
+     */
+    static unsigned int GetChunkSize(unsigned int chunk, unsigned int minimum)
+
+    /*!
+     * @brief Return the file name from given complate path string
+     */
+    static std::string GetFileName(
+        const std::string&  path,
+        char                separator = PATH_SEPARATOR_CHAR);
+
+    /*!
+     * @brief Return the directory name from given complate path string
+     */
+    static std::string GetDirectoryName(
+        const std::string&  path,
+        char                separator = PATH_SEPARATOR_CHAR);
   }; /* class CAddOnLib_File */
 
 }; /* namespace V2 */

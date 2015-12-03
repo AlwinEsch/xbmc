@@ -35,10 +35,11 @@ namespace V2
   typedef void    _free_string(void* hdl, char* str);
   typedef float   _get_volume(void* hdl, bool percentage);
   typedef void    _set_volume(void* hdl, float value, bool isPercentage);
-  typedef bool     _is_muted(void* hdl);
-  typedef void     _toggle_mute(void* hdl);
-  typedef void     _kodi_version(void* hdl, char*& compile_name, int& major, int& minor, char*& revision, char*& tag, char*& tagversion);
-  typedef void     _kodi_quit(void* hdl);
+  typedef bool    _is_muted(void* hdl);
+  typedef void    _toggle_mute(void* hdl);
+  typedef bool    _eject_optical_drive(void* hdl);
+  typedef void    _kodi_version(void* hdl, char*& compile_name, int& major, int& minor, char*& revision, char*& tag, char*& tagversion);
+  typedef void    _kodi_quit(void* hdl);
 
   typedef struct CB_AddOn_General
   {
@@ -55,6 +56,7 @@ namespace V2
     _set_volume*                    set_volume;
     _is_muted*                      is_muted;
     _toggle_mute*                   toggle_mute;
+    _eject_optical_drive*           eject_optical_drive;
     _kodi_version*                  kodi_version;
     _kodi_quit*                     kodi_quit;
   } CB_AddOnLib_General;

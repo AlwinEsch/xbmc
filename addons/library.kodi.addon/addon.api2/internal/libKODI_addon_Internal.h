@@ -21,7 +21,7 @@
 
 #include <memory>
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -35,6 +35,8 @@
 #include "libKODI_addon_FileHead.h"
 #include "libKODI_addon_NetworkHead.h"
 #include "libKODI_addon_VFSUtilsHead.h"
+
+#include "xbmc_addon_types.h"
 
 #ifdef _WIN32                   // windows
   #ifndef _SSIZE_T_DEFINED
@@ -242,19 +244,20 @@ extern "C"
       return ret;
     }
 
-    std::string GetLocalizedString(uint32_t labelId)
+    std::string GetLocalizedString(uint32_t labelId, const std::string& strDefault)
     {
-      std::string retString;
-      char* string = m_Callbacks->General.get_localized_string(m_Handle, labelId);
-      if (string != nullptr)
+      std::string strReturn = strDefault;
+      char* strMsg = m_Callbacks->General.get_localized_string(m_Handle, labelId);
+      if (strMsg != nullptr)
       {
-        retString = string;
-        m_Callbacks->General.free_string(m_Handle, string);
+        if (std::strlen(strMsg))
+          strReturn = strMsg;
+        m_Callbacks->General.free_string(m_Handle, strMsg);
       }
-      return retString;
+      return strReturn;
     }
 
-    const std::string GetDVDMenuLanguage()
+    std::string GetDVDMenuLanguage()
     {
       std::string language;
       language.resize(16);
@@ -289,6 +292,11 @@ extern "C"
     {
       if (m_Callbacks->General.is_muted(m_Handle) != mute)
         m_Callbacks->General.toggle_mute(m_Handle);
+    }
+
+    bool EjectOpticalDrive()
+    {
+      return m_Callbacks->General.eject_optical_drive(m_Handle);
     }
 
     void KodiVersion(kodi_version_t& version)
@@ -511,8 +519,26 @@ extern "C"
     {
       return m_Callbacks->Codec.free_demux_packet(m_Handle, pPacket);
     }
+
     /*\_________________________________________________________________________
     \*/
+
+    std::string TranslateAddonStatus(ADDON_STATUS status)
+    {
+      switch (status)
+      {
+        case ADDON_STATUS_OK:                 return "OK";
+        case ADDON_STATUS_LOST_CONNECTION:    return "Lost connection";
+        case ADDON_STATUS_NEED_RESTART:       return "Needs restart";
+        case ADDON_STATUS_NEED_SETTINGS:      return "Needs settngs";
+        case ADDON_STATUS_UNKNOWN:            return "Unknown";
+        case ADDON_STATUS_NEED_SAVEDSETTINGS: return "Needs saved settings";
+        case ADDON_STATUS_PERMANENT_FAILURE:  return "Permanent failure";
+        default:
+          break;
+      }
+      return "";
+    }
 
   protected:
     _register_level*  KODI_register;

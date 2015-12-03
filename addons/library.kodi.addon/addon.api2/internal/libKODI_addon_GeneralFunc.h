@@ -31,9 +31,38 @@ namespace V2
     CAddonLib::g_libKODI_Internal->Log(loglevel, format, args);
   }
 
-  inline bool CAddOnLib_General::GetSetting(const std::string& settingName, void *settingValue)
+  inline bool CAddOnLib_General::GetSettingString(
+      const std::string& settingName,
+      std::string&       settingValue)
   {
-    return CAddonLib::g_libKODI_Internal->GetSetting(settingName, settingValue);
+    char * buffer = (char*) malloc(1024);
+    buffer[0] = 0; /* Set the end of string */
+    bool ret = CAddonLib::g_libKODI_Internal->GetSetting(settingName, buffer);
+    if (ret)
+      settingValue = buffer;
+    free(buffer);
+    return ret;
+  }
+
+  inline bool CAddOnLib_General::GetSettingInt(
+      const std::string& settingName,
+      int&               settingValue)
+  {
+    return CAddonLib::g_libKODI_Internal->GetSetting(settingName, &settingValue);
+  }
+
+  inline bool CAddOnLib_General::GetSettingBoolean(
+      const std::string& settingName,
+      bool&              settingValue)
+  {
+    return CAddonLib::g_libKODI_Internal->GetSetting(settingName, &settingValue);
+  }
+
+  inline bool CAddOnLib_General::GetSettingFloat(
+      const std::string& settingName,
+      float&             settingValue)
+  {
+    return CAddonLib::g_libKODI_Internal->GetSetting(settingName, &settingValue);
   }
 
   inline void CAddOnLib_General::QueueNotification(const queue_msg_t type, const char *format, ... )
@@ -81,12 +110,12 @@ namespace V2
     return CAddonLib::g_libKODI_Internal->UnknownToUTF8(stringSrc, utf8StringDst, failOnBadChar);
   }
 
-  inline std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId)
+  inline std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string& strDefault)
   {
-    return CAddonLib::g_libKODI_Internal->GetLocalizedString(labelId);
+    return CAddonLib::g_libKODI_Internal->GetLocalizedString(labelId, strDefault);
   }
 
-  inline const std::string CAddOnLib_General::GetDVDMenuLanguage()
+  inline std::string CAddOnLib_General::GetDVDMenuLanguage()
   {
     return CAddonLib::g_libKODI_Internal->GetDVDMenuLanguage();
   }
@@ -116,6 +145,11 @@ namespace V2
     CAddonLib::g_libKODI_Internal->SetMute(mute);
   }
 
+  inline bool CAddOnLib_General::EjectOpticalDrive()
+  {
+    return CAddonLib::g_libKODI_Internal->EjectOpticalDrive();
+  }
+
   inline void CAddOnLib_General::KodiVersion(kodi_version_t& version)
   {
     CAddonLib::g_libKODI_Internal->KodiVersion(version);
@@ -124,6 +158,11 @@ namespace V2
   inline void CAddOnLib_General::KodiQuit()
   {
     CAddonLib::g_libKODI_Internal->KodiQuit();
+  }
+
+  inline std::string TranslateAddonStatus(ADDON_STATUS status)
+  {
+    return CAddonLib::g_libKODI_Internal->TranslateAddonStatus(status);
   }
 
 }; /* namespace V2 */

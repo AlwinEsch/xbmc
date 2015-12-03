@@ -24,21 +24,22 @@ namespace AddOnLIB
 namespace V2
 {
 
-typedef void*   _open_file(void* HANDLE, const char* strFileName, unsigned int flags);
-typedef void*   _open_file_for_write(void* HANDLE, const char* strFileName, bool bOverWrite);
-typedef ssize_t _read_file(void* HANDLE, void* file, void* lpBuf, size_t uiBufSize);
-typedef bool    _read_file_string(void* HANDLE, void* file, char *szLine, int iLineLength);
-typedef ssize_t _write_file(void* HANDLE, void* file, const void* lpBuf, size_t uiBufSize);
-typedef void    _flush_file(void* HANDLE, void* file);
-typedef int64_t _seek_file(void* HANDLE, void* file, int64_t iFilePosition, int iWhence);
-typedef int     _truncate_file(void* HANDLE, void* file, int64_t iSize);
-typedef int64_t _get_file_position(void* HANDLE, void* file);
-typedef int64_t _get_file_length(void* HANDLE, void* file);
-typedef void    _close_file(void* HANDLE, void* file);
-typedef int     _get_file_chunk_size(void* HANDLE, void* file);
-typedef bool    _file_exists(void* HANDLE, const char *strFileName, bool bUseCache);
-typedef int     _stat_file(void* HANDLE, const char *strFileName, struct __stat64* buffer);
-typedef bool    _delete_file(void* HANDLE, const char *strFileName);
+typedef void*   _open_file(void* hdl, const char* strFileName, unsigned int flags);
+typedef void*   _open_file_for_write(void* hdl, const char* strFileName, bool bOverWrite);
+typedef ssize_t _read_file(void* hdl, void* file, void* lpBuf, size_t uiBufSize);
+typedef bool    _read_file_string(void* hdl, void* file, char *szLine, int iLineLength);
+typedef ssize_t _write_file(void* hdl, void* file, const void* lpBuf, size_t uiBufSize);
+typedef void    _flush_file(void* hdl, void* file);
+typedef int64_t _seek_file(void* hdl, void* file, int64_t iFilePosition, int iWhence);
+typedef int     _truncate_file(void* hdl, void* file, int64_t iSize);
+typedef int64_t _get_file_position(void* hdl, void* file);
+typedef int64_t _get_file_length(void* hdl, void* file);
+typedef void    _close_file(void* hdl, void* file);
+typedef int     _get_file_chunk_size(void* hdl, void* file);
+typedef bool    _file_exists(void* hdl, const char *strFileName, bool bUseCache);
+typedef int     _stat_file(void* hdl, const char *strFileName, struct __stat64* buffer);
+typedef bool    _delete_file(void* hdl, const char *strFileName);
+typedef char*   _get_file_md5(void* hdl, const char* strFileName);
 
 typedef struct CB_AddOn_File
 {
@@ -57,7 +58,14 @@ typedef struct CB_AddOn_File
   _file_exists*                   file_exists;
   _stat_file*                     stat_file;
   _delete_file*                   delete_file;
+  _get_file_md5*                  get_file_md5;
 } CB_AddOnLib_File;
+
+#define IMPL_FILE                                                              \
+  private:                                                                     \
+    void*         m_pFile;                                                     \
+    void*         m_Handle;                                                    \
+    CB_AddOnLib*  m_Callbacks;
 
 }; /* namespace V2 */
 }; /* namespace AddOnLIB */

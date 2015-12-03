@@ -108,6 +108,15 @@ namespace V2
   #define KODI_INVALID_CODEC_ID   0
   #define KODI_INVALID_CODEC      { KODI_CODEC_TYPE_UNKNOWN, KODI_INVALID_CODEC_ID }
 
+  /* Platform dependent path separator */
+  #ifndef PATH_SEPARATOR_CHAR
+    #if (defined(_WIN32) || defined(_WIN64))
+      #define PATH_SEPARATOR_CHAR '\\'
+    #else
+      #define PATH_SEPARATOR_CHAR '/'
+    #endif
+  #endif
+  
   #if !defined(__stat64)
     #if defined(__APPLE__)
       #define __stat64 stat

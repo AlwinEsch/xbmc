@@ -44,14 +44,44 @@ namespace V2
       ... );
 
     /*!
-     * @brief Get a settings value for this add-on.
+     * @brief Get a string settings value for this add-on.
      * @param settingName The name of the setting to get.
      * @param settingValue The value.
      * @return True if the settings was fetched successfully, false otherwise.
      */
-    static bool GetSetting(
+    static bool GetSettingString(
       const std::string& settingName,
-      void*              settingValue);
+      std::string&       settingValue);
+
+    /*!
+     * @brief Get a integer settings value for this add-on.
+     * @param settingName The name of the setting to get.
+     * @param settingValue The value.
+     * @return True if the settings was fetched successfully, false otherwise.
+     */
+    static bool GetSettingInt(
+      const std::string& settingName,
+      int&               settingValue);
+
+    /*!
+     * @brief Get a boolean settings value for this add-on.
+     * @param settingName The name of the setting to get.
+     * @param settingValue The value.
+     * @return True if the settings was fetched successfully, false otherwise.
+     */
+    static bool GetSettingBoolean(
+      const std::string& settingName,
+      bool&              settingValue);
+
+    /*!
+     * @brief Get a float settings value for this add-on.
+     * @param settingName The name of the setting to get.
+     * @param settingValue The value.
+     * @return True if the settings was fetched successfully, false otherwise.
+     */
+    static bool GetSettingFloat(
+      const std::string& settingName,
+      float&             settingValue);
 
     /*!
      * @brief Queue a notification in the GUI.
@@ -121,16 +151,18 @@ namespace V2
     /*!
      * @brief Get a localised message.
      * @param labelId The code of the message to get.
-     * @return The message.
+     * @param strDefault The default message, also helps to identify the code that is used
+     * @return The localized message, or strDefault if the add-on helper fails to return a message
      */
     static std::string GetLocalizedString(
-      uint32_t            labelId);
+      uint32_t            labelId,
+      const std::string&  strDefault = "");
 
     /*!
      * @brief Get the DVD menu language.
-     * @return The language.
+     * @return The DVD menu langauge, or empty if unknown
      */
-    static const std::string GetDVDMenuLanguage();
+    static std::string GetDVDMenuLanguage();
 
     /*!
      * @brief Get the current global Kodi audio volume
@@ -164,6 +196,12 @@ namespace V2
     static void SetMute(bool mute);
 
     /*!
+     * @brief Send eject signal to optical drive
+     * @return true if successfull done
+     */
+    static bool EjectOpticalDrive();
+
+    /*!
      * @brief Get current Kodi informations and versions,
      * returned data from the following
      *   kodi_version_t version;
@@ -185,6 +223,13 @@ namespace V2
      * WARNING: Kodi is really quited!
      */
     static void KodiQuit();
+
+    /*!
+     * @brief Translate an add-on status return code into a human-readable string
+     * @param status The return code
+     * @return A human-readable string suitable for logging
+     */
+    static std::string TranslateAddonStatus(ADDON_STATUS status);
   }; /* class CAddOnLib_General */
 
 }; /* namespace V2 */
