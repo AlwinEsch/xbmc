@@ -1,4 +1,146 @@
 # *<p align="center">Kodi development</p>*
-#### *<p align="center">Group: ```General```</p>*
+#### *<p align="center">Group: ```File```</p>*
 
+----------
+
+Functions
 -------------
+
+The with ```#include <kodi/addon.api2/General.h``` given functions are basically used to allow add-on access to Kodi's general functions
+
+*  <b>```void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);```</b>
+    * Add a message to KODI's log.
+	    * <b>```loglevel```</b>The log level of the message.
+		    *     LOG_DEBUG,
+				  LOG_INFO,
+				  LOG_NOTICE,
+				  LOG_WARNING,
+				  LOG_ERROR,
+				  LOG_SEVERE,
+				  LOG_FATAL
+	    * <b>```format```</b>The format of the message to pass to KODI.
+
+*  <b>```bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);```</b>
+    * Get a string settings value for this add-on.
+	    * <b>```settingName```</b>The name of the setting to get.
+	    * <b>```settingValue```</b>The value.
+		* <b>return:</b> true if successfull done
+
+*  <b>```bool CAddOnLib_General::GetSettingInt(const std::string& settingName, int& settingValue);```</b>
+    * Get a integer settings value for this add-on.
+	    * <b>```settingName```</b>The name of the setting to get.
+	    * <b>```settingValue```</b>The value.
+		* <b>return:</b> true if successfull done
+
+*  <b>```bool CAddOnLib_General::GetSettingBoolean(const std::string& settingName, bool& settingValue);```</b>
+    * Get a boolean settings value for this add-on.
+	    * <b>```settingName```</b>The name of the setting to get.
+	    * <b>```settingValue```</b>The value.
+		* <b>return:</b> true if successfull done
+
+*  <b>```bool CAddOnLib_General::GetSettingFloat(const std::string& settingName, float& settingValue);```</b>
+    * Get a float settings value for this add-on.
+	    * <b>```settingName```</b>The name of the setting to get.
+	    * <b>```settingValue```</b>The value.
+		* <b>return:</b> true if successful done
+
+*  <b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const char* format, ...);```</b>
+    * Queue a notification in the GUI.
+	    * <b>```type```</b>The message type.
+		    *     QUEUE_INFO,
+				  QUEUE_WARNING,
+				  QUEUE_ERROR
+	    * <b>```format```</b>The format of the message to pass to display in Kodi.
+	    * <b>```...```</b>Added string values
+
+*  <b>```void CAddOnLib_General::QueueNotification(const queue_msg_t  type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b>
+    * Queue a notification in the GUI.
+	    * <b>```type```</b>The message type.
+		    *     QUEUE_INFO,
+				  QUEUE_WARNING,
+				  QUEUE_ERROR
+	    * <b>```aCaption```</b>Header Name
+	    * <b>```aDescription```</b>Message to display on Kodi
+	    * <b>```displayTime```</b>The time how long message is displayed (default 5 sec)
+	    * <b>```withSound```</b>if true also warning sound becomes played
+	    * <b>```messageTime```</b>how many milli seconds start show of notification
+
+*  <b>```void CAddOnLib_General::QueueNotification(const std::string& aCaption, const std::string& aDescription);```</b>
+    * Queue a notification in the GUI.
+	    * <b>```aCaption```</b>Header Name
+	    * <b>```aDescription```</b>Message to display on Kodi
+
+*  <b>```void CAddOnLib_General::QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime = 5000, bool withSound   = true, unsigned int messageTime = 1000);```</b>
+    * Queue a notification in the GUI.
+	    * <b>```aImageFile```</b>The image file to show on message
+	    * <b>```aCaption```</b>Header Name
+	    * <b>```aDescription```</b>Message to display on Kodi
+	    * <b>```displayTime```</b>The time how long message is displayed (default 5 sec)
+	    * <b>```withSound```</b> true also warning sound becomes played
+	    * <b>```messageTime```</b>in how many milli seconds start show of notification
+
+*  <b>```bool CAddOnLib_General::UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);```</b>
+    * Translate a string with an unknown encoding to UTF8.
+	    * <b>```stringSrc```</b>The string to translate.
+	    * <b>```utf8StringDst```</b>The translated string.
+	    * <b>```failOnBadChar```</b>return failed if bad character is inside
+		* <b>return:</b> true if OK
+
+*  <b>```std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string&  strDefault = "");```</b>
+    * Get a localized message.
+	    * <b>```labelId```</b>The code of the message to get.
+	    * <b>```strDefault```</b>The default message, also helps to identify the code that is used
+		* <b>return:</b> The localized message, or strDefault if the add-on helper fails to return a message
+
+*  <b>```std::string CAddOnLib_General::GetDVDMenuLanguage();```</b>
+    * Get the DVD menu language.
+		* <b>return:</b> The DVD menu langauge, or empty if unknown
+
+*  <b>```float CAddOnLib_General::GetVolume(bool percentage = true);```</b>
+    * Get the current global Kodi audio volume
+	    * <b>```percentage```</b>if set to false becomes amplication level returned
+		* <b>return:</b> The volume value
+
+*  <b>```void CAddOnLib_General::SetVolume(float value, bool isPercentage = true);```</b>
+    * Set the current global Kodi audio volume
+	    * <b>```value```</b>the volume to use
+	    * <b>```isPercentage```</b>if set to false becomes amplication level use
+
+*  <b>```bool CAddOnLib_General::IsMuted();```</b>
+    * Ask if Kodi audio is muted
+		* <b>return:</b> true if audio is muted
+
+*  <b>```void CAddOnLib_General::ToggleMute(void);```</b>
+    * Toggle the audio volume between on and off
+
+*  <b>```void CAddOnLib_General::SetMute(bool mute);```</b>
+    * Set Kodi's mute
+	    * <b>```mute```</b>with set to true becomes it muted otherwise audio is present
+
+*  <b>```bool CAddOnLib_General::EjectOpticalDrive();```</b>
+    * Send eject signal to optical drive
+		* <b>return:</b> true if successfull done
+
+*  <b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);```</b>
+    * Get current Kodi informations and versions,
+      returned data from the following
+        ```kodi_version_t version;```
+        ```CAddOnLib_General::KodiVersion(version);```
+      is e.g.:
+       ```version.compile_name = Kodi```
+        ```version.major        = 16```
+        ```version.minor        = 0```
+        ```version.revision     = 2015-11-30-74edffb-dirty```
+        ```version.tag          = beta```
+        ```version.tag_revision = 1
+       ```
+	    * <b>```version```</b>version structure to store data from kodi
+
+*  <b>```void CAddOnLib_General::KodiQuit();```</b>
+    * Tell Kodi to stop work, go to exit and stop his work.
+      <b>WARNING:</b> Kodi is really quited!
+
+*  <b>```std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);```</b>
+    * Translate an add-on status return code into a human-readable string
+	    * <b>```bUseCache```</b> The return code
+		* <b>return:</b> A human-readable string suitable for logging
