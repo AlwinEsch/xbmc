@@ -94,6 +94,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 		* <b>return:</b> The localized message, or strDefault if the add-on helper fails to return a message
 
 *  <a id="CAddOnLib_General_GetDVDMenuLanguage"></a><b>```std::string CAddOnLib_General::GetDVDMenuLanguage();```</b>
+    * Get the DVD menu language.
 		* <b>return:</b> The DVD menu langauge, or empty if unknown
 
 *  <a id="CAddOnLib_General_GetVolume"></a><b>```float CAddOnLib_General::GetVolume(bool percentage = true);```</b>
