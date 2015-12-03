@@ -123,18 +123,30 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 		* <b>return:</b> true if successfull done
 
 *  <b>```void CAddOnLib_General::KodiVersion(kodi_version_t& version);```</b>
-    * Get current Kodi informations and versions,
-      returned data from the following
-        ```kodi_version_t version;```
-        ```CAddOnLib_General::KodiVersion(version);```
+	```C++
+	  typedef struct kodi_version
+	  {
+	    std::string compile_name;
+	
+	    int         major;
+	    int         minor;
+	    std::string revision;
+	    std::string tag;
+	    std::string tag_revision;
+	  } kodi_version_t;
+	```
+    * Get current Kodi informations and versions, returned data from the following
+        ```kodi_version_t version; CAddOnLib_General::KodiVersion(version);```
       is e.g.:
-       ```version.compile_name = Kodi```
-        ```version.major        = 16```
-        ```version.minor        = 0```
-        ```version.revision     = 2015-11-30-74edffb-dirty```
-        ```version.tag          = beta```
-        ```version.tag_revision = 1 ```
-	    * <b>```version```</b>version structure to store data from kodi
+	```C++
+		version.compile_name = Kodi
+		version.major        = 16
+		version.minor        = 0
+		version.revision     = 2015-11-30-74edffb-dirty
+		version.tag          = beta
+		version.tag_revision = 1
+	```
+	*  <b>```version```</b>version structure to store data from kodi
 
 *  <b>```void CAddOnLib_General::KodiQuit();```</b>
     * Tell Kodi to stop work, go to exit and stop his work.
