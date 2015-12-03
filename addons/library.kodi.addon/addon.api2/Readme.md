@@ -11,7 +11,7 @@ Below is a code example do show what must be done on add-on base function to bec
 
 using namespace AddOnLIB::V2;
 
-# Insert one macro on your add-on for it
+// Insert one macro on your add-on for it
 IMPLEMENT_KODI_ADDON_LIBRARY;
 
 ...
@@ -21,13 +21,13 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
   if (!hdl || !props)
     return ADDON_STATUS_UNKNOWN;
 
-  # Enable access to all add-on to Kodi functions
+  // Enable access to all add-on to Kodi functions
   if (!CAddonLib::RegisterMe(hdl))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   ...
   
-  # Example lib call
+  // Example lib call
   CAddOnLib_General::Log(LOG_INFO, "My add-on creation done");
 
   return ADDON_STATUS_OK;
