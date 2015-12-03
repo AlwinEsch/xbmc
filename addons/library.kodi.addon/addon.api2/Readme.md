@@ -51,50 +51,50 @@ demonstration code is inserted there.
 
 ###### Functions
 1. [CAddOnLib_General](docs/General.md) - General functions
-  * [void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);](docs/General.md) 
+  * [void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);](docs/General.md#CAddOnLib_General_Log) 
     - Kodi log file write
-  * [bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);](docs/General.md)   
+  * [bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);](docs/General.md#CAddOnLib_General_GetSettingString)   
     - Settings read
-  * [bool CAddOnLib_General::GetSettingInt(const std::string& settingName, int& settingValue);](docs/General.md)
+  * [bool CAddOnLib_General::GetSettingInt(const std::string& settingName, int& settingValue);](docs/General.md#CAddOnLib_General_GetSettingInt)
     - Settings read
-  * [bool CAddOnLib_General::GetSettingBoolean(const std::string& settingName, bool& settingValue);](docs/General.md)
+  * [bool CAddOnLib_General::GetSettingBoolean(const std::string& settingName, bool& settingValue);](docs/General.md#CAddOnLib_General_GetSettingBoolean)
     - Settings read
-  * [bool CAddOnLib_General::GetSettingFloat(const std::string& settingName, float& settingValue);](docs/General.md)
+  * [bool CAddOnLib_General::GetSettingFloat(const std::string& settingName, float& settingValue);](docs/General.md#CAddOnLib_General_GetSettingFloat)
     - Settings read
-  * [void CAddOnLib_General::QueueNotification(const queue_msg_t type, const char* format, ...);](docs/General.md)
+  * [void CAddOnLib_General::QueueNotification(const queue_msg_t type, const char* format, ...);](docs/General.md#CAddOnLib_General_QueueNotification_1)
     - Notification message
-  * [void CAddOnLib_General::QueueNotification(const queue_msg_t type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](docs/General.md)
+  * [void CAddOnLib_General::QueueNotification(const queue_msg_t type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](docs/General.md#CAddOnLib_General_QueueNotification_2)
     - Notification message
-  * [void CAddOnLib_General::QueueNotification(const std::string& aCaption, const std::string& aDescription);](docs/General.md)
+  * [void CAddOnLib_General::QueueNotification(const std::string& aCaption, const std::string& aDescription);](docs/General.md#CAddOnLib_General_QueueNotification_3)
     - Notification message
-  * [void CAddOnLib_General::QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](docs/General.md)
+  * [void CAddOnLib_General::QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](docs/General.md#CAddOnLib_General_QueueNotification_4)
     - Notification message
-  * [bool CAddOnLib_General::UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);](docs/General.md)
+  * [bool CAddOnLib_General::UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);](docs/General.md#CAddOnLib_General_UnknownToUTF8)
     - String convert to UTF8
-  * [std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string& strDefault = "");](docs/General.md)
+  * [std::string CAddOnLib_General::GetLocalizedString(uint32_t labelId, const std::string& strDefault = "");](docs/General.md#CAddOnLib_General_GetLocalizedString)
     - Localized string return
-  * [std::string CAddOnLib_General::GetDVDMenuLanguage();](docs/General.md)
+  * [std::string CAddOnLib_General::GetDVDMenuLanguage();](docs/General.md#CAddOnLib_General_GetDVDMenuLanguage)
     - DVD language
-  * [float CAddOnLib_General::GetVolume(bool percentage = true);](docs/General.md)
+  * [float CAddOnLib_General::GetVolume(bool percentage = true);](docs/General.md#CAddOnLib_General_GetVolume)
     - Current volume
-  * [void CAddOnLib_General::SetVolume(float value, bool isPercentage = true);](docs/General.md)
+  * [void CAddOnLib_General::SetVolume(float value, bool isPercentage = true);](docs/General.md#CAddOnLib_General_SetVolume)
     - Set volume
-  * [bool CAddOnLib_General::IsMuted();](docs/General.md)
+  * [bool CAddOnLib_General::IsMuted();](docs/General.md#CAddOnLib_General_IsMuted)
     - Is muted?
-  * [void CAddOnLib_General::ToggleMute(void);](docs/General.md)
+  * [void CAddOnLib_General::ToggleMute(void);](docs/General.md#CAddOnLib_General_ToggleMute)
     - Toogle mute
-  * [void CAddOnLib_General::SetMute(bool mute);](docs/General.md)
+  * [void CAddOnLib_General::SetMute(bool mute);](docs/General.md#CAddOnLib_General_SetMute)
     - Set mute
-  * [bool CAddOnLib_General::EjectOpticalDrive();](docs/General.md)
+  * [bool CAddOnLib_General::EjectOpticalDrive();](docs/General.md#CAddOnLib_General_EjectOpticalDrive)
     - Eject a drive
   * [void CAddOnLib_General::KodiVersion(kodi_version_t& version);](docs/General.md#CAddOnLib_General_KodiVersion)
     - Current version
-  * [void CAddOnLib_General::KodiQuit();](docs/General.md)
+  * [void CAddOnLib_General::KodiQuit();](docs/General.md#CAddOnLib_General_KodiQuit)
     - Quit Kodi
-  * [std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);](docs/General.md)
+  * [std::string CAddOnLib_General::TranslateAddonStatus(ADDON_STATUS status);](docs/General.md#CAddOnLib_General_TranslateAddonStatus)
     - Become string about error
 - [CAddOnLib_Codec](docs/Codec.md) - Codec functions
-  * [kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);](docs/Codec.md) 
+  * [kodi_codec_t CAddOnLib_Codec::GetCodecByName(const std::string &strCodecName);](docs/Codec.md#CAddOnLib_General_GetCodecByName)
     - Get the codec id used by Kodi
   * [DemuxPacket* CAddOnLib_Codec::AllocateDemuxPacket(int iDataSize);](docs/Codec.md) 
     - Allocate a demux packet. Free with FreeDemuxPacket
