@@ -19,6 +19,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
 				  LOG_SEVERE,
 				  LOG_FATAL
 	    * <b>```format```</b>The format of the message to pass to KODI.
+	    * <b>```...```</b>Added string values
 
 *  <b>```bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);```</b>
     * Get a string settings value for this add-on.
@@ -132,8 +133,7 @@ The with ```#include <kodi/addon.api2/General.h``` given functions are basically
         ```version.minor        = 0```
         ```version.revision     = 2015-11-30-74edffb-dirty```
         ```version.tag          = beta```
-        ```version.tag_revision = 1
-       ```
+        ```version.tag_revision = 1 ```
 	    * <b>```version```</b>version structure to store data from kodi
 
 *  <b>```void CAddOnLib_General::KodiQuit();```</b>
