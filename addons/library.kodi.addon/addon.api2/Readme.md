@@ -47,7 +47,7 @@ Below is showing you a description and usage of parts which becomes usable on ad
 demonstration code is inserted there.
 
 ###### Functions
-1. [CAddOnLib_General](docs/General.md) - Generak functions
+1. [CAddOnLib_General](docs/General.md) - General functions
   * [void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);](docs/General.md) 
     - Kodi log file write
   * [bool CAddOnLib_General::GetSettingString(const std::string& settingName, std::string& settingValue);](docs/General.md)   
