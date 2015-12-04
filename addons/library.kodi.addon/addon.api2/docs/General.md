@@ -8,6 +8,30 @@ Functions
 
 The with ```#include <kodi/addon.api2/General.h``` given functions are basically used to allow add-on access to Kodi's general functions
 
+1. [void Log(const addon_log_t loglevel, const char* format, ...);](#CAddOnLib_General_Log) 
+* [bool GetSettingString(const std::string& settingName, std::string& settingValue);](#CAddOnLib_General_GetSettingString) 
+* [bool GetSettingInt(const std::string& settingName, int& settingValue);](#CAddOnLib_General_GetSettingInt)
+* [bool GetSettingBoolean(const std::string& settingName, bool& settingValue);](#CAddOnLib_General_GetSettingBoolean)
+* [bool GetSettingFloat(const std::string& settingName, float& settingValue);](#CAddOnLib_General_GetSettingFloat)
+* [void QueueNotification(const queue_msg_t type, const char* format, ...);](#CAddOnLib_General_QueueNotification_1)
+* [void QueueNotification(const queue_msg_t type, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](#CAddOnLib_General_QueueNotification_2)
+* [void QueueNotification(const std::string& aCaption, const std::string& aDescription);](#CAddOnLib_General_QueueNotification_3)
+* [void QueueNotification(const std::string& aImageFile, const std::string& aCaption, const std::string& aDescription, unsigned int displayTime, bool withSound, unsigned int messageTime);](#CAddOnLib_General_QueueNotification_4)
+* [bool UnknownToUTF8(const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);](#CAddOnLib_General_UnknownToUTF8)
+* [std::string GetLocalizedString(uint32_t labelId, const std::string& strDefault = "");](#CAddOnLib_General_GetLocalizedString)
+* [std::string GetDVDMenuLanguage();](#CAddOnLib_General_GetDVDMenuLanguage)
+* [float GetVolume(bool percentage = true);](#CAddOnLib_General_GetVolume)
+* [void SetVolume(float value, bool isPercentage = true);](#CAddOnLib_General_SetVolume)
+* [bool IsMuted();](#CAddOnLib_General_IsMuted)
+* [void ToggleMute(void);](#CAddOnLib_General_ToggleMute)
+* [void SetMute(bool mute);](#CAddOnLib_General_SetMute)
+* [bool EjectOpticalDrive();](#CAddOnLib_General_EjectOpticalDrive)
+* [void KodiVersion(kodi_version_t& version);](#CAddOnLib_General_KodiVersion)
+* [void KodiQuit();](#CAddOnLib_General_KodiQuit)
+* [std::string TranslateAddonStatus(ADDON_STATUS status);](#CAddOnLib_General_TranslateAddonStatus)
+
+-------------
+
 *  <a id="CAddOnLib_General_Log"></a><b>```void CAddOnLib_General::Log(const addon_log_t loglevel, const char* format, ...);```</b>
     * Add a message to KODI's log.
 	    * <b>```loglevel```</b>The log level of the message.
