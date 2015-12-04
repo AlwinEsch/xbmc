@@ -101,7 +101,7 @@ namespace V2
     return m_size;
   }
 
-  inline const std::vector<CVFSDirEntry>& CVFSDirEntry::Properties(void) const
+  inline const std::vector<CVFSProperty>& CVFSDirEntry::Properties(void) const
   {
     return m_properties;
   }

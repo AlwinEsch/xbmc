@@ -76,7 +76,7 @@ extern "C"
       std::string m_path;                                                      \
       bool m_bFolder;                                                          \
       int64_t m_size;                                                          \
-      std::vector<CVFSDirEntry> m_properties;
+      std::vector<CVFSProperty> m_properties;
 
 }; /* extern "C" */
 }; /* namespace V2 */
