@@ -54,18 +54,18 @@ std::shared_ptr<IAddon> CAddonBuilder::Build()
   if (m_built)
     throw std::logic_error("Already built");
 
-  if (m_addonInfo.m_id.empty())
+  if (m_addonInfo.id.empty())
     return nullptr;
 
   m_built = true;
 
-  if (m_addonInfo.m_mainType == ADDON_UNKNOWN)
+  if (m_addonInfo.type == ADDON_UNKNOWN)
     return std::make_shared<CAddon>(std::move(m_addonInfo));
 
   if (m_extPoint == nullptr)
     return FromProps(std::move(m_addonInfo));
 
-  const TYPE type(m_addonInfo.m_mainType);
+  const TYPE type(m_addonInfo.type);
 
   // Handle screensaver special cases
   if (type == ADDON_SCREENSAVER)
@@ -173,7 +173,7 @@ AddonPtr CAddonBuilder::FromProps(CAddonInfo addonInfo)
   // FIXME: there is no need for this as none of the derived classes will contain any useful
   // information. We should return CAddon instances only, however there are several places that
   // down casts, which need to fixed first.
-  switch (addonInfo.m_mainType)
+  switch (addonInfo.type)
   {
     case ADDON_PLUGIN:
     case ADDON_SCRIPT:
