@@ -28,7 +28,7 @@
 #include <vector>
 #include <map>
 #include <deque>
-
+#include <tuple>
 
 class DllLibCPluff;
 extern "C"
@@ -116,6 +116,8 @@ namespace ADDON
     bool GetInstallableAddons(VECADDONS& addons);
 
     bool GetInstallableAddons(VECADDONS& addons, const TYPE &type);
+
+    bool GetInstalledBinaryAddonPaths(std::vector<std::tuple<std::string, bool, std::string>>& binaryAddonList);
 
     /*! Get the installable addon with the highest version. */
     bool FindInstallableById(const std::string& addonId, AddonPtr& addon);
