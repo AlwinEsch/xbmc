@@ -26,7 +26,7 @@
 
 #include "Application.h"
 #include "FileItem.h"
-#include "addons/AddonDll.h"
+#include "addons/binary-addons/AddonDll.h"
 #include "addons/Skin.h"
 #include "filesystem/File.h"
 #include "guilib/GUIRenderingControl.h"
@@ -153,7 +153,7 @@ void* Interface_GUIWindow::create(void* kodiBase, const char* xml_filename,
     // Check for the matching folder for the skin in the fallback skins folder (if it exists)
     if (XFILE::CFile::Exists(basePath))
     {
-      addonInfo.SetPath(basePath);
+      addonInfo.path = basePath;
       ADDON::CSkinInfo skinInfo(addonInfo, res);
       skinInfo.Start();
       strSkinPath = skinInfo.GetSkinPath(xml_filename, &res);
@@ -162,7 +162,7 @@ void* Interface_GUIWindow::create(void* kodiBase, const char* xml_filename,
     if (!XFILE::CFile::Exists(strSkinPath))
     {
       // Finally fallback to the DefaultSkin as it didn't exist in either the Kodi Skin folder or the fallback skin folder
-      addonInfo.SetPath(URIUtils::AddFileToFolder(fallbackPath, default_skin));
+      addonInfo.path = URIUtils::AddFileToFolder(fallbackPath, default_skin);
       ADDON::CSkinInfo skinInfo(addonInfo, res);
 
       skinInfo.Start();

@@ -277,15 +277,15 @@ GUIHANDLE CAddonCallbacksGUI::Window_New(void *addonData, const char *xmlFilenam
     //FIXME make this static method of current skin?
     std::string str("none");
     CAddonInfo addonInfo(str, ADDON_SKIN);
-    addonInfo.SetPath(URIUtils::AddFileToFolder(
+    addonInfo.path = URIUtils::AddFileToFolder(
       guiHelper->m_addon->Path(),
       "resources",
       "skins",
-      defaultSkin));
+      defaultSkin);
 
     std::shared_ptr<CSkinInfo> skinInfo = std::make_shared<ADDON::CSkinInfo>(addonInfo);
     skinInfo->Start();
-    strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res, addonInfo.Path());
+    strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res, addonInfo.path);
 
     if (!XFILE::CFile::Exists(strSkinPath))
     {

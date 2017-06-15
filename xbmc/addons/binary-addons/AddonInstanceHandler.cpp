@@ -19,6 +19,7 @@
  */
 
 #include "AddonInstanceHandler.h"
+#include "BinaryAddonBase.h"
 
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -26,28 +27,62 @@
 namespace ADDON
 {
 
-IAddonInstanceHandler::IAddonInstanceHandler(ADDON_TYPE type, const AddonDllPtr& addonInfo, KODI_HANDLE parentInstance/* = nullptr*/, const std::string& instanceID/* = ""*/)
+IAddonInstanceHandler::IAddonInstanceHandler(ADDON_TYPE type, const BinaryAddonBasePtr& addonBase, KODI_HANDLE parentInstance/* = nullptr*/, const std::string& instanceID/* = ""*/)
   : m_type(type),
     m_parentInstance(parentInstance),
-    m_addon(addonInfo)
+    m_addonBase(addonBase)
 {
   // if no special instance ID is given generate one from class pointer (is
   // faster as unique id and also safe enough for them).
   m_instanceId = !instanceID.empty() ? instanceID : StringUtils::Format("%p", static_cast<void*>(this));
+
+  m_addon = m_addonBase->GetAddon(this);
+  if (!m_addon)
+    CLog::Log(LOGFATAL, "ADDON::IAddonInstanceHandler: Tried to get add-on '%s' who not available!", m_addonBase->ID().c_str());
 }
 
 IAddonInstanceHandler::~IAddonInstanceHandler()
 {
+  m_addonBase->ReleaseAddon(this);
+}
+
+std::string IAddonInstanceHandler::ID() const
+{
+  return m_addon ? m_addon->ID() : "";
+}
+
+std::string IAddonInstanceHandler::Name() const
+{
+  return m_addon ? m_addon->Name() : "";
+}
+
+std::string IAddonInstanceHandler::Author() const
+{
+  return m_addon ? m_addon->Author() : "";
+}
+
+std::string IAddonInstanceHandler::Icon() const
+{
+  return m_addon ? m_addon->Icon() : "";
+}
+
+std::string IAddonInstanceHandler::Path() const
+{
+  return m_addon ? m_addon->Path() : "";
+}
+
+std::string IAddonInstanceHandler::Profile() const
+{
+  return m_addon ? m_addon->Profile() : "";
+}
+
+AddonVersion IAddonInstanceHandler::Version() const
+{
+  return m_addon ? m_addon->Version() : AddonVersion("0.0.0");
 }
 
 bool IAddonInstanceHandler::CreateInstance(KODI_HANDLE instance)
 {
-  if (!m_addon)
-  {
-    CLog::Log(LOGFATAL, "Addon: Tried to create instance with not present addon class");
-    return false;
-  }
-
   ADDON_STATUS status = m_addon->CreateInstance(m_type, m_instanceId, instance, m_parentInstance);
   if (status != ADDON_STATUS_OK)
   {
@@ -59,8 +94,7 @@ bool IAddonInstanceHandler::CreateInstance(KODI_HANDLE instance)
 
 void IAddonInstanceHandler::DestroyInstance()
 {
-  if (m_addon)
-    m_addon->DestroyInstance(m_instanceId);
+  m_addon->DestroyInstance(m_instanceId);
 }
 
 } /* namespace ADDON */

@@ -20,8 +20,9 @@
 
 #include "AddonDll.h"
 
-#include "AddonStatusHandler.h"
+#include "addons/AddonStatusHandler.h"
 #include "GUIUserMessages.h"
+#include "ServiceBroker.h"
 #include "addons/settings/GUIDialogAddonSettings.h"
 #include "events/EventLog.h"
 #include "events/NotificationEvent.h"
@@ -47,17 +48,30 @@
 namespace ADDON
 {
 
+CAddonDll::CAddonDll(CAddonInfo addonInfo, BinaryAddonBasePtr addonBase)
+  : CAddon(std::move(addonInfo)),
+    m_pHelpers(nullptr),
+    m_bIsChild(false),
+    m_binaryAddonBase(addonBase),
+    m_pDll(nullptr),
+    m_initialized(false),
+    m_needsavedsettings(false),
+    m_interface{0}
+{
+}
+
 CAddonDll::CAddonDll(CAddonInfo addonInfo)
   : CAddon(std::move(addonInfo)),
-    m_bIsChild(false)
+    m_pHelpers(nullptr),
+    m_bIsChild(false),
+    m_binaryAddonBase(nullptr),
+    m_pDll(nullptr),
+    m_initialized(false),
+    m_needsavedsettings(false),
+    m_interface{0}
 {
-  m_initialized = false;
-  m_pDll        = NULL;
-  m_pHelpers    = NULL;
-  m_needsavedsettings = false;
-  m_parentLib.clear();
-  m_interface = {0};
 }
+
 
 CAddonDll::CAddonDll(const CAddonDll &rhs)
   : CAddon(rhs),
@@ -99,7 +113,7 @@ bool CAddonDll::LoadDll()
       libPath = tempbin + libPath;
       if (!XFILE::CFile::Exists(libPath))
       {
-        CLog::Log(LOGERROR, "ADDON: Could not locate %s", m_addonInfo.LibName().c_str());
+        CLog::Log(LOGERROR, "ADDON: Could not locate %s", m_addonInfo.libname.c_str());
         return false;
       }
     }
@@ -122,7 +136,7 @@ bool CAddonDll::LoadDll()
   if (!XFILE::CFile::Exists(strFileName))
   {
     std::string tempbin = getenv("XBMC_ANDROID_LIBS");
-    strFileName = tempbin + "/" + m_addonInfo.LibName();
+    strFileName = tempbin + "/" + m_addonInfo.libname;
   }
 #endif
   if (!XFILE::CFile::Exists(strFileName))
@@ -130,7 +144,7 @@ bool CAddonDll::LoadDll()
     std::string altbin = CSpecialProtocol::TranslatePath("special://xbmcaltbinaddons/");
     if (!altbin.empty())
     {
-      strAltFileName = altbin + m_addonInfo.LibName();
+      strAltFileName = altbin + m_addonInfo.libname;
       if (!XFILE::CFile::Exists(strAltFileName))
       {
         std::string temp = CSpecialProtocol::TranslatePath("special://xbmc/addons/");
@@ -151,7 +165,7 @@ bool CAddonDll::LoadDll()
       strFileName = tempbin + strFileName;
       if (!XFILE::CFile::Exists(strFileName))
       {
-        CLog::Log(LOGERROR, "ADDON: Could not locate %s", m_addonInfo.LibName().c_str());
+        CLog::Log(LOGERROR, "ADDON: Could not locate %s", m_addonInfo.libname.c_str());
         return false;
       }
     }
@@ -385,6 +399,14 @@ void CAddonDll::DestroyInstance(const std::string& instanceID)
     Destroy();
 }
 
+AddonPtr CAddonDll::GetRunningInstance() const
+{
+  AddonPtr addon = CServiceBroker::GetBinaryAddonManager().GetRunningAddon(ID());
+  if (addon)
+    return addon;
+  return AddonPtr();
+}
+
 bool CAddonDll::DllLoaded(void) const
 {
   return m_pDll != NULL;
@@ -520,7 +542,7 @@ bool CAddonDll::UpdateSettingInActiveDialog(const char* id, const std::string& v
     return false;
 
   CGUIDialogAddonSettings* dialog = g_windowManager.GetWindow<CGUIDialogAddonSettings>(WINDOW_DIALOG_ADDON_SETTINGS);
-  if (dialog->GetCurrentAddonID() != m_addonInfo.ID())
+  if (dialog->GetCurrentAddonID() != ID())
     return false;
 
   CGUIMessage message(GUI_MSG_SETTING_UPDATED, 0, 0);
