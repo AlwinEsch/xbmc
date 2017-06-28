@@ -49,8 +49,6 @@ void cp_logger(cp_log_severity_t level, const char *msg, const char *apid, void 
  *
  */
 
-std::map<TYPE, IAddonMgrCallback*> CAddonMgr::m_managers;
-
 static cp_extension_t* GetFirstExtPoint(const cp_plugin_info_t* addon, TYPE type)
 {
   for (unsigned int i = 0; i < addon->num_extensions; ++i)
@@ -258,30 +256,6 @@ CAddonMgr::~CAddonMgr()
 CAddonMgr &CAddonMgr::GetInstance()
 {
   return CServiceBroker::GetAddonMgr();
-}
-
-IAddonMgrCallback* CAddonMgr::GetCallbackForType(TYPE type)
-{
-  if (m_managers.find(type) == m_managers.end())
-    return NULL;
-  else
-    return m_managers[type];
-}
-
-bool CAddonMgr::RegisterAddonMgrCallback(const TYPE type, IAddonMgrCallback* cb)
-{
-  if (cb == NULL)
-    return false;
-
-  m_managers.erase(type);
-  m_managers[type] = cb;
-
-  return true;
-}
-
-void CAddonMgr::UnregisterAddonMgrCallback(TYPE type)
-{
-  m_managers.erase(type);
 }
 
 bool CAddonMgr::Init()

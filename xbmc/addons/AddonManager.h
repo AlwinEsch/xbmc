@@ -50,20 +50,6 @@ namespace ADDON
   const std::string ADDON_PYTHON_EXT           = "*.py";
 
   /**
-  * Class - IAddonMgrCallback
-  * This callback should be inherited by any class which manages
-  * specific addon types. Could be mostly used for Dll addon types to handle
-  * cleanup before restart/removal
-  */
-  class IAddonMgrCallback
-  {
-    public:
-      virtual ~IAddonMgrCallback() = default;
-      virtual bool RequestRestart(AddonPtr addon, bool datachanged)=0;
-      virtual bool RequestRemoval(AddonPtr addon)=0;
-  };
-
-  /**
   * Class - CAddonMgr
   * Holds references to all addons, enabled or
   * otherwise. Services the generic callbacks available
@@ -83,10 +69,6 @@ namespace ADDON
     virtual ~CAddonMgr();
 
     CEventStream<AddonEvent>& Events() { return m_events; }
-
-    IAddonMgrCallback* GetCallbackForType(TYPE type);
-    bool RegisterAddonMgrCallback(TYPE type, IAddonMgrCallback* cb);
-    void UnregisterAddonMgrCallback(TYPE type);
 
     /*! \brief Retrieve a specific addon (of a specific type)
      \param id the id of the addon to retrieve.
@@ -308,7 +290,6 @@ namespace ADDON
 
     std::set<std::string> m_disabled;
     std::set<std::string> m_updateBlacklist;
-    static std::map<TYPE, IAddonMgrCallback*> m_managers;
     CCriticalSection m_critSection;
     CAddonDatabase m_database;
     CEventSource<AddonEvent> m_events;
