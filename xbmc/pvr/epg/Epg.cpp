@@ -22,7 +22,7 @@
 
 #include <utility>
 
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/PVRClient.h"
 #include "EpgContainer.h"
 #include "EpgDatabase.h"
 #include "ServiceBroker.h"

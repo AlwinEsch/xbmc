@@ -57,7 +57,7 @@ namespace PVR
     long long   diskTotal = 0;
   };
 
-  class CPVRClients : public ADDON::IAddonMgrCallback
+  class CPVRClients : public ADDON::IBinaryAddonManagerCallback
   {
   public:
     CPVRClients(void);
@@ -68,10 +68,13 @@ namespace PVR
      */
     void Start(void);
 
-    /*!
-     * @brief Update add-ons from the AddonManager
-     */
-    void UpdateAddons(void);
+    virtual void EnableEvent(ADDON::BinaryAddonBasePtr addon) override;
+    virtual void DisableEvent(ADDON::BinaryAddonBasePtr addon) override;
+    virtual void UpdateEvent(ADDON::BinaryAddonBasePtr addon) override;
+    virtual void InstallEvent(ADDON::BinaryAddonBasePtr addon, bool update, bool modal) override;
+    virtual void PreUnInstallEvent(ADDON::BinaryAddonBasePtr addon) override;
+    virtual void PostUnInstallEvent(ADDON::BinaryAddonBasePtr addon) override;
+    virtual void RequestRestartEvent(ADDON::BinaryAddonBasePtr addon) override;
 
     /*! @name Backend methods */
     //@{
@@ -88,7 +91,7 @@ namespace PVR
      * @param addon The addon.
      * @return True if the the addon represents a created client, false otherwise.
      */
-    bool IsCreatedClient(const ADDON::AddonPtr &addon);
+    bool IsCreatedClient(const ADDON::BinaryAddonBasePtr& addon);
 
     /*!
      * @brief Get the instance of the client, if it's created.
@@ -104,21 +107,6 @@ namespace PVR
      * @return The amount of added clients.
      */
     int GetCreatedClients(PVR_CLIENTMAP &clients) const;
-
-    /*!
-     * @brief Restart a single client add-on.
-     * @param addon The add-on to restart.
-     * @param bDataChanged True if the client's data changed, false otherwise (unused).
-     * @return True if the client was found and restarted, false otherwise.
-     */
-    bool RequestRestart(ADDON::AddonPtr addon, bool bDataChanged) override;
-
-    /*!
-     * @brief Remove a single client add-on.
-     * @param addon The add-on to remove.
-     * @return True if the client was found and removed, false otherwise.
-     */
-    bool RequestRemoval(ADDON::AddonPtr addon) override;
 
     /*!
      * @brief Unload all loaded add-ons and reset all class properties.
@@ -146,7 +134,7 @@ namespace PVR
      * @param bRestart If true, restart the client.
      * @return True if the client was found, false otherwise.
      */
-    bool StopClient(const ADDON::AddonPtr &client, bool bRestart);
+    bool StopClient(const ADDON::BinaryAddonBasePtr &addon, bool bRestart);
 
     /*!
      * @return The amount of connected clients.
@@ -606,7 +594,7 @@ namespace PVR
 
     //@}
 
-    bool GetClient(const std::string &strId, ADDON::AddonPtr &addon) const;
+    bool GetClient(const std::string &strId, PVR_CLIENT &addon) const;
 
     /*!
      * @brief Query the the given client's capabilities.
@@ -641,6 +629,19 @@ namespace PVR
 
   private:
     /*!
+     * @brief Update add-ons from the AddonManager
+     */
+    void UpdateAddons(void);
+
+    /*!
+     * @brief Update add-on from the AddonManager
+     *
+     * @param[in] addon pointer to addon who becomes update
+     * @param[in] enabled true if addon become enabled, false if disabled
+     */
+    void UpdateAddon(const ADDON::BinaryAddonBasePtr& addon, bool enabled);
+
+    /*!
      * @brief Get the instance of the client.
      * @param iClientId The id of the client to get.
      * @param addon The client.
@@ -653,10 +654,10 @@ namespace PVR
      * @param client The client to check.
      * @return True if this client is registered, false otherwise.
      */
-    bool IsKnownClient(const ADDON::AddonPtr &client) const;
+    bool IsKnownClient(const ADDON::BinaryAddonBasePtr& addon) const;
 
 
-    int GetClientId(const ADDON::AddonPtr &client) const;
+    int GetClientId(const ADDON::BinaryAddonBasePtr& addon) const;
 
 
     bool                  m_bIsSwitchingChannels;        /*!< true while switching channels */

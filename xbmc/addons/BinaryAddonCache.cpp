@@ -33,7 +33,6 @@ CBinaryAddonCache::~CBinaryAddonCache()
 void CBinaryAddonCache::Init()
 {
   m_addonsToCache = {
-    ADDON_PVRDLL,
     ADDON_GAMEDLL,
   };
   CAddonMgr::GetInstance().Events().Subscribe(this, &CBinaryAddonCache::OnEvent);

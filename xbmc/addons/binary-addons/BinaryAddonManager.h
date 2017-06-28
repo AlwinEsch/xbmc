@@ -49,7 +49,7 @@ namespace ADDON
     virtual void InstallEvent(BinaryAddonBasePtr addon, bool update, bool modal) {}
     virtual void PreUnInstallEvent(BinaryAddonBasePtr addon) {}
     virtual void PostUnInstallEvent(BinaryAddonBasePtr addon) {}
-    virtual bool RequestRestart(BinaryAddonBasePtr addon, bool datachanged) { return false; }
+    virtual void RequestRestartEvent(BinaryAddonBasePtr addon) { }
   };
 
   class CBinaryAddonDataProtocol : public Actor::Protocol
@@ -64,6 +64,7 @@ namespace ADDON
       POST_INSTALL_EVENT,
       PRE_UNINSTALL_EVENT,
       POST_UNINSTALL_EVENT,
+      REQUEST_RESTART_EVENT,
       TIMEOUT,
     };
     enum InSignal
@@ -216,6 +217,7 @@ namespace ADDON
     void OnPostInstallEvent(const std::string& addonId, bool update, bool modal);
     void OnPreUnInstallEvent(const std::string& addonId);
     void OnPostUnInstallEvent(const std::string& addonId);
+    void OnRequestRestartEvent(const std::string& addonId);
     //@}
 
   private:

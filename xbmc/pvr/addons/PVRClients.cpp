@@ -28,6 +28,7 @@
 #include "ServiceBroker.h"
 #include "cores/IPlayer.h"
 #include "guilib/LocalizeStrings.h"
+#include "addons/binary-addons/BinaryAddonBase.h"
 #include "messaging/ApplicationMessenger.h"
 #include "pvr/channels/PVRChannelGroupInternal.h"
 #include "pvr/channels/PVRChannelGroups.h"
@@ -56,15 +57,55 @@ CPVRClients::CPVRClients(void) :
 
 CPVRClients::~CPVRClients(void)
 {
-  CAddonMgr::GetInstance().UnregisterAddonMgrCallback(ADDON_PVRDLL);
+  CServiceBroker::GetBinaryAddonManager().UnregisterCallback(ADDON_PVRDLL);
   Unload();
 }
 
 void CPVRClients::Start(void)
 {
-  CAddonMgr::GetInstance().RegisterAddonMgrCallback(ADDON_PVRDLL, this);
+  CServiceBroker::GetBinaryAddonManager().RegisterCallback(ADDON_PVRDLL, this);
 
   UpdateAddons();
+}
+
+void CPVRClients::EnableEvent(BinaryAddonBasePtr addon)
+{
+  UpdateAddon(addon, true);
+  CServiceBroker::GetPVRManager().Start();
+}
+
+void CPVRClients::DisableEvent(BinaryAddonBasePtr addon)
+{
+  UpdateAddon(addon, false);
+  CServiceBroker::GetPVRManager().Start();
+}
+
+void CPVRClients::UpdateEvent(BinaryAddonBasePtr addon)
+{
+  CServiceBroker::GetPVRManager().Stop();
+  StopClient(addon, false);
+}
+
+void CPVRClients::InstallEvent(BinaryAddonBasePtr addon, bool update, bool modal)
+{
+  CServiceBroker::GetPVRManager().Stop();
+  UpdateAddons();
+}
+
+void CPVRClients::PreUnInstallEvent(BinaryAddonBasePtr addon)
+{
+  CServiceBroker::GetPVRManager().Stop();
+  StopClient(addon, false);
+}
+
+void CPVRClients::PostUnInstallEvent(BinaryAddonBasePtr addon)
+{
+  UpdateAddons();
+}
+
+void CPVRClients::RequestRestartEvent(BinaryAddonBasePtr addon)
+{
+  StopClient(addon, true);
 }
 
 bool CPVRClients::IsCreatedClient(int iClientId) const
@@ -73,7 +114,7 @@ bool CPVRClients::IsCreatedClient(int iClientId) const
   return GetCreatedClient(iClientId, client);
 }
 
-bool CPVRClients::IsCreatedClient(const AddonPtr &addon)
+bool CPVRClients::IsCreatedClient(const BinaryAddonBasePtr& addon)
 {
   CSingleLock lock(m_critSection);
 
@@ -83,13 +124,13 @@ bool CPVRClients::IsCreatedClient(const AddonPtr &addon)
   return false;
 }
 
-int CPVRClients::GetClientId(const AddonPtr &client) const
+int CPVRClients::GetClientId(const BinaryAddonBasePtr& addon) const
 {
   CSingleLock lock(m_critSection);
 
   for (auto &entry : m_clientMap)
   {
-    if (entry.second->ID() == client->ID())
+    if (entry.second->ID() == addon->ID())
     {
       return entry.first;
     }
@@ -128,16 +169,6 @@ bool CPVRClients::GetCreatedClient(int iClientId, PVR_CLIENT &addon) const
   if (GetClient(iClientId, addon))
     return addon->ReadyToUse();
   return false;
-}
-
-bool CPVRClients::RequestRestart(AddonPtr addon, bool bDataChanged)
-{
-  return StopClient(addon, true);
-}
-
-bool CPVRClients::RequestRemoval(AddonPtr addon)
-{
-  return StopClient(addon, false);
 }
 
 void CPVRClients::Unload(void)
@@ -197,14 +228,14 @@ bool CPVRClients::HasEnabledClients(void) const
   return false;
 }
 
-bool CPVRClients::StopClient(const AddonPtr &client, bool bRestart)
+bool CPVRClients::StopClient(const BinaryAddonBasePtr &addon, bool bRestart)
 {
   /* stop playback if needed */
   if (IsPlaying())
     CApplicationMessenger::GetInstance().SendMsg(TMSG_MEDIA_STOP);
 
   CSingleLock lock(m_critSection);
-  int iId = GetClientId(client);
+  int iId = GetClientId(addon);
   PVR_CLIENT mappedClient;
   if (GetClient(iId, mappedClient))
   {
@@ -949,7 +980,7 @@ bool CPVRClients::RenameChannel(const CPVRChannelPtr &channel)
   return (error == PVR_ERROR_NO_ERROR || error == PVR_ERROR_NOT_IMPLEMENTED);
 }
 
-bool CPVRClients::IsKnownClient(const AddonPtr &client) const
+bool CPVRClients::IsKnownClient(const BinaryAddonBasePtr& client) const
 {
   // database IDs start at 1
   return GetClientId(client) > 0;
@@ -957,68 +988,72 @@ bool CPVRClients::IsKnownClient(const AddonPtr &client) const
 
 void CPVRClients::UpdateAddons(void)
 {
-  VECADDONS addons;
-  CAddonMgr::GetInstance().GetInstalledAddons(addons, ADDON_PVRDLL);
+  BinaryAddonBaseList addonInfos;
+  CServiceBroker::GetBinaryAddonManager().GetAddonInfos(addonInfos, false, ADDON_PVRDLL);
 
-  if (addons.empty())
+  if (addonInfos.empty())
     return;
 
-  for (auto &addon : addons)
+  for (auto &addon : addonInfos)
   {
-    bool bEnabled = !CAddonMgr::GetInstance().IsAddonDisabled(addon->ID());
-
-    if (bEnabled && (!IsKnownClient(addon) || !IsCreatedClient(addon)))
-    {
-      std::hash<std::string> hasher;
-      int iClientId = static_cast<int>(hasher(addon->ID()));
-      if (iClientId < 0)
-        iClientId = -iClientId;
-
-      ADDON_STATUS status;
-      if (IsKnownClient(addon))
-      {
-        PVR_CLIENT client;
-        GetClient(iClientId, client);
-        status = client->Create(iClientId);
-      }
-      else
-      {
-        PVR_CLIENT pvrclient = std::dynamic_pointer_cast<CPVRClient>(addon);
-        if (!pvrclient)
-        {
-          CLog::Log(LOGERROR, "CPVRClients - %s - severe error, incorrect add-on type", __FUNCTION__);
-          continue;
-        }
-        status = pvrclient.get()->Create(iClientId);
-        // register the add-on
-        if (m_clientMap.find(iClientId) == m_clientMap.end())
-        {
-          m_clientMap.insert(std::make_pair(iClientId, pvrclient));
-          m_addonNameIds.insert(make_pair(addon->ID(), iClientId));
-        }
-      }
-
-      if (status != ADDON_STATUS_OK)
-      {
-        CLog::Log(LOGERROR, "%s - failed to create add-on %s, status = %d", __FUNCTION__, addon->Name().c_str(), status);
-        if (status == ADDON_STATUS_PERMANENT_FAILURE)
-        {
-          CAddonMgr::GetInstance().DisableAddon(addon->ID());
-          CJobManager::GetInstance().AddJob(new CPVREventlogJob(true, true, addon->Name(), g_localizeStrings.Get(24070), addon->Icon()), nullptr);
-        }
-      }
-    }
-    else if (IsCreatedClient(addon))
-    {
-      // stop add-on if it's no longer enabled, restart add-on if it's still enabled
-      StopClient(addon, bEnabled);
-    }
+    bool enabled = CServiceBroker::GetBinaryAddonManager().IsAddonEnabled(addon->ID(), ADDON_PVRDLL);
+    UpdateAddon(addon, enabled);
   }
 
   CServiceBroker::GetPVRManager().Start();
 }
 
-bool CPVRClients::GetClient(const std::string &strId, AddonPtr &addon) const
+void CPVRClients::UpdateAddon(const BinaryAddonBasePtr& addon, bool enabled)
+{
+  if (enabled && (!IsKnownClient(addon) || !IsCreatedClient(addon)))
+  {
+    std::hash<std::string> hasher;
+    int iClientId = static_cast<int>(hasher(addon->ID()));
+    if (iClientId < 0)
+      iClientId = -iClientId;
+
+    ADDON_STATUS status;
+    if (IsKnownClient(addon))
+    {
+      PVR_CLIENT client;
+      GetClient(iClientId, client);
+      status = client->Create(iClientId);
+    }
+    else
+    {
+      PVR_CLIENT pvrclient = std::make_shared<CPVRClient>(addon);
+      if (!pvrclient)
+      {
+        CLog::Log(LOGERROR, "CPVRClients - %s - severe error, incorrect add-on type", __FUNCTION__);
+        return;
+      }
+      status = pvrclient.get()->Create(iClientId);
+      // register the add-on
+      if (m_clientMap.find(iClientId) == m_clientMap.end())
+      {
+        m_clientMap.insert(std::make_pair(iClientId, pvrclient));
+        m_addonNameIds.insert(make_pair(addon->ID(), iClientId));
+      }
+    }
+
+    if (status != ADDON_STATUS_OK)
+    {
+      CLog::Log(LOGERROR, "%s - failed to create add-on %s, status = %d", __FUNCTION__, addon->Name().c_str(), status);
+      if (status == ADDON_STATUS_PERMANENT_FAILURE)
+      {
+        CAddonMgr::GetInstance().DisableAddon(addon->ID());
+        CJobManager::GetInstance().AddJob(new CPVREventlogJob(true, true, addon->Name(), g_localizeStrings.Get(24070), addon->Icon()), nullptr);
+      }
+    }
+  }
+  else if (IsCreatedClient(addon))
+  {
+    // stop add-on if it's no longer enabled, restart add-on if it's still enabled
+    StopClient(addon, enabled);
+  }
+}
+
+bool CPVRClients::GetClient(const std::string &strId, PVR_CLIENT &addon) const
 {
   CSingleLock lock(m_critSection);
   for (const auto &client : m_clientMap)

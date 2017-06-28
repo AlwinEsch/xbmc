@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/PVRClient.h"
 #include "pvr/PVRSettings.h"
 #include "pvr/PVRTypes.h"
 #include "PVRTimerInfoTag.h"

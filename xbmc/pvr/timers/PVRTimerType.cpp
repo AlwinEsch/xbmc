@@ -19,7 +19,7 @@
  */
 
 #include "ServiceBroker.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/PVRClient.h"
 #include "guilib/LocalizeStrings.h"
 #include "pvr/timers/PVRTimerType.h"
 #include "pvr/addons/PVRClients.h"

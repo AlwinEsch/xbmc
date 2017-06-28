@@ -36,7 +36,6 @@
 #include "addons/Webinterface.h"
 #include "games/addons/GameClient.h"
 #include "games/controllers/Controller.h"
-#include "addons/PVRClient.h"
 #include "utils/StringUtils.h"
 
 using namespace KODI;
@@ -125,12 +124,11 @@ std::shared_ptr<IAddon> CAddonBuilder::Build()
     case ADDON_IMAGEDECODER:
     case ADDON_INPUTSTREAM:
     case ADDON_PERIPHERALDLL:
+    case ADDON_PVRDLL:
     case ADDON_VFS:
     case ADDON_VIZ:
     case ADDON_SCREENSAVER:
       return std::make_shared<CAddonDll>(std::move(m_addonInfo));
-    case ADDON_PVRDLL:
-      return std::make_shared<PVR::CPVRClient>(std::move(m_addonInfo));
     case ADDON_GAMEDLL:
       return GAME::CGameClient::FromExtension(std::move(m_addonInfo), m_extPoint);
     case ADDON_SKIN:
@@ -191,12 +189,11 @@ AddonPtr CAddonBuilder::FromProps(CAddonInfo addonInfo)
     case ADDON_IMAGEDECODER:
     case ADDON_INPUTSTREAM:
     case ADDON_PERIPHERALDLL:
+    case ADDON_PVRDLL:
     case ADDON_VFS:
     case ADDON_VIZ:
     case ADDON_SCREENSAVER:
       return AddonPtr(new CAddonDll(std::move(addonInfo)));
-    case ADDON_PVRDLL:
-      return AddonPtr(new PVR::CPVRClient(std::move(addonInfo)));
     case ADDON_RESOURCE_IMAGES:
       return AddonPtr(new CImageResource(std::move(addonInfo)));
     case ADDON_RESOURCE_GAMES:

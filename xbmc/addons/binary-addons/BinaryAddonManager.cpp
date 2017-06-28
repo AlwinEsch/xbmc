@@ -291,6 +291,31 @@ void CBinaryAddonManager::StateMachine(int signal, Actor::Message *msg)
       }
       break;
     }
+    case CBinaryAddonDataProtocol::REQUEST_RESTART_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+          break;
+
+        base = addon->second;
+      }
+
+      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Removing binary addon '%s'", __FUNCTION__, addonId);
+
+      for (auto &type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->RequestRestartEvent(base);
+      }
+      break;
+    }
   }
 }
 
@@ -479,6 +504,11 @@ void CBinaryAddonManager::OnPreUnInstallEvent(const std::string& addonId)
 void CBinaryAddonManager::OnPostUnInstallEvent(const std::string& addonId)
 {
   m_control.SendOutMessage(CBinaryAddonDataProtocol::POST_UNINSTALL_EVENT, const_cast<char*>(addonId.c_str()), addonId.size()+1);
+}
+
+void CBinaryAddonManager::OnRequestRestartEvent(const std::string& addonId)
+{
+  m_control.SendOutMessage(CBinaryAddonDataProtocol::REQUEST_RESTART_EVENT, const_cast<char*>(addonId.c_str()), addonId.size()+1);
 }
 
 //@}

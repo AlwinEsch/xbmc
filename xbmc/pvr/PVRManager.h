@@ -20,7 +20,7 @@
  */
 
 #include "FileItem.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/PVRClient.h"
 #include "interfaces/IAnnouncer.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"

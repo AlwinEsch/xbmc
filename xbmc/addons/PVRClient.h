@@ -24,9 +24,8 @@
 #include <string>
 #include <vector>
 
-#include "addons/Addon.h"
-#include "addons/binary-addons/AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"
+#include "addons/binary-addons/AddonInstanceHandler.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/PVRClient.h"
 
 #include "pvr/PVRTypes.h"
 
@@ -206,19 +205,11 @@ namespace PVR
    *
    * Also translates Kodi's C++ structures to the add-on's C structures.
    */
-  class CPVRClient : public ADDON::CAddonDll
+  class CPVRClient : public ADDON::IAddonInstanceHandler
   {
   public:
-    explicit CPVRClient(ADDON::CAddonInfo addonInfo);
+    CPVRClient(ADDON::BinaryAddonBasePtr addonBase);
     ~CPVRClient(void) override;
-
-    void OnDisabled() override;
-    void OnEnabled() override;
-    void OnPreInstall() override;
-    void OnPostInstall(bool update, bool modal) override;
-    void OnPreUnInstall() override;
-    void OnPostUnInstall() override;
-    ADDON::AddonPtr GetRunningInstance() const override;
 
     /** @name PVR add-on methods */
     //@{
@@ -228,11 +219,6 @@ namespace PVR
      * @param iClientId The ID of this add-on.
      */
     ADDON_STATUS Create(int iClientId);
-
-    /*!
-     * @return True when the dll for this add-on was loaded, false otherwise (e.g. unresolved symbols)
-     */
-    bool DllLoaded(void) const;
 
     /*!
      * @brief Destroy the instance of this add-on.
@@ -814,11 +800,6 @@ namespace PVR
      */
     bool CanPlayChannel(const CPVRChannelPtr &channel) const;
 
-    /*!
-     * @brief Stop this instance, if it is currently running.
-     */
-    void StopRunningInstance();
-
     bool LogError(const PVR_ERROR error, const char *strMethod) const;
 
     /*!
@@ -879,7 +860,7 @@ namespace PVR
      * @param kodiInstance Pointer to Kodi's CPVRClient class
      * @param hook The hook to add.
      */
-    static void cb_add_menu_hook(void* kodiInstance, PVR_MENUHOOK* hook);
+    static void cb_add_menu_hook(void* kodiInstance, const PVR_MENUHOOK* hook);
 
     /*!
      * @brief Display a notification in Kodi that a recording started or stopped on the server

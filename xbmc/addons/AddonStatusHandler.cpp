@@ -18,7 +18,9 @@
  *
  */
 #include "AddonStatusHandler.h"
+#include "ServiceBroker.h"
 #include "addons/AddonManager.h"
+#include "addons/binary-addons/BinaryAddonManager.h"
 #include "addons/settings/GUIDialogAddonSettings.h"
 #include "threads/SingleLock.h"
 #include "messaging/ApplicationMessenger.h"
@@ -100,7 +102,7 @@ void CAddonStatusHandler::Process()
     pDialog->SetLine(1, CVariant{24074});
     pDialog->Open();
 
-    CAddonMgr::GetInstance().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+    CServiceBroker::GetBinaryAddonManager().OnRequestRestartEvent(m_addon->ID());
   }
   /* Some required settings are missing/invalid */
   else if (m_status == ADDON_STATUS_NEED_SETTINGS)
@@ -123,7 +125,7 @@ void CAddonStatusHandler::Process()
     {
       //! @todo Doesn't dialogaddonsettings save these automatically? It should do this.
       m_addon->SaveSettings();
-      CAddonMgr::GetInstance().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+      CServiceBroker::GetBinaryAddonManager().OnRequestRestartEvent(m_addon->ID());
     }
   }
 }
