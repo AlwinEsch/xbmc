@@ -99,51 +99,51 @@ typedef struct AddonInstance_Visualization /* internal */
 /// \ingroup cpp_kodi_addon_visualization
 /// @brief **Visualization track information structure**
 ///
-/// Becomes given on kodi::addon::CInstanceVisualization::UpdateTrack() call to have on
-/// information of currently played song.
+/// Called from kodi::addon::CInstanceVisualization::UpdateTrack() with the
+/// information of the currently-playing song.
 ///
 //@{
 struct VisTrack
 {
-  /// @brief Title of the currently playing song
+  /// @brief Title of the current song
   const char *title;
 
   /// @brief Get artist names from the artist decription string (if it exists)
   /// as a single string
   const char *artist;
 
-  /// @brief Album from which the current song is from
+  /// @brief Album that the current song is from
   const char *album;
 
   /// @brief Album artist names from the artist decription string (if it
   /// exists) as a single string.
   const char *albumArtist;
 
-  /// @brief Shows the genre of the currently playing artist
+  /// @brief Shows the genre of the current artist
   const char *genre;
 
-  /// @brief Comment of current song stored in ID tag info
+  /// @brief Comment of the current song stored in the ID tag info
   const char *comment;
 
-  /// @brief Lyrics of the currently played song if available
+  /// @brief Lyrics of the current song, if available
   const char *lyrics;
 
   const char *reserved1;
   const char *reserved2;
 
-  /// @brief Track number of current song
+  /// @brief Track number of the current song
   int trackNumber;
 
-  /// @brief Disc Number of current song stored in ID tag info
+  /// @brief Disc number of the current song stored in the ID tag info
   int discNumber;
 
-  /// @brief Duration of song in seconds
+  /// @brief Duration of the current song, in seconds
   int duration;
 
-  /// @brief Year of release of current song
+  /// @brief Year that the current song was released
   int year;
 
-  /// @brief The from user defined rating of song
+  /// @brief The user-defined rating of the current song
   int rating;
 
   int reserved3;
@@ -165,34 +165,30 @@ namespace addon
   /// @brief \cpp_class{ kodi::addon::CInstanceVisualization }
   /// **Visualization add-on instance**
   ///
-  /// [Music visualization](https://en.wikipedia.org/wiki/Music_visualization)
-  /// or music visualisation, a feature in Kodi, generates animated imagery
-  /// based on a piece of music. The imagery is usually generated and rendered
-  /// in real time and in a way synchronized with the music as it is played.
+  /// [Music visualization](https://en.wikipedia.org/wiki/Music_visualization),
+  /// or music visualisation, is a feature in Kodi that generates animated
+  /// imagery based on a piece of music. The imagery is usually generated and
+  /// rendered in real time synchronized to the music.
   ///
   /// Visualization techniques range from simple ones (e.g., a simulation of an
   /// oscilloscope display) to elaborate ones, which often include a plurality
   /// of composited effects. The changes in the music's loudness and frequency
   /// spectrum are among the properties used as input to the visualization.
   ///
-  /// It has the header \ref Visualization.h "#include <kodi/visualization/Visualization.h>"
-  /// be included to enjoy it.
+  /// Include the header \ref Visualization.h "#include <kodi/visualization/Visualization.h>"
+  /// to use this class.
   ///
-  /// This interface allow the creating of a visualizations for Kodi, based upon
+  /// This interface allows the creation of visualizations for Kodi, based upon
   /// **DirectX** or/and **OpenGL** rendering with `C++` code.
   ///
-  /// The interface have big possibility. By transferring the many different
-  /// data, almost everything can be possible to use items of the respective
-  /// title.
-  ///
-  /// Further are several \ref cpp_kodi_addon_visualization_CB "other functions"
-  /// available where the child class can ask about used device, display and
-  /// few other parts.
+  /// Additionally, there are several \ref cpp_kodi_addon_visualization_CB "other functions"
+  /// available in which the child class can ask about the current hardware,
+  /// including the device, display and several other parts.
   ///
   /// --------------------------------------------------------------------------
   ///
   ///
-  /// **Here as example what is minimum required to start on a visualization:**
+  /// **Here is an example of the minimum required code to start a visualization:**
   /// ~~~~~~~~~~~~~{.cpp}
   /// #include <kodi/visualization/Visualization.h>
   ///
@@ -235,7 +231,9 @@ namespace addon
   /// --------------------------------------------------------------------------
   ///
   ///
-  /// **Here another example where visualization becomes used together with other instance types:**
+  /// **Here is another example where the visualization is used together with
+  /// other instance types:**
+  ///
   /// ~~~~~~~~~~~~~{.cpp}
   /// #include <kodi/visualization/Visualization.h>
   ///
@@ -307,9 +305,8 @@ namespace addon
   /// ADDONCREATOR(CMyAddon)
   /// ~~~~~~~~~~~~~
   ///
-  /// The **desctruction** of the here created example class `CMyVisualization`
-  /// becomes done from Kodi's header and never for add-on instances a delete on
-  /// add-on itself necessary.
+  /// The destruction of the example class `CMyVisualization` is called from
+  /// Kodi's header. Manually deleting the add-on instance is not required.
   ///
   //----------------------------------------------------------------------------
   class CInstanceVisualization : public IAddonInstance
@@ -320,8 +317,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization
     /// @brief Visualization class constructor
     ///
-    /// Used on addon who supports only visualization and CAddonBase is also
-    /// included as parent.
+    /// Used by an add-on that only supports visualizations.
     ///
     CInstanceVisualization()
       : IAddonInstance(ADDON_INSTANCE_VISUALIZATION),
@@ -341,10 +337,10 @@ namespace addon
     /// @brief Visualization class constructor used to support multiple instance
     /// types
     ///
-    /// @param[in] instance               The with <b>`kodi::addon::CAddonBase::CreateInstance(...)`</b>
-    ///                                   given `instance` value.
+    /// @param[in] instance               The instance value given to
+    ///                                   <b>`kodi::addon::CAddonBase::CreateInstance(...)`</b>.
     ///
-    /// @warning Use always only `instance` value from CreateInstance call
+    /// @warning Only use `instance` from the CreateInstance call
     ///
     CInstanceVisualization(KODI_HANDLE instance)
       : IAddonInstance(ADDON_INSTANCE_VISUALIZATION),
@@ -368,15 +364,12 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To notify visualization. that new song has been started
+    /// @brief Used to notify the visualization that a new song has been started
     ///
-    /// It pass the number of audio channels, sample rate, bits/sample and
-    /// offcourse the songname.
-    ///
-    /// @param[in] channels             Amount of channels on stream
-    /// @param[in] samplesPerSec        Samples per second on stream
-    /// @param[in] bitsPerSample        Amount of bits on one sample
-    /// @param[in] songName             The name of the currently played song
+    /// @param[in] channels             Number of channels in the stream
+    /// @param[in] samplesPerSec        Samples per second of stream
+    /// @param[in] bitsPerSample        Number of bits in one sample
+    /// @param[in] songName             The name of the currently-playing song
     ///
     virtual bool Start(int channels, int samplesPerSec, int bitsPerSample, std::string songName) { return true; }
     //--------------------------------------------------------------------------
@@ -384,7 +377,8 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To inform about stop of rendering control
+    /// @brief Used to inform the visualization that the rendering control was
+    /// stopped
     ///
     virtual void Stop() {}
     //--------------------------------------------------------------------------
@@ -392,17 +386,17 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Pass audio data to visualization
+    /// @brief Pass audio data to the visualization
     ///
-    /// @param[in] audioData            is short audiodata [channel][audioDataLength]
-    ///                                 containing the raw audio data
-    /// @param[in] audioDataLength      length of audiodata array
-    /// @param[in] freqData             fft-ed audio data
-    /// @param[in] freqDataLength       length of frequeny data array
+    /// @param[in] audioData            The raw audio data
+    /// @param[in] audioDataLength      Length of the audioData array
+    /// @param[in] freqData             The [FFT](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+    ///                                 of the audio data
+    /// @param[in] freqDataLength       Length of frequency data array
     ///
-    /// Values **freqData** and **freqDataLength** becomes used if on GetInfo()
-    /// the `wantsFreq` is set to true, otherwise is **freqData** = `nullptr`
-    /// and **freqDataLength** = `0`.
+    /// Values **freqData** and **freqDataLength** are used if GetInfo() returns
+    /// true for the `wantsFreq` parameter. Otherwise, **freqData** is set to
+    /// `nullptr` and **freqDataLength** is `0`.
     ///
     virtual void AudioData(const float* audioData, int audioDataLength, float* freqData, int freqDataLength) {}
     //--------------------------------------------------------------------------
@@ -410,9 +404,10 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To inform Kodi rendered region is dirty and need update
+    /// @brief Used to inform Kodi that the rendered region is dirty and need an
+    /// update
     ///
-    /// @return true if dirty
+    /// @return True if dirty
     ///
     virtual bool IsDirty() { return true; }
     //--------------------------------------------------------------------------
@@ -420,7 +415,7 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To handle rendering time on add-on
+    /// @brief Used to indicate when the add-on should render
     ///
     virtual void Render() {}
     //--------------------------------------------------------------------------
@@ -428,16 +423,16 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To get the number of buffers from the current visualization
+    /// @brief Used to get the number of buffers from the current visualization
     ///
-    /// @param[out] wantsFreq           Fourier transform the data if the wants it.
-    ///                                 If set to true are the values
-    ///                                 **freqData** and **freqDataLength** on
-    ///                                 AudioData() used.
-    /// @param[out] syncDelay           Number of buffers from the current
+    /// @param[out] wantsFreq           Indicates whether the add-on wants FFT
+    ///                                 data. If set to true, the **freqData**
+    ///                                 and **freqDataLength** parameters of
+    ///                                 AudioData() are used.
+    /// @param[out] syncDelay           Number of buffers from the current !!! @todo
     ///
-    /// @note If function becomes not used is as defaults from parent the
-    /// `wantsFreq` = false and the `syncDelay` = 0.
+    /// @note If this function is not implemented, it will default to
+    /// `wantsFreq` = false and `syncDelay` = 0.
     ///
     virtual void GetInfo(bool& wantsFreq, int& syncDelay) { wantsFreq = false; syncDelay = 0; }
     //--------------------------------------------------------------------------
@@ -445,11 +440,13 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To get a list of selectable visualization presets on add-on
+    /// @brief Used to get a list of visualization presets the user can select
+    /// from
     ///
-    /// @param[out] presets             Vector list with selectable names of
-    ///                                 presets
-    /// @return                         Return true if successfull done
+    /// @param[out] presets             The vector list containing the names of
+    ///                                 presets that the user can select
+    /// @return                         Return true if successful, or false if
+    ///                                 there are no presets to choose from
     ///
     virtual bool GetPresets(std::vector<std::string>& presets) { return false; }
     //--------------------------------------------------------------------------
@@ -457,9 +454,9 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Get the index of currently used preset on visualization add-on
+    /// @brief Get the index of the current preset
     ///
-    /// @return                         Index number
+    /// @return                         Index number of the current preset
     ///
     virtual int GetActivePreset() { return -1; }
     //--------------------------------------------------------------------------
@@ -467,9 +464,9 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief To ask add-on is locked on current preset
+    /// @brief Check if the add-on is locked to the current preset
     ///
-    /// @return                         True if locked there
+    /// @return                         True if locked to the current preset
     ///
     virtual bool IsLocked() { return false; }
     //--------------------------------------------------------------------------
@@ -477,30 +474,30 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Load previous visualization preset
+    /// @brief Load the previous visualization preset
     ///
-    /// @return                 Return true if it becomes used from you
+    /// @return                 Return true if the previous preset was loaded
     virtual bool PrevPreset() { return false; }
     //--------------------------------------------------------------------------
 
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Load next visualization preset
+    /// @brief Load the next visualization preset
     ///
-    /// @return                 Return true if it becomes used from you
+    /// @return                 Return true if the next preset was loaded
     virtual bool NextPreset() { return false; }
     //--------------------------------------------------------------------------
 
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Load visualization preset
+    /// @brief Load a visualization preset
     ///
-    /// Becomes send after new select is requested.
+    /// This function is called after a new preset is selected.
     ///
     /// @param[in] select       Preset index to use
-    /// @return                 Return true if the load becomes used from you
+    /// @return                 Return true if the preset is loaded
     virtual bool LoadPreset(int select) { return false; }
     //--------------------------------------------------------------------------
 
@@ -509,32 +506,31 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization
     /// @brief Switch to a new random preset
     ///
-    /// @return                 Return true if the random becomes used from you
+    /// @return                 Return true if a random preset was loaded
     virtual bool RandomPreset() { return false; }
     //--------------------------------------------------------------------------
 
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Lock the current visualization preset on add-on if selected from
-    /// user
+    /// @brief Lock the current visualization preset, preventing it from changing
     ///
-    /// @param[in] lockUnlock   If set to true is the preset is needed to lock
-    ///                         there
-    /// @return                 Return true if the lock becomes used from you
+    /// @param[in] lockUnlock   If set to true, the preset should be locked
+    /// @return                 Return true if the current preset is locked
     virtual bool LockPreset(bool lockUnlock) { return false; }
     //--------------------------------------------------------------------------
 
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Used to increase/decrease track rating in full screen playback
+    /// @brief Used to increase/decrease the track rating in fullscreen playback
     ///
-    /// Press info on track and use pageplus or pageminus on keyboard/remote.
+    /// Press info on the track and use Page Up or Page Down on the
+    /// keyboard/remote.
     ///
-    /// @param[in] plusMinus    If set to true is the rate increased, otherwise
+    /// @param[in] plusMinus    If set to true the rating is increased, otherwise
     ///                         decreased
-    /// @return                 Return true if the rate becomes used from you
+    /// @return                 Return true if the rating is modified
     virtual bool RatePreset(bool plusMinus) { return false; }
     //--------------------------------------------------------------------------
 
@@ -544,7 +540,7 @@ namespace addon
     /// @brief Inform the visualization of the current album art image
     ///
     /// @param[in] albumart     Path to the current album art image
-    /// @return                 Return true if the image becomes used from you
+    /// @return                 Return true if the image is used
     virtual bool UpdateAlbumart(std::string albumart) { return false; }
     //--------------------------------------------------------------------------
 
@@ -554,14 +550,14 @@ namespace addon
     /// @brief Inform the visualization of the current track's tag information
     ///
     /// @param[in] track        Visualization track information structure
-    /// @return                 Return true if it becomes used from you
+    /// @return                 Return true if the track information is used
     virtual bool UpdateTrack(const VisTrack &track) { return false; }
 
     //==========================================================================
     ///
     /// \defgroup cpp_kodi_addon_visualization_CB Information functions
     /// \ingroup cpp_kodi_addon_visualization
-    /// @brief **To get info about device, display and few other parts**
+    /// @brief **To get info about the device, display and several other parts**
     ///
     //@{
 
@@ -570,9 +566,9 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization_CB
     /// @brief Device that represents the display adapter
     ///
-    /// @return Used device pointer
+    /// @return A pointer to the used device
     ///
-    /// @note only be available on **DirectX** and unused (`nullptr`) on
+    /// @note This is only available on **DirectX**, It us unused (`nullptr`) on
     /// **OpenGL**
     ///
     inline void* Device() { return m_instanceData->props.device; }
@@ -583,7 +579,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization_CB
     /// @brief Returns the X position of the rendering window
     ///
-    /// @return Position X in pixels
+    /// @return The X position, in pixels
     ///
     inline int X() { return m_instanceData->props.x; }
     //--------------------------------------------------------------------------
@@ -593,7 +589,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization_CB
     /// @brief Returns the Y position of the rendering window
     ///
-    /// @return Position Y in pixels
+    /// @return The Y position, in pixels
     ///
     inline int Y() { return m_instanceData->props.y; }
     //--------------------------------------------------------------------------
@@ -603,7 +599,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization_CB
     /// @brief Returns the width of the rendering window
     ///
-    /// @return Width in pixels
+    /// @return The width, in pixels
     ///
     inline int Width() { return m_instanceData->props.width; }
     //--------------------------------------------------------------------------
@@ -613,7 +609,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_visualization_CB
     /// @brief Returns the height of the rendering window
     ///
-    /// @return Height in pixels
+    /// @return The height, in pixels
     ///
     inline int Height() { return m_instanceData->props.height; }
     //--------------------------------------------------------------------------
@@ -621,11 +617,10 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization_CB
-    /// @brief Pixel aspect ratio (often abbreviated PAR) is a mathematical
-    /// ratio that describes how the width of a pixel in a digital image
-    /// compares to the height of that pixel.
+    /// @brief Pixel aspect ratio (often abbreviated PAR) is a ratio that
+    /// describes how the width of a pixel compares to the height of that pixel.
     ///
-    /// @return used Pixel aspect ratio
+    /// @return The pixel aspect ratio used by the display
     ///
     inline float PixelRatio() { return m_instanceData->props.pixelRatio; }
     //--------------------------------------------------------------------------
@@ -633,9 +628,9 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization_CB
-    /// @brief To get the in `addon.xml` defined name of the add-on
+    /// @brief Used to get the name of the add-on defined in `addon.xml`
     ///
-    /// @return Add-on name
+    /// @return The add-on name
     ///
     inline std::string Name() { return m_instanceData->props.name; }
     //--------------------------------------------------------------------------
@@ -643,9 +638,9 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization_CB
-    /// @brief To get the full path where add-on is be installed
+    /// @brief Used to get the full path where the add-on is installed
     ///
-    /// @return Add-on installation path
+    /// @return The add-on installation path
     ///
     inline std::string Presets() { return m_instanceData->props.presets; }
     //--------------------------------------------------------------------------
@@ -653,13 +648,13 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization_CB
-    /// @brief To get the full user related path name for the add-on
+    /// @brief Used to get the full path to the add-on's user profile
     ///
-    /// @note The folder with his add-on name on end is not created by default,
-    /// if it is needed must be one time a kodi::vfs::CreateDirectory()
-    /// call performed.
+    /// @note The trailing folder (consisting of the add-on's ID) is not created
+    /// by default. If it is needed, you must call kodi::vfs::CreateDirectory()
+    /// to create the folder.
     ///
-    /// @return User path name
+    /// @return Path to the user profile
     ///
     inline std::string Profile() { return m_instanceData->props.profile; }
     //--------------------------------------------------------------------------
