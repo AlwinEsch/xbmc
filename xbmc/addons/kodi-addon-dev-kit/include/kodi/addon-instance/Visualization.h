@@ -108,18 +108,16 @@ struct VisTrack
   /// @brief Title of the current song.
   const char *title;
 
-  /// @brief Get artist names from the artist decription string (if it exists).
-  /// as a single string
+  /// @brief Artist names, as a single string
   const char *artist;
 
   /// @brief Album that the current song is from.
   const char *album;
 
-  /// @brief Album artist names from the artist decription string (if it
-  /// exists) as a single string.
+  /// @brief Album artist names, as a single string
   const char *albumArtist;
 
-  /// @brief The genre name from music tag as string if present.
+  /// @brief The genre name from the music tag, if present.
   const char *genre;
 
   /// @brief Comment of the current song stored in the ID tag info.
@@ -429,7 +427,7 @@ namespace addon
     ///                                 data. If set to true, the **freqData**
     ///                                 and **freqDataLength** parameters of
     ///                                 AudioData() are used.
-    /// @param[out] syncDelay           Number of buffers from the current !!! @todo
+    /// @param[out] syncDelay           Number of buffers from the current
     ///
     /// @note If this function is not implemented, it will default to
     /// `wantsFreq` = false and `syncDelay` = 0.
@@ -523,7 +521,7 @@ namespace addon
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief Used to increase/decrease the preset rating from visualization
+    /// @brief Used to increase/decrease the visualization preset rating
     ///
     /// @param[in] plusMinus    If set to true the rating is increased, otherwise
     ///                         decreased
