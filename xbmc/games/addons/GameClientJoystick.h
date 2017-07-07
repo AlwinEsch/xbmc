@@ -22,7 +22,7 @@
 #include "games/controllers/ControllerTypes.h"
 #include "input/joysticks/IInputHandler.h"
 
-struct KodiToAddonFuncTable_Game;
+struct AddonInstance_Game;
 
 namespace KODI
 {
@@ -46,7 +46,7 @@ namespace GAME
      * \param controller The game controller which is used (for controller mapping).
      * \param dllStruct The emulator or game to which the events are sent.
      */
-    CGameClientJoystick(CGameClient* addon, int port, const ControllerPtr& controller, const KodiToAddonFuncTable_Game* dllStruct);
+    CGameClientJoystick(CGameClient* addon, int port, const ControllerPtr& controller, const AddonInstance_Game* dllStruct);
 
     virtual ~CGameClientJoystick() = default;
 
@@ -66,7 +66,7 @@ namespace GAME
     const CGameClient* const  m_gameClient;
     const int                 m_port;
     const ControllerPtr       m_controller;
-    const KodiToAddonFuncTable_Game* const m_dllStruct;
+    const AddonInstance_Game* const m_dllStruct;
   };
 }
 }

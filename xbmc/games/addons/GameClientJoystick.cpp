@@ -30,7 +30,7 @@
 using namespace KODI;
 using namespace GAME;
 
-CGameClientJoystick::CGameClientJoystick(CGameClient* gameClient, int port, const ControllerPtr& controller, const KodiToAddonFuncTable_Game *dllStruct) :
+CGameClientJoystick::CGameClientJoystick(CGameClient* gameClient, int port, const ControllerPtr& controller, const AddonInstance_Game *dllStruct) :
   m_gameClient(gameClient),
   m_port(port),
   m_controller(controller),
@@ -49,7 +49,7 @@ bool CGameClientJoystick::HasFeature(const std::string& feature) const
 {
   try
   {
-    return m_dllStruct->HasFeature(m_controller->ID().c_str(), feature.c_str());
+    return m_dllStruct->toAddon.has_feature(m_dllStruct, m_controller->ID().c_str(), feature.c_str());
   }
   catch (...)
   {
@@ -80,7 +80,7 @@ bool CGameClientJoystick::OnButtonPress(const std::string& feature, bool bPresse
 
   try
   {
-    bHandled = m_dllStruct->InputEvent(&event);
+    bHandled = m_dllStruct->toAddon.input_event(m_dllStruct, &event);
   }
   catch (...)
   {
@@ -106,7 +106,7 @@ bool CGameClientJoystick::OnButtonMotion(const std::string& feature, float magni
 
   try
   {
-    bHandled = m_dllStruct->InputEvent(&event);
+    bHandled = m_dllStruct->toAddon.input_event(m_dllStruct, &event);
   }
   catch (...)
   {
@@ -133,7 +133,7 @@ bool CGameClientJoystick::OnAnalogStickMotion(const std::string& feature, float 
 
   try
   {
-    bHandled = m_dllStruct->InputEvent(&event);
+    bHandled = m_dllStruct->toAddon.input_event(m_dllStruct, &event);
   }
   catch (...)
   {
@@ -161,7 +161,7 @@ bool CGameClientJoystick::OnAccelerometerMotion(const std::string& feature, floa
 
   try
   {
-    bHandled = m_dllStruct->InputEvent(&event);
+    bHandled = m_dllStruct->toAddon.input_event(m_dllStruct, &event);
   }
   catch (...)
   {

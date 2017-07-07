@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_game_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/Game.h"
 #include "games/GameTypes.h"
 
 #include <string>

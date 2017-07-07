@@ -132,7 +132,8 @@ CGameClient::CGameClient(ADDON::CAddonInfo addonInfo) :
   m_serializeSize(0),
   m_audio(nullptr),
   m_video(nullptr),
-  m_region(GAME_REGION_UNKNOWN)
+  m_region(GAME_REGION_UNKNOWN),
+  m_struct{0}
 {
   const ADDON::InfoMap& extraInfo = m_addonInfo.ExtraInfo();
   ADDON::InfoMap::const_iterator it;
@@ -168,24 +169,12 @@ CGameClient::CGameClient(ADDON::CAddonInfo addonInfo) :
   if (it != extraInfo.end())
     m_bSupportsMouse = (it->second == "true");
 
-  if (m_struct.props.proxy_dll_count > 0)
-    SetAlternateLibName(m_struct.props.proxy_dll_paths[0]);
-
   ResetPlayback();
 }
 
 CGameClient::~CGameClient(void)
 {
   CloseFile();
-}
-
-std::string CGameClient::LibPath() const
-{
-  // If the game client requires a proxy, load its DLL instead
-  if (m_struct.props.proxy_dll_count > 0)
-    return m_struct.props.proxy_dll_paths[0];
-
-  return CAddon::LibPath();
 }
 
 ADDON::AddonPtr CGameClient::GetRunningInstance() const
@@ -228,22 +217,25 @@ bool CGameClient::Initialize(void)
   m_libraryProps.InitializeProperties();
 
   m_struct.toKodi.kodiInstance = this;
-  m_struct.toKodi.CloseGame = cb_close_game;
-  m_struct.toKodi.OpenPixelStream = cb_open_pixel_stream;
-  m_struct.toKodi.OpenVideoStream = cb_open_video_stream;
-  m_struct.toKodi.OpenPCMStream = cb_open_pcm_stream;
-  m_struct.toKodi.OpenAudioStream = cb_open_audio_stream;
-  m_struct.toKodi.AddStreamData = cb_add_stream_data;
-  m_struct.toKodi.CloseStream = cb_close_stream;
-  m_struct.toKodi.EnableHardwareRendering = cb_enable_hardware_rendering;
-  m_struct.toKodi.HwGetCurrentFramebuffer = cb_hw_get_current_framebuffer;
-  m_struct.toKodi.HwGetProcAddress = cb_hw_get_proc_address;
-  m_struct.toKodi.RenderFrame = cb_render_frame;
-  m_struct.toKodi.OpenPort = cb_open_port;
-  m_struct.toKodi.ClosePort = cb_close_port;
-  m_struct.toKodi.InputEvent = cb_input_event;
+  m_struct.toKodi.close_game = cb_close_game;
+  m_struct.toKodi.open_pixel_stream = cb_open_pixel_stream;
+  m_struct.toKodi.open_video_stream = cb_open_video_stream;
+  m_struct.toKodi.open_pcm_stream = cb_open_pcm_stream;
+  m_struct.toKodi.open_audio_stream = cb_open_audio_stream;
+  m_struct.toKodi.add_stream_data = cb_add_stream_data;
+  m_struct.toKodi.close_stream = cb_close_stream;
+  m_struct.toKodi.enable_hardware_rendering = cb_enable_hardware_rendering;
+  m_struct.toKodi.hw_get_current_framebuffer = cb_hw_get_current_framebuffer;
+  m_struct.toKodi.hw_get_proc_address = cb_hw_get_proc_address;
+  m_struct.toKodi.render_frame = cb_render_frame;
+  m_struct.toKodi.open_port = cb_open_port;
+  m_struct.toKodi.close_port = cb_close_port;
+  m_struct.toKodi.input_event = cb_input_event;
 
-  if (Create(ADDON_INSTANCE_GAME, &m_struct, &m_struct.props) == ADDON_STATUS_OK)
+  if (m_struct.props.proxy_dll_count > 0)
+    SetAlternateLibName(m_struct.props.proxy_dll_paths[0]);
+
+  if (CreateInstance(ADDON_INSTANCE_GAME, ID(), &m_struct, nullptr) == ADDON_STATUS_OK)
   {
     LogAddonProperties();
     return true;
@@ -254,7 +246,7 @@ bool CGameClient::Initialize(void)
 
 void CGameClient::Unload()
 {
-  Destroy();
+  DestroyInstance(ID());
 }
 
 bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGameVideoCallback* video)
@@ -281,14 +273,14 @@ bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGa
 
   CSingleLock lock(m_critSection);
 
-  if (!Initialized())
+  if (!m_struct.toAddon.load_game)
     return false;
 
   CloseFile();
 
   GAME_ERROR error = GAME_ERROR_FAILED;
 
-  try { LogError(error = m_struct.toAddon.LoadGame(path.c_str()), "LoadGame()"); }
+  try { LogError(error = m_struct.toAddon.load_game(&m_struct, path.c_str()), "LoadGame()"); }
   catch (...) { LogException("LoadGame()"); }
 
   if (error != GAME_ERROR_NO_ERROR)
@@ -309,14 +301,14 @@ bool CGameClient::OpenStandalone(IGameAudioCallback* audio, IGameVideoCallback* 
 
   CSingleLock lock(m_critSection);
 
-  if (!Initialized())
+  if (!m_struct.toAddon.load_standalone)
     return false;
 
   CloseFile();
 
   GAME_ERROR error = GAME_ERROR_FAILED;
 
-  try { LogError(error = m_struct.toAddon.LoadStandalone(), "LoadStandalone()"); }
+  try { LogError(error = m_struct.toAddon.load_standalone(&m_struct), "LoadStandalone()"); }
   catch (...) { LogException("LoadStandalone()"); }
 
   if (error != GAME_ERROR_NO_ERROR)
@@ -348,7 +340,7 @@ bool CGameClient::InitializeGameplay(const std::string& gamePath, IGameAudioCall
     if (m_bSupportsMouse)
       OpenMouse();
 
-    m_inGameSaves.reset(new CGameClientInGameSaves(this, &m_struct.toAddon));
+    m_inGameSaves.reset(new CGameClientInGameSaves(this, &m_struct));
     m_inGameSaves->Load();
 
     // Start playback
@@ -394,14 +386,14 @@ bool CGameClient::LoadGameInfo()
   game_system_av_info av_info = { };
 
   bool bSuccess = false;
-  try { bSuccess = LogError(m_struct.toAddon.GetGameInfo(&av_info), "GetGameInfo()"); }
+  try { bSuccess = LogError(m_struct.toAddon.get_game_info(&m_struct, &av_info), "GetGameInfo()"); }
   catch (...) { LogException("GetGameInfo()"); }
 
   if (!bSuccess)
     return false;
 
   GAME_REGION region;
-  try { region = m_struct.toAddon.GetRegion(); }
+  try { region = m_struct.toAddon.get_region(&m_struct); }
   catch (...) { LogException("GetRegion()"); return false; }
 
   CLog::Log(LOGINFO, "GAME: ---------------------------------------");
@@ -472,7 +464,7 @@ void CGameClient::CreatePlayback()
 {
   bool bRequiresGameLoop = false;
 
-  try { bRequiresGameLoop = m_struct.toAddon.RequiresGameLoop(); }
+  try { bRequiresGameLoop = m_struct.toAddon.requires_game_loop(&m_struct); }
   catch (...) { LogException("RequiresGameLoop()"); }
 
   if (bRequiresGameLoop)
@@ -498,7 +490,7 @@ void CGameClient::Reset(unsigned int port)
 
   if (m_bIsPlaying)
   {
-    try { LogError(m_struct.toAddon.Reset(), "Reset()"); }
+    try { LogError(m_struct.toAddon.reset(&m_struct), "Reset()"); }
     catch (...) { LogException("Reset()"); }
 
     CreatePlayback();
@@ -516,7 +508,7 @@ void CGameClient::CloseFile()
     m_inGameSaves->Save();
     m_inGameSaves.reset();
 
-    try { LogError(m_struct.toAddon.UnloadGame(), "UnloadGame()"); }
+    try { LogError(m_struct.toAddon.unload_game(&m_struct), "UnloadGame()"); }
     catch (...) { LogException("UnloadGame()"); }
   }
 
@@ -550,7 +542,7 @@ void CGameClient::RunFrame()
 
   if (m_bIsPlaying)
   {
-    try { LogError(m_struct.toAddon.RunFrame(), "RunFrame()"); }
+    try { LogError(m_struct.toAddon.run_frame(&m_struct), "RunFrame()"); }
     catch (...) { LogException("RunFrame()"); }
   }
 }
@@ -704,7 +696,7 @@ size_t CGameClient::GetSerializeSize()
   size_t serializeSize = 0;
   if (m_bIsPlaying)
   {
-    try { serializeSize = m_struct.toAddon.SerializeSize(); }
+    try { serializeSize = m_struct.toAddon.serialize_size(&m_struct); }
     catch (...) { LogException("SerializeSize()"); }
   }
 
@@ -721,7 +713,7 @@ bool CGameClient::Serialize(uint8_t* data, size_t size)
   bool bSuccess = false;
   if (m_bIsPlaying)
   {
-    try { bSuccess = LogError(m_struct.toAddon.Serialize(data, size), "Serialize()"); }
+    try { bSuccess = LogError(m_struct.toAddon.serialize(&m_struct, data, size), "Serialize()"); }
     catch (...) { LogException("Serialize()"); }
   }
 
@@ -738,7 +730,7 @@ bool CGameClient::Deserialize(const uint8_t* data, size_t size)
   bool bSuccess = false;
   if (m_bIsPlaying)
   {
-    try { bSuccess = LogError(m_struct.toAddon.Deserialize(data, size), "Deserialize()"); }
+    try { bSuccess = LogError(m_struct.toAddon.deserialize(&m_struct, data, size), "Deserialize()"); }
     catch (...) { LogException("Deserialize()"); }
   }
 
@@ -761,7 +753,7 @@ bool CGameClient::OpenPort(unsigned int port)
     //! @todo Choose controller
     ControllerPtr& controller = controllers[0];
 
-    m_ports[port].reset(new CGameClientJoystick(this, port, controller, &m_struct.toAddon));
+    m_ports[port].reset(new CGameClientJoystick(this, port, controller, &m_struct));
 
     // If keyboard input is being captured by this add-on, force the port type to PERIPHERAL_JOYSTICK
     PERIPHERALS::PeripheralType device = PERIPHERALS::PERIPHERAL_UNKNOWN;
@@ -797,7 +789,7 @@ void CGameClient::UpdatePort(unsigned int port, const ControllerPtr& controller)
 
   CSingleLock lock(m_critSection);
 
-  if (Initialized())
+  if (m_struct.toAddon.update_port)
   {
     if (controller != CController::EmptyPtr)
     {
@@ -815,12 +807,12 @@ void CGameClient::UpdatePort(unsigned int port, const ControllerPtr& controller)
       controllerStruct.abs_pointer_count    = 0; //! @todo
       controllerStruct.motor_count          = controller->Layout().FeatureCount(FEATURE_TYPE::MOTOR);
 
-      try { m_struct.toAddon.UpdatePort(port, true, &controllerStruct); }
+      try { m_struct.toAddon.update_port(&m_struct, port, true, &controllerStruct); }
       catch (...) { LogException("UpdatePort()"); }
     }
     else
     {
-      try { m_struct.toAddon.UpdatePort(port, false, nullptr); }
+      try { m_struct.toAddon.update_port(&m_struct, port, false, nullptr); }
       catch (...) { LogException("UpdatePort()"); }
     }
   }
@@ -893,7 +885,7 @@ bool CGameClient::SetRumble(unsigned int port, const std::string& feature, float
 
 void CGameClient::OpenKeyboard(void)
 {
-  m_keyboard.reset(new CGameClientKeyboard(this, &m_struct.toAddon, &CServiceBroker::GetInputManager()));
+  m_keyboard.reset(new CGameClientKeyboard(this, &m_struct, &CServiceBroker::GetInputManager()));
 }
 
 void CGameClient::CloseKeyboard(void)
@@ -903,17 +895,17 @@ void CGameClient::CloseKeyboard(void)
 
 void CGameClient::OpenMouse(void)
 {
-  m_mouse.reset(new CGameClientMouse(this, &m_struct.toAddon, &CServiceBroker::GetInputManager()));
+  m_mouse.reset(new CGameClientMouse(this, &m_struct, &CServiceBroker::GetInputManager()));
 
   CSingleLock lock(m_critSection);
 
-  if (Initialized())
+  if (m_struct.toAddon.update_port)
   {
     std::string strId = m_mouse->ControllerID();
 
     game_controller controllerStruct = { strId.c_str() };
 
-    try { m_struct.toAddon.UpdatePort(GAME_INPUT_PORT_MOUSE, true, &controllerStruct); }
+    try { m_struct.toAddon.update_port(&m_struct, GAME_INPUT_PORT_MOUSE, true, &controllerStruct); }
     catch (...) { LogException("UpdatePort()"); }
   }
 }
@@ -923,9 +915,9 @@ void CGameClient::CloseMouse(void)
   {
     CSingleLock lock(m_critSection);
 
-    if (Initialized())
+    if (m_struct.toAddon.update_port)
     {
-      try { m_struct.toAddon.UpdatePort(GAME_INPUT_PORT_MOUSE, false, nullptr); }
+      try { m_struct.toAddon.update_port(&m_struct, GAME_INPUT_PORT_MOUSE, false, nullptr); }
       catch (...) { LogException("UpdatePort()"); }
     }
   }

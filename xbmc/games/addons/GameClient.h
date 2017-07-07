@@ -22,7 +22,7 @@
 #include "GameClientProperties.h"
 #include "GameClientTiming.h"
 #include "addons/binary-addons/AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_game_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/Game.h"
 #include "games/controllers/ControllerTypes.h"
 #include "games/GameTypes.h"
 #include "peripherals/EventScanRate.h"
@@ -66,7 +66,6 @@ public:
   virtual ~CGameClient(void);
 
   // Implementation of IAddon via CAddonDll
-  virtual std::string     LibPath() const override;
   virtual ADDON::AddonPtr GetRunningInstance() const override;
 
   // Query properties of the game client

@@ -21,7 +21,7 @@
 #include "GameClientKeyboard.h"
 #include "GameClient.h"
 #include "GameClientTranslator.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_game_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/Game.h"
 #include "input/keyboard/IKeyboardInputProvider.h"
 #include "input/Key.h"
 #include "utils/log.h"
@@ -31,7 +31,7 @@ using namespace GAME;
 
 #define BUTTON_INDEX_MASK  0x01ff
 
-CGameClientKeyboard::CGameClientKeyboard(const CGameClient* gameClient, const KodiToAddonFuncTable_Game* dllStruct, KEYBOARD::IKeyboardInputProvider *inputProvider) :
+CGameClientKeyboard::CGameClientKeyboard(const CGameClient* gameClient, const AddonInstance_Game* dllStruct, KEYBOARD::IKeyboardInputProvider *inputProvider) :
   m_gameClient(gameClient),
   m_dllStruct(dllStruct),
   m_inputProvider(inputProvider)
@@ -69,7 +69,7 @@ bool CGameClientKeyboard::OnKeyPress(const CKey& key)
   {
     try
     {
-      bHandled = m_dllStruct->InputEvent(&event);
+      bHandled = m_dllStruct->toAddon.input_event(m_dllStruct, &event);
     }
     catch (...)
     {
@@ -96,7 +96,7 @@ void CGameClientKeyboard::OnKeyRelease(const CKey& key)
   {
     try
     {
-      m_dllStruct->InputEvent(&event);
+      m_dllStruct->toAddon.input_event(m_dllStruct, &event);
     }
     catch (...)
     {
