@@ -168,6 +168,9 @@ CGameClient::CGameClient(ADDON::CAddonInfo addonInfo) :
   if (it != extraInfo.end())
     m_bSupportsMouse = (it->second == "true");
 
+  if (m_struct.props.proxy_dll_count > 0)
+    SetAlternateLibName(m_struct.props.proxy_dll_paths[0]);
+
   ResetPlayback();
 }
 

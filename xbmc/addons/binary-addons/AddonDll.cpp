@@ -111,7 +111,7 @@ bool CAddonDll::LoadDll()
   if (m_pDll)
     return true;
 
-  std::string strFileName = LibPath();
+  std::string strFileName = m_alternateLibName.empty() ? LibPath() : m_alternateLibName;
   std::string strAltFileName;
 
   /* Check if lib being loaded exists, else check in XBMC binary location */
@@ -373,6 +373,11 @@ bool CAddonDll::DllLoaded(void) const
 ADDON_STATUS CAddonDll::GetStatus()
 {
   return m_pDll->GetStatus();
+}
+
+void CAddonDll::SetAlternateLibName(const std::string& alternateLib)
+{
+  m_alternateLibName = alternateLib;
 }
 
 void CAddonDll::SaveSettings()

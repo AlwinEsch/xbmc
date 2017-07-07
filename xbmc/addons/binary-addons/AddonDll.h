@@ -44,6 +44,8 @@ namespace ADDON
 
     virtual ADDON_STATUS GetStatus();
 
+    void SetAlternateLibName(const std::string& alternateLib);
+
     // addon settings
     void SaveSettings() override;
     std::string GetSetting(const std::string& key) override;
@@ -105,6 +107,8 @@ namespace ADDON
     BinaryAddonBasePtr m_binaryAddonBase;
     DllAddon* m_pDll;
     bool m_initialized;
+    std::string m_alternateLibName;
+
     bool LoadDll();
     std::map<std::string, std::pair<ADDON_TYPE, KODI_HANDLE>> m_usedInstances;
 
