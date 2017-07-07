@@ -35,6 +35,13 @@ namespace ADDON
     CAddonDll(CAddonInfo addonInfo);
     ~CAddonDll() override;
 
+    virtual void OnDisabled() override;
+    virtual void OnEnabled() override;
+    virtual void OnPreInstall() override;
+    virtual void OnPostInstall(bool update, bool modal) override;
+    virtual void OnPreUnInstall() override;
+    virtual void OnPostUnInstall() override;
+
     virtual ADDON_STATUS GetStatus();
 
     // addon settings

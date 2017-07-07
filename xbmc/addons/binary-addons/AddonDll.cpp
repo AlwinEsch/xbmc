@@ -76,6 +76,36 @@ CAddonDll::~CAddonDll()
     Destroy();
 }
 
+void CAddonDll::OnDisabled()
+{
+  CServiceBroker::GetBinaryAddonManager().OnDisabledEvent(ID());
+}
+
+void CAddonDll::OnEnabled()
+{
+  CServiceBroker::GetBinaryAddonManager().OnEnabledEvent(ID());
+}
+
+void CAddonDll::OnPreInstall()
+{
+  CServiceBroker::GetBinaryAddonManager().OnPreInstallEvent(ID());
+}
+
+void CAddonDll::OnPostInstall(bool update, bool modal)
+{
+  CServiceBroker::GetBinaryAddonManager().OnPostInstallEvent(ID(), update, modal);
+}
+
+void CAddonDll::OnPreUnInstall()
+{
+  CServiceBroker::GetBinaryAddonManager().OnPreUnInstallEvent(ID());
+}
+
+void CAddonDll::OnPostUnInstall()
+{
+  CServiceBroker::GetBinaryAddonManager().OnPostUnInstallEvent(ID());
+}
+
 bool CAddonDll::LoadDll()
 {
   if (m_pDll)

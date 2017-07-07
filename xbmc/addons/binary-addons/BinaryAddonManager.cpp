@@ -26,11 +26,14 @@
 #include "filesystem/Directory.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
+#include "utils/Variant.h"
 
 using namespace ADDON;
 
 CBinaryAddonManager::CBinaryAddonManager()
-  : m_tempAddonBasePath("special://temp/binary-addons")
+  : CThread("BinaryAddonManager"),
+    m_control("BinaryAddonControl", &m_inMsgEvent, &m_outMsgEvent),
+    m_tempAddonBasePath("special://temp/binary-addons")
 {
 }
 
@@ -41,8 +44,6 @@ CBinaryAddonManager::~CBinaryAddonManager()
 
 bool CBinaryAddonManager::Init()
 {
-  CAddonMgr::GetInstance().Events().Subscribe(this, &CBinaryAddonManager::OnEvent);
-
   BINARY_ADDON_LIST binaryAddonList;
   if (!CAddonMgr::GetInstance().GetInstalledBinaryAddons(binaryAddonList))
   {
@@ -55,6 +56,7 @@ bool CBinaryAddonManager::Init()
   for (auto addon : binaryAddonList)
     AddAddonBaseEntry(addon);
 
+  Create();
   return true;
 }
 
@@ -65,6 +67,231 @@ void CBinaryAddonManager::DeInit()
     XFILE::CDirectory::RemoveRecursive(CSpecialProtocol::TranslatePath(m_tempAddonBasePath));
 
   CAddonMgr::GetInstance().Events().Unsubscribe(this);
+
+  StopThread();
+}
+
+void CBinaryAddonManager::Process()
+{
+  Actor::Message* msg = nullptr;
+  bool gotMsg;
+  XbmcThreads::EndTime timer;
+  m_extTimeout = 1000;
+
+  while (!m_bStop)
+  {
+    timer.Set(m_extTimeout);
+
+    // check port
+    gotMsg = m_control.ReceiveOutMessage(&msg);
+    if (gotMsg)
+    {
+      StateMachine(msg->signal, msg);
+      msg->Release();
+      msg = nullptr;
+      continue;
+    }
+    else if (m_outMsgEvent.WaitMSec(m_extTimeout)) // wait for message
+    {
+      m_extTimeout = timer.MillisLeft();
+      continue;
+    }
+    else // time out
+    {
+      msg = m_control.GetMessage();
+      msg->signal = CBinaryAddonDataProtocol::TIMEOUT;
+      // signal timeout to state machine
+      StateMachine(msg->signal, msg);
+      msg->Release();
+      msg = nullptr;
+    }
+  }
+}
+
+void CBinaryAddonManager::StateMachine(int signal, Actor::Message *msg)
+{
+  switch (signal)
+  {
+    case CBinaryAddonDataProtocol::ENABLE_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+          break;
+
+        base = addon->second;
+        m_enabledAddons[base->ID()] = base;
+      }
+
+      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Enable addon '%s' on binary addon manager", __FUNCTION__, base->ID().c_str());
+
+      for (const auto& type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->EnableEvent(base);
+      }
+
+      break;
+    }
+    case CBinaryAddonDataProtocol::DISABLE_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+          break;
+
+        base = addon->second;
+        m_enabledAddons.erase(base->ID());
+      }
+
+      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Disable addon '%s' on binary addon manager", __FUNCTION__, base->ID().c_str());
+
+      for (const auto& type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->DisableEvent(base);
+      }
+
+      break;
+    }
+    case CBinaryAddonDataProtocol::PRE_INSTALL_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+        {
+          msg->Reply(CBinaryAddonDataProtocol::ACC);
+          break;
+        }
+
+        base = addon->second;
+      }
+
+      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Update of addon '%s' on binary addon manager started", __FUNCTION__, base->ID().c_str());
+
+      for (const auto& type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->UpdateEvent(base);
+      }
+
+      msg->Reply(CBinaryAddonDataProtocol::ACC);
+      break;
+    }
+    case CBinaryAddonDataProtocol::POST_INSTALL_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      MsgAddonPostInstall* addonPostInstall = *reinterpret_cast<MsgAddonPostInstall**>(msg->data);
+
+      BINARY_ADDON_LIST_ENTRY binaryAddon;
+      if (!CAddonMgr::GetInstance().GetInstalledBinaryAddon(addonPostInstall->addonID, binaryAddon))
+      {
+        delete addonPostInstall;
+        break;
+      }
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(binaryAddon.second.ID());
+        if (addon == m_installedAddons.end())
+        {
+          CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Adding new binary addon '%s'", __FUNCTION__, binaryAddon.second.ID().c_str());
+
+          if (!AddAddonBaseEntry(binaryAddon))
+          {
+            delete addonPostInstall;
+            break;
+          }
+        }
+
+        base = m_installedAddons[binaryAddon.second.ID()];
+      }
+
+      for (auto& type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->InstallEvent(base, addonPostInstall->update, addonPostInstall->modal);
+      }
+
+      delete addonPostInstall;
+      break;
+    }
+    case CBinaryAddonDataProtocol::PRE_UNINSTALL_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+        {
+          msg->Reply(CBinaryAddonDataProtocol::ERR);
+          break;
+        }
+
+        base = addon->second;
+      }
+
+      for (auto &type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->PreUnInstallEvent(base);
+      }
+
+      msg->Reply(CBinaryAddonDataProtocol::ACC);
+      break;
+    }
+    case CBinaryAddonDataProtocol::POST_UNINSTALL_EVENT:
+    {
+      BinaryAddonBasePtr base;
+      const char* addonId = reinterpret_cast<const char*>(msg->data);
+
+      {
+        CSingleLock lock(m_critSection);
+
+        auto addon = m_installedAddons.find(addonId);
+        if (addon == m_installedAddons.end())
+          break;
+
+        base = addon->second;
+        m_installedAddons.erase(addonId);
+        m_enabledAddons.erase(addonId);
+      }
+
+      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Removing binary addon '%s'", __FUNCTION__, addonId);
+
+      for (auto &type : base->Types())
+      {
+        auto manager = m_managers.find(type.Type());
+        if (manager != m_managers.end())
+          manager->second->PostUnInstallEvent(base);
+      }
+      break;
+    }
+  }
 }
 
 bool CBinaryAddonManager::HasInstalledAddons(const TYPE &type) const
@@ -157,6 +384,24 @@ AddonPtr CBinaryAddonManager::GetRunningAddon(const std::string& addonId) const
   return nullptr;
 }
 
+bool CBinaryAddonManager::RegisterCallback(const TYPE type, IBinaryAddonManagerCallback *cb)
+{
+  if (type == ADDON_UNKNOWN || cb == nullptr)
+    return false;
+
+  CSingleLock lock(m_critSection);
+  m_managers.erase(type);
+  m_managers[type] = cb;
+
+  return true;
+}
+
+void CBinaryAddonManager::UnregisterCallback(const TYPE type)
+{
+  CSingleLock lock(m_critSection);
+  m_managers.erase(type);
+}
+
 bool CBinaryAddonManager::AddAddonBaseEntry(BINARY_ADDON_LIST_ENTRY& entry)
 {
   BinaryAddonBasePtr base = std::make_shared<CBinaryAddonBase>(entry.second);
@@ -172,105 +417,68 @@ bool CBinaryAddonManager::AddAddonBaseEntry(BINARY_ADDON_LIST_ENTRY& entry)
   return true;
 }
 
-void CBinaryAddonManager::OnEvent(const AddonEvent& event)
+/*!
+ * @brief Addon change event handling
+ */
+//@{
+void CBinaryAddonManager::OnEnabledEvent(const std::string& addonId)
 {
-  if (auto enableEvent = dynamic_cast<const AddonEvents::Enabled*>(&event))
-  {
-    EnableEvent(enableEvent->id);
-  }
-  else if (auto disableEvent = dynamic_cast<const AddonEvents::Disabled*>(&event))
-  {
-    DisableEvent(disableEvent->id);
-  }
-  else if (typeid(event) == typeid(AddonEvents::InstalledChanged))
-  {
-    InstalledChangeEvent();
-  }
+  m_control.SendOutMessage(CBinaryAddonDataProtocol::ENABLE_EVENT, const_cast<char*>(addonId.c_str()), addonId.size()+1);
 }
 
-void CBinaryAddonManager::EnableEvent(const std::string& addonId)
+void CBinaryAddonManager::OnDisabledEvent(const std::string& addonId)
 {
-  CSingleLock lock(m_critSection);
-
-  BinaryAddonBasePtr base;
-  auto addon = m_installedAddons.find(addonId);
-  if (addon != m_installedAddons.end())
-    base = addon->second;
-  else
-    return;
-
-  CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Enable addon '%s' on binary addon manager", __FUNCTION__, base->ID().c_str());
-  m_enabledAddons[base->ID()] = base;
-
-  /**
-   * @todo add way to inform type addon manager (e.g. for PVR) and parts about changed addons
-   *
-   * Currently only Screensaver and Visualization use the new way and not need informed.
-   */
+  m_control.SendOutMessage(CBinaryAddonDataProtocol::DISABLE_EVENT, const_cast<char*>(addonId.c_str()), addonId.size()+1);
 }
 
-void CBinaryAddonManager::DisableEvent(const std::string& addonId)
+void CBinaryAddonManager::OnPreInstallEvent(const std::string& addonId)
 {
-  CSingleLock lock(m_critSection);
-
-  BinaryAddonBasePtr base;
-  auto addon = m_installedAddons.find(addonId);
-  if (addon != m_installedAddons.end())
-    base = addon->second;
-  else
-    return;
-
-  CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Disable addon '%s' on binary addon manager", __FUNCTION__, base->ID().c_str());
-  m_enabledAddons.erase(base->ID());
-
-  /**
-   * @todo add way to inform type addon manager (e.g. for PVR) and parts about changed addons
-   *
-   * Currently only Screensaver and Visualization use the new way and not need informed.
-   */
-}
-
-void CBinaryAddonManager::InstalledChangeEvent()
-{
-  BINARY_ADDON_LIST binaryAddonList;
-  CAddonMgr::GetInstance().GetInstalledBinaryAddons(binaryAddonList);
-
-  CSingleLock lock(m_critSection);
-
-  BinaryAddonMgrBaseList deletedAddons = m_installedAddons;
-  for (auto addon : binaryAddonList)
+  Actor::Message *reply;
+  if (m_control.SendOutMessageSync(CBinaryAddonDataProtocol::PRE_INSTALL_EVENT, &reply, 5000, const_cast<char*>(addonId.c_str()), addonId.size()+1))
   {
-    auto knownAddon = m_installedAddons.find(addon.second.ID());
-    if (knownAddon == m_installedAddons.end())
+    bool success = reply->signal == CBinaryAddonDataProtocol::ACC;
+    reply->Release();
+    if (!success)
     {
-      CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Adding new binary addon '%s'", __FUNCTION__, addon.second.ID().c_str());
-
-      if (!AddAddonBaseEntry(addon))
-        continue;
-
-      /**
-       * @todo add way to inform type addon manager (e.g. for PVR) and parts about changed addons
-       *
-       * Currently only Screensaver and Visualization use the new way and not need informed.
-       */
-    }
-    else
-    {
-      deletedAddons.erase(addon.second.ID());
+      CLog::Log(LOGERROR, "CBinaryAddonManager::%s - returned error", __FUNCTION__);
     }
   }
-
-  for (auto addon : deletedAddons)
+  else
   {
-    CLog::Log(LOGDEBUG, "CBinaryAddonManager::%s: Removing binary addon '%s'", __FUNCTION__, addon.first.c_str());
-
-    m_installedAddons.erase(addon.first);
-    m_enabledAddons.erase(addon.first); // Normally should the addon disabled by another event, but to make sure also erased here
-
-    /**
-     * @todo add way to inform type addon manager (e.g. for PVR) and parts about changed addons
-     *
-     * Currently only Screensaver and Visualization use the new way and not need informed.
-     */
+    CLog::Log(LOGERROR, "CBinaryAddonManager::%s - timed out", __FUNCTION__);
   }
 }
+
+void CBinaryAddonManager::OnPostInstallEvent(const std::string& addonId, bool update, bool modal)
+{
+  MsgAddonPostInstall* msg = new MsgAddonPostInstall;
+  msg->addonID = addonId;
+  msg->update = update;
+  msg->modal = modal;
+  m_control.SendOutMessage(CBinaryAddonDataProtocol::POST_INSTALL_EVENT, &msg, sizeof(MsgAddonPostInstall*));
+}
+
+void CBinaryAddonManager::OnPreUnInstallEvent(const std::string& addonId)
+{
+  Actor::Message *reply;
+  if (m_control.SendOutMessageSync(CBinaryAddonDataProtocol::PRE_UNINSTALL_EVENT, &reply, 5000, const_cast<char*>(addonId.c_str()), addonId.size()+1))
+  {
+    bool success = reply->signal == CBinaryAddonDataProtocol::ACC;
+    reply->Release();
+    if (!success)
+    {
+      CLog::Log(LOGERROR, "CBinaryAddonManager::%s - returned error", __FUNCTION__);
+    }
+  }
+  else
+  {
+    CLog::Log(LOGERROR, "CBinaryAddonManager::%s - timed out", __FUNCTION__);
+  }
+}
+
+void CBinaryAddonManager::OnPostUnInstallEvent(const std::string& addonId)
+{
+  m_control.SendOutMessage(CBinaryAddonDataProtocol::POST_UNINSTALL_EVENT, const_cast<char*>(addonId.c_str()), addonId.size()+1);
+}
+
+//@}

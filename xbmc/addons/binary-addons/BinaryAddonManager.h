@@ -20,7 +20,10 @@
  */
 
 #include "addons/AddonManager.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/AddonBase.h"
 #include "threads/CriticalSection.h"
+#include "threads/Thread.h"
+#include "utils/ActorProtocol.h"
 
 #include <map>
 
@@ -36,7 +39,48 @@ namespace ADDON
   typedef std::shared_ptr<CBinaryAddonBase> BinaryAddonBasePtr;
   typedef std::vector<BinaryAddonBasePtr> BinaryAddonBaseList;
 
-  class CBinaryAddonManager
+  class IBinaryAddonManagerCallback
+  {
+  public:
+    virtual ~IBinaryAddonManagerCallback() {};
+    virtual void EnableEvent(BinaryAddonBasePtr addon) {}
+    virtual void DisableEvent(BinaryAddonBasePtr addon) {}
+    virtual void UpdateEvent(BinaryAddonBasePtr addon) {}
+    virtual void InstallEvent(BinaryAddonBasePtr addon, bool update, bool modal) {}
+    virtual void PreUnInstallEvent(BinaryAddonBasePtr addon) {}
+    virtual void PostUnInstallEvent(BinaryAddonBasePtr addon) {}
+    virtual bool RequestRestart(BinaryAddonBasePtr addon, bool datachanged) { return false; }
+  };
+
+  class CBinaryAddonDataProtocol : public Actor::Protocol
+  {
+  public:
+    CBinaryAddonDataProtocol(std::string name, CEvent* inEvent, CEvent *outEvent) : Protocol(name, inEvent, outEvent) {};
+    enum OutSignal
+    {
+      ENABLE_EVENT,
+      DISABLE_EVENT,
+      PRE_INSTALL_EVENT,
+      POST_INSTALL_EVENT,
+      PRE_UNINSTALL_EVENT,
+      POST_UNINSTALL_EVENT,
+      TIMEOUT,
+    };
+    enum InSignal
+    {
+      ACC,
+      ERR,
+    };
+  };
+
+  struct MsgAddonPostInstall
+  {
+    std::string addonID;
+    bool update;
+    bool modal;
+  };
+
+  class CBinaryAddonManager : private CThread
   {
   public:
     CBinaryAddonManager();
@@ -139,13 +183,57 @@ namespace ADDON
      */
     const std::string& GetTempAddonBasePath() { return m_tempAddonBasePath; }
 
-  private:
-    bool AddAddonBaseEntry(BINARY_ADDON_LIST_ENTRY& entry);
+    /*!
+     * @brief Used to register callback functions on manager
+     *
+     * The callbacks are done in case of addon changes to do needed work on
+     * related addon systems, e.g. stop Live TV playback and unload related
+     * dll, then the addon can be easily changed.
+     *
+     * @param[in] type the add-on type who need to observed by the callback
+     * @param[in] cb The class who include IBinaryAddonManagerCallback as
+     *               parent and have his functions as child
+     * @return true if register is successfull done
+     */
+    bool RegisterCallback(const TYPE type, IBinaryAddonManagerCallback *cb);
 
-    void OnEvent(const AddonEvent& event);
-    void EnableEvent(const std::string& addonId);
-    void DisableEvent(const std::string& addonId);
-    void InstalledChangeEvent();
+    /*!
+     * @brief Unregister addon change observer
+     *
+     * This unregister the with RegisterCallback() created parts.
+     *
+     * @param[in] type the addon type callback to unregister.
+     */
+    void UnregisterCallback(const TYPE type);
+
+    /*!
+     * Event functions called from CAddonDll in case of changes
+     */
+    //@{
+    void OnEnabledEvent(const std::string& addonId);
+    void OnDisabledEvent(const std::string& addonId);
+    void OnPreInstallEvent(const std::string& addonId);
+    void OnPostInstallEvent(const std::string& addonId, bool update, bool modal);
+    void OnPreUnInstallEvent(const std::string& addonId);
+    void OnPostUnInstallEvent(const std::string& addonId);
+    //@}
+
+  private:
+    /*!
+     * Thread and message handling
+     */
+    //@{
+    virtual void Process() override;
+
+    void StateMachine(int signal, Actor::Message *msg);
+
+    int m_extTimeout;
+    CEvent m_inMsgEvent;
+    CEvent m_outMsgEvent;
+    CBinaryAddonDataProtocol m_control;
+    //@}
+
+    bool AddAddonBaseEntry(BINARY_ADDON_LIST_ENTRY& entry);
 
     CCriticalSection m_critSection;
 
@@ -154,6 +242,7 @@ namespace ADDON
     BinaryAddonMgrBaseList m_enabledAddons;
 
     const std::string m_tempAddonBasePath;
+    std::map<TYPE, IBinaryAddonManagerCallback*> m_managers;
   };
 
 } /* namespace ADDON */
