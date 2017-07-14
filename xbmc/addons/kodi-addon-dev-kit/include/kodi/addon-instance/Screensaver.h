@@ -19,11 +19,6 @@
  *
  */
 
-/*
- * Parts with a comment named "internal" are only used inside header and not
- * used or accessed direct during add-on development!
- */
-
 #include "../AddonBase.h"
 
 namespace kodi { namespace addon { class CInstanceScreensaver; }}
@@ -33,7 +28,12 @@ extern "C"
 
 struct AddonInstance_Screensaver;
 
-typedef struct AddonProps_Screensaver /* internal */
+/*!
+ * @brief Screensaver properties
+ *
+ * Not to be used outside this header.
+ */
+typedef struct AddonProps_Screensaver
 {
   void *device;
   int x;
@@ -46,12 +46,22 @@ typedef struct AddonProps_Screensaver /* internal */
   const char *profile;
 } AddonProps_Screensaver;
 
-typedef struct AddonToKodiFuncTable_Screensaver /* internal */
+/*!
+ * @brief Screensaver callbacks
+ *
+ * Not to be used outside this header.
+ */
+typedef struct AddonToKodiFuncTable_Screensaver
 {
   KODI_HANDLE kodiInstance;
 } AddonToKodiFuncTable_Screensaver;
 
-typedef struct KodiToAddonFuncTable_Screensaver /* internal */
+/*!
+ * @brief Screensaver function hooks
+ *
+ * Not to be used outside this header.
+ */
+typedef struct KodiToAddonFuncTable_Screensaver
 {
   kodi::addon::CInstanceScreensaver* addonInstance;
   bool (__cdecl* Start) (AddonInstance_Screensaver* instance);
@@ -59,7 +69,12 @@ typedef struct KodiToAddonFuncTable_Screensaver /* internal */
   void (__cdecl* Render) (AddonInstance_Screensaver* instance);
 } KodiToAddonFuncTable_Screensaver;
 
-typedef struct AddonInstance_Screensaver /* internal */
+/*!
+ * @brief Screensaver instance
+ *
+ * Not to be used outside this header.
+ */
+typedef struct AddonInstance_Screensaver
 {
   AddonProps_Screensaver props;
   AddonToKodiFuncTable_Screensaver toKodi;
@@ -79,23 +94,23 @@ namespace addon
   /// @brief \cpp_class{ kodi::addon::CInstanceScreensaver }
   /// **Screensaver add-on instance**
   ///
-  /// A screensaver (or screen saver) is a Kodi addon that blanks the screen or
-  /// fills it with moving images or patterns when the computer is not in use.
-  /// Initially designed to prevent phosphor burn-in on CRT and plasma computer
-  /// monitors (hence the name), screensavers are now used primarily for
-  /// entertainment, security or to display system status information.
+  /// A screensaver is a Kodi addon that fills the screen with moving images or
+  /// patterns when the computer is not in use. Initially designed to prevent
+  /// phosphor burn-in on CRT and plasma computer monitors (hence the name),
+  /// screensavers are now used primarily for entertainment, security or to
+  /// display system status information.
   ///
   /// Include the header \ref ScreenSaver.h "#include <kodi/addon-instance/ScreenSaver.h>"
   /// to use this class.
   ///
-  /// This interface allow the creating of a screensavers for Kodi, based upon
+  /// This interface allows the creating of screensavers for Kodi, based upon
   /// **DirectX** or/and **OpenGL** rendering with `C++` code.
   ///
-  /// The interface is small and easy usable, it have three function. One for
-  /// the creation with <b><c>Start()</c></b> and for the render time with
-  /// <b><c>Render()</c></b>, this both are required and must be implemented.
-  /// Also a <b><c>Stop()</c></b> can be used to become informed for end of
-  /// work.
+  /// The interface is small and easy usable. It has three functions:
+  ///
+  /// * <b><c>Start()</c></b> - Called on creation
+  /// * <b><c>Render()</c></b> - Called at render time
+  /// * <b><c>Stop()</c></b> - Called when the screensaver has no work
   ///
   /// Additionally, there are several \ref cpp_kodi_addon_screensaver_CB "other functions"
   /// available in which the child class can ask about the current hardware,
@@ -269,7 +284,8 @@ namespace addon
     /// @ingroup cpp_kodi_addon_screensaver
     /// @brief Used to notify the screensaver that it has been started
     ///
-    /// @return                         true if start successful done
+    /// @return                         true if the screensaver was started
+    ///                                 successfully, false otherwise
     ///
     virtual bool Start() { return true; }
     //--------------------------------------------------------------------------
@@ -304,7 +320,7 @@ namespace addon
     /// @ingroup cpp_kodi_addon_screensaver_CB
     /// @brief Device that represents the display adapter
     ///
-    /// @return A pointer to the used device
+    /// @return A pointer to the device
     ///
     /// @note This is only available on **DirectX**, It us unused (`nullptr`) on
     /// **OpenGL**
