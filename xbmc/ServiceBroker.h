@@ -29,6 +29,11 @@ class CServiceAddonManager;
 class CRepositoryUpdater;
 }
 
+namespace ADDON_NEW
+{
+  class CAddonManager;
+}
+
 namespace ActiveAE {
 class CActiveAEDSP;
 }
@@ -73,6 +78,7 @@ namespace PERIPHERALS
 class CServiceBroker
 {
 public:
+  static ADDON_NEW::CAddonManager& GetAddonManager();
   static ADDON::CAddonMgr &GetAddonMgr();
   static ADDON::CBinaryAddonManager &GetBinaryAddonManager();
   static ADDON::CBinaryAddonCache &GetBinaryAddonCache();

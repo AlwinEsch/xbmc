@@ -34,6 +34,11 @@ class CServiceAddonManager;
 class CRepositoryUpdater;
 }
 
+namespace ADDON_NEW
+{
+  class CAddonManager;
+}
+
 namespace ActiveAE {
 class CActiveAE;
 }
@@ -94,6 +99,7 @@ public:
   void DeinitStageTwo();
   void DeinitStageOne();
   ADDON::CAddonMgr& GetAddonMgr();
+  ADDON_NEW::CAddonManager& GetAddonManager();
   ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   ADDON::CBinaryAddonCache& GetBinaryAddonCache();
   ADDON::CVFSAddonCache& GetVFSAddonCache();
@@ -143,6 +149,7 @@ protected:
   };
 
   std::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
+  std::unique_ptr<ADDON_NEW::CAddonManager> m_addonManager;
   std::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
   std::unique_ptr<ADDON::CBinaryAddonCache> m_binaryAddonCache;
   std::unique_ptr<ADDON::CVFSAddonCache> m_vfsAddonCache;

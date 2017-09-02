@@ -19,6 +19,7 @@
  */
 
 #include "ServiceManager.h"
+#include "addons-new/AddonManager.h"
 #include "addons/BinaryAddonCache.h"
 #include "addons/VFSEntry.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
@@ -61,6 +62,8 @@ bool CServiceManager::InitStageOne()
 
   m_settings.reset(new CSettings());
 
+  m_addonManager.reset(new ADDON_NEW::CAddonManager);
+
   init_level = 1;
   return true;
 }
@@ -69,6 +72,12 @@ bool CServiceManager::InitStageTwo(const CAppParamParser &params)
 {
   m_Platform.reset(CPlatform::CreateInstance());
   m_Platform->Init();
+
+  if (!m_addonManager->Init())
+  {
+    CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start CAddonManager", __FUNCTION__);
+    return false;
+  }
 
   m_binaryAddonManager.reset(new ADDON::CBinaryAddonManager()); /* Need to constructed before, GetRunningInstance() of binary CAddonDll need to call them */
   m_addonMgr.reset(new ADDON::CAddonMgr());
@@ -168,6 +177,8 @@ void CServiceManager::DeinitStageThree()
 
 void CServiceManager::DeinitStageTwo()
 {
+  m_addonManager->Deinit();
+
   m_peripherals.reset();
   m_inputManager.reset();
   m_gameControllerManager.reset();
@@ -188,6 +199,7 @@ void CServiceManager::DeinitStageTwo()
 
 void CServiceManager::DeinitStageOne()
 {
+  m_addonManager.reset();
   m_settings.reset();
   m_playlistPlayer.reset();
 #ifdef HAS_PYTHON
@@ -202,6 +214,11 @@ void CServiceManager::DeinitStageOne()
 ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
 {
   return *m_addonMgr.get();
+}
+
+ADDON_NEW::CAddonManager& CServiceManager::GetAddonManager()
+{
+  return *m_addonManager.get();
 }
 
 ADDON::CBinaryAddonCache &CServiceManager::GetBinaryAddonCache()

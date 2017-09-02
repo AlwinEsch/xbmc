@@ -21,6 +21,7 @@
 #include "DatabaseManager.h"
 #include "utils/log.h"
 #include "addons/AddonDatabase.h"
+#include "addons-new/AddonDatabase.h"
 #include "view/ViewDatabase.h"
 #include "TextureDatabase.h"
 #include "music/MusicDatabase.h"
@@ -49,6 +50,7 @@ CDatabaseManager::~CDatabaseManager() = default;
 void CDatabaseManager::Initialize(bool addonsOnly)
 {
   Deinitialize();
+  { ADDON_NEW::CAddonDatabase db; UpdateDatabase(db); }
   { CAddonDatabase db; UpdateDatabase(db); }
   if (addonsOnly)
     return;

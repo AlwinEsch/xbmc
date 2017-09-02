@@ -23,6 +23,11 @@
 
 using namespace KODI;
 
+ADDON_NEW::CAddonManager& CServiceBroker::GetAddonManager()
+{
+  return g_application.m_ServiceManager->GetAddonManager();
+}
+
 ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
 {
   return g_application.m_ServiceManager->GetAddonMgr();
