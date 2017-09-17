@@ -22,6 +22,7 @@
 #include "addons/BinaryAddonCache.h"
 #include "addons/VFSEntry.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
+#include "addons/binary-addons/exe/BinaryAddonManager.h"
 #include "ContextMenuManager.h"
 #include "cores/AudioEngine/Engines/ActiveAE/ActiveAE.h"
 #include "cores/DataCacheCore.h"
@@ -83,6 +84,9 @@ bool CServiceManager::InitStageTwo(const CAppParamParser &params)
     CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to initialize CBinaryAddonManager", __FUNCTION__);
     return false;
   }
+
+  m_binaryAddonExeManager.reset(new ADDON::CBinaryAddonExeManager()); /* Need to constructed before, GetRunningInstance() of binary CAddonDll need to call them */
+  m_binaryAddonExeManager->StartManager();
 
   m_repositoryUpdater.reset(new ADDON::CRepositoryUpdater(*m_addonMgr));
 
@@ -179,6 +183,7 @@ void CServiceManager::DeinitStageTwo()
   m_PVRManager.reset();
   m_vfsAddonCache.reset();
   m_repositoryUpdater.reset();
+  m_binaryAddonExeManager.reset();
   m_binaryAddonManager.reset();
   m_addonMgr.reset();
   m_Platform.reset();
@@ -212,6 +217,11 @@ ADDON::CBinaryAddonCache &CServiceManager::GetBinaryAddonCache()
 ADDON::CBinaryAddonManager &CServiceManager::GetBinaryAddonManager()
 {
   return *m_binaryAddonManager.get();
+}
+
+ADDON::CBinaryAddonExeManager &CServiceManager::GetBinaryAddonExeManager()
+{
+  return *m_binaryAddonExeManager.get();
 }
 
 ADDON::CVFSAddonCache &CServiceManager::GetVFSAddonCache()

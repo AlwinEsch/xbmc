@@ -22,6 +22,8 @@
 #include <string>
 #include <time.h>
 
+#define ADDON_EXE_IGNORE_THIS
+
 /*
  * Internal Structures to have "C"-Style data transfer
  */
@@ -312,12 +314,12 @@ typedef struct AddonToKodiFuncTable_kodi_gui_window
   void* (*create)(void* kodiBase, const char* xml_filename, const char* default_skin, bool as_dialog, bool is_media);
   void (*destroy)(void* kodiBase, void* handle);
   void (*set_callbacks)(void* kodiBase, void* handle, void* clienthandle,
-       bool (*)(void* handle),
-       bool (*)(void* handle, int),
-       bool (*)(void* handle, int),
-       bool (*)(void* handle, int),
-       void (*)(void* handle, int, gui_context_menu_pair*, unsigned int*),
-       bool (*)(void* handle, int, unsigned int));
+       bool (*onInitCB)(void*),
+       bool (*onFocusCB)(void*,int),
+       bool (*onClickCB)(void*,int),
+       bool (*onActionCB)(void*,int),
+       void (*getContextButtonsCB)(void*,int,gui_context_menu_pair*,unsigned int*),
+       bool (*onContextButtonCB)(void*,int,unsigned int));
   bool (*show)(void* kodiBase, void* handle);
   bool (*close)(void* kodiBase, void* handle);
   bool (*do_modal)(void* kodiBase, void* handle);

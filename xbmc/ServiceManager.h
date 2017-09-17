@@ -28,6 +28,7 @@ class CAppParamParser;
 namespace ADDON {
 class CAddonMgr;
 class CBinaryAddonManager;
+class CBinaryAddonExeManager;
 class CBinaryAddonCache;
 class CVFSAddonCache;
 class CServiceAddonManager;
@@ -95,6 +96,7 @@ public:
   void DeinitStageOne();
   ADDON::CAddonMgr& GetAddonMgr();
   ADDON::CBinaryAddonManager& GetBinaryAddonManager();
+  ADDON::CBinaryAddonExeManager& GetBinaryAddonExeManager();
   ADDON::CBinaryAddonCache& GetBinaryAddonCache();
   ADDON::CVFSAddonCache& GetVFSAddonCache();
   ADDON::CServiceAddonManager& GetServiceAddons();
@@ -144,6 +146,7 @@ protected:
 
   std::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
   std::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
+  std::unique_ptr<ADDON::CBinaryAddonExeManager> m_binaryAddonExeManager;
   std::unique_ptr<ADDON::CBinaryAddonCache> m_binaryAddonCache;
   std::unique_ptr<ADDON::CVFSAddonCache> m_vfsAddonCache;
   std::unique_ptr<ADDON::CServiceAddonManager> m_serviceAddons;

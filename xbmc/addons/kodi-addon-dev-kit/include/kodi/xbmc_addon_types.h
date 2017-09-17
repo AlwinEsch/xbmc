@@ -20,4 +20,6 @@
  *
  */
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include "AddonBase.h" // compatibility fallback

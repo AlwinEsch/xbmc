@@ -23,6 +23,7 @@
 namespace ADDON {
 class CAddonMgr;
 class CBinaryAddonManager;
+class CBinaryAddonExeManager;
 class CBinaryAddonCache;
 class CVFSAddonCache;
 class CServiceAddonManager;
@@ -75,6 +76,7 @@ class CServiceBroker
 public:
   static ADDON::CAddonMgr &GetAddonMgr();
   static ADDON::CBinaryAddonManager &GetBinaryAddonManager();
+  static ADDON::CBinaryAddonExeManager &GetBinaryAddonExeManager();
   static ADDON::CBinaryAddonCache &GetBinaryAddonCache();
   static ADDON::CVFSAddonCache &GetVFSAddonCache();
   static ANNOUNCEMENT::CAnnouncementManager &GetAnnouncementManager();

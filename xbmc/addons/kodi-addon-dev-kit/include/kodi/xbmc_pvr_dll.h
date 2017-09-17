@@ -20,6 +20,8 @@
  *
  */
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include "xbmc_addon_dll.h"
 #include "xbmc_pvr_types.h"
 

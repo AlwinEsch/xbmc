@@ -20,6 +20,8 @@
  *
  */
 
+#define ADDON_EXE_IGNORE_THIS
+
 #ifndef TARGET_WINDOWS
 #ifndef __cdecl
 #define __cdecl

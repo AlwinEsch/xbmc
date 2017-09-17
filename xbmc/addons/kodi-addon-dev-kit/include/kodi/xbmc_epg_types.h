@@ -19,6 +19,8 @@
  *
  */
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include <string.h>
 #include <time.h>
 

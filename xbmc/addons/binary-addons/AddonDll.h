@@ -70,6 +70,19 @@ namespace ADDON
 
     AddonPtr GetRunningInstance() const override;
 
+    static char* get_addon_path(void* kodiBase);
+    static char* get_base_user_path(void* kodiBase);
+    static void addon_log_msg(void* kodiBase, const int addonLogLevel, const char* strMessage);
+    static bool get_setting_bool(void* kodiBase, const char* id, bool* value);
+    static bool get_setting_int(void* kodiBase, const char* id, int* value);
+    static bool get_setting_float(void* kodiBase, const char* id, float* value);
+    static bool get_setting_string(void* kodiBase, const char* id, char** value);
+    static bool set_setting_bool(void* kodiBase, const char* id, bool value);
+    static bool set_setting_int(void* kodiBase, const char* id, int value);
+    static bool set_setting_float(void* kodiBase, const char* id, float value);
+    static bool set_setting_string(void* kodiBase, const char* id, const char* value);
+    static void free_string(void* kodiBase, char* str);
+
   protected:
     bool Initialized() { return m_initialized; }
 
@@ -118,19 +131,6 @@ namespace ADDON
 
     inline bool InitInterface(KODI_HANDLE firstKodiInstance);
     inline void DeInitInterface();
-
-    static char* get_addon_path(void* kodiBase);
-    static char* get_base_user_path(void* kodiBase);
-    static void addon_log_msg(void* kodiBase, const int addonLogLevel, const char* strMessage);
-    static bool get_setting_bool(void* kodiBase, const char* id, bool* value);
-    static bool get_setting_int(void* kodiBase, const char* id, int* value);
-    static bool get_setting_float(void* kodiBase, const char* id, float* value);
-    static bool get_setting_string(void* kodiBase, const char* id, char** value);
-    static bool set_setting_bool(void* kodiBase, const char* id, bool value);
-    static bool set_setting_int(void* kodiBase, const char* id, int value);
-    static bool set_setting_float(void* kodiBase, const char* id, float value);
-    static bool set_setting_string(void* kodiBase, const char* id, const char* value);
-    static void free_string(void* kodiBase, char* str);
     //@}
   };
 

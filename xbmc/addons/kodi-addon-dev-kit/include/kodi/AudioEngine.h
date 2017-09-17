@@ -27,6 +27,8 @@
 #include "cores/AudioEngine/Utils/AEChannelData.h"
 #endif
 
+#define ADDON_EXE_IGNORE_THIS
+
 //==============================================================================
 ///
 /// \defgroup cpp_kodi_audioengine  Interface - kodi::audioengine

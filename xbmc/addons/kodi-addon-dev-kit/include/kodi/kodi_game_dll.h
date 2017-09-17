@@ -20,6 +20,8 @@
 #ifndef KODI_GAME_DLL_H_
 #define KODI_GAME_DLL_H_
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include "kodi_game_types.h"
 
 #ifdef __cplusplus

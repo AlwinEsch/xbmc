@@ -33,6 +33,11 @@ ADDON::CBinaryAddonManager &CServiceBroker::GetBinaryAddonManager()
   return g_application.m_ServiceManager->GetBinaryAddonManager();
 }
 
+ADDON::CBinaryAddonExeManager &CServiceBroker::GetBinaryAddonExeManager()
+{
+  return g_application.m_ServiceManager->GetBinaryAddonExeManager();
+}
+
 ADDON::CBinaryAddonCache &CServiceBroker::GetBinaryAddonCache()
 {
   return g_application.m_ServiceManager->GetBinaryAddonCache();

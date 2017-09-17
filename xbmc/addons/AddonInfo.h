@@ -88,6 +88,7 @@ namespace ADDON
   typedef std::map<std::string, std::string> ArtMap;
 
   class CAddonBuilder;
+  class CBinaryAddon;
 
   class CAddonInfo
   {
@@ -140,6 +141,7 @@ namespace ADDON
 
   private:
     friend class ADDON::CAddonBuilder;
+    friend class ADDON::CBinaryAddon;
 
     std::string m_id;
     TYPE m_mainType;

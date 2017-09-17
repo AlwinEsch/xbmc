@@ -30,6 +30,8 @@
 #define PERIPHERAL_SAFE_DELETE(x)        do { delete   (x); (x) = NULL; } while (0)
 #define PERIPHERAL_SAFE_DELETE_ARRAY(x)  do { delete[] (x); (x) = NULL; } while (0)
 
+#define ADDON_EXE_IGNORE_THIS
+
 namespace kodi
 {
 namespace addon

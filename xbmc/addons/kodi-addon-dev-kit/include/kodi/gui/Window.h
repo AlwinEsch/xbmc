@@ -23,10 +23,12 @@
 #include "ListItem.h"
 
 #ifdef BUILD_KODI_ADDON
-#include "../ActionIDs.h"
+#include "ActionIDs.h"
 #else
 #include "input/ActionIDs.h"
 #endif
+
+#define ADDON_EXE_IGNORE_THIS
 
 namespace kodi
 {
@@ -98,7 +100,7 @@ namespace gui
       if (!m_controlHandle)
         kodi::Log(ADDON_LOG_FATAL, "kodi::gui::CWindow can't create window class from Kodi !!!");
       m_interface->kodi_gui->window->set_callbacks(m_interface->kodiBase, m_controlHandle, this,
-                                                   CBOnInit, CBOnFocus, CBOnClick, CBOnAction, 
+                                                   CBOnInit, CBOnFocus, CBOnClick, CBOnAction,
                                                    CBGetContextButtons, CBOnContextButton);
     }
     //--------------------------------------------------------------------------

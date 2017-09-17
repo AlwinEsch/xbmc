@@ -29,6 +29,8 @@ namespace kodi { namespace addon { class CInstancePeripheral; }}
 /* joystick's driver button/hat/axis index is unknown */
 #define DRIVER_INDEX_UNKNOWN  (-1)
 
+#define ADDON_EXE_IGNORE_THIS
+
 extern "C"
 {
 

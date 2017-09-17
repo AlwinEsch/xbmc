@@ -20,6 +20,8 @@
  *
  */
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include "AddonBase.h"
 
 #ifdef __cplusplus

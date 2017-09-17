@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#define ADDON_EXE_IGNORE_THIS
+
 #include "libXBMC_addon.h"
 #include "kodi_game_types.h"
 

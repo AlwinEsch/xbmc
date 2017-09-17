@@ -21,11 +21,13 @@
 
 #include "../AddonBase.h"
 #ifdef BUILD_KODI_ADDON
-#include "../AEChannelData.h"
+#include "AEChannelData.h"
 #else
 #include "cores/AudioEngine/Utils/AEChannelData.h"
 #endif
 #include <stdint.h>
+
+#define ADDON_EXE_IGNORE_THIS
 
 namespace kodi { namespace addon { class CInstanceAudioDecoder; }}
 

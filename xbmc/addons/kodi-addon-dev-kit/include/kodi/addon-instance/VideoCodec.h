@@ -25,10 +25,12 @@
 #include "../StreamCodec.h"
 
 #ifdef BUILD_KODI_ADDON
-#include "../DVDDemuxPacket.h"
+#include "DVDDemuxPacket.h"
 #else
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemuxPacket.h"
 #endif
+
+#define ADDON_EXE_IGNORE_THIS
 
 namespace kodi { namespace addon { class CInstanceVideoCodec; } }
 

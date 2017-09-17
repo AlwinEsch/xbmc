@@ -44,6 +44,8 @@
   #define S_ISLNK(mode)  ((((mode)) & 0170000) == (0120000))
 #endif
 
+#define ADDON_EXE_IGNORE_THIS
+
 /*
  * For interface between add-on and kodi.
  *

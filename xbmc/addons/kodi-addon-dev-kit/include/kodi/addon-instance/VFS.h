@@ -22,11 +22,13 @@
 #include "../Filesystem.h"
 
 #ifdef BUILD_KODI_ADDON
-#include "../IFileTypes.h"
+#include "IFileTypes.h"
 #else
 #include "filesystem/IFileTypes.h"
 #include "PlatformDefs.h"
 #endif
+
+#define ADDON_EXE_IGNORE_THIS
 
 namespace kodi { namespace addon { class CInstanceVFS; }}
 

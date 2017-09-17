@@ -21,6 +21,8 @@
 
 #include "../AddonBase.h"
 
+#define ADDON_EXE_IGNORE_THIS
+
 namespace kodi { namespace addon { class CInstanceScreensaver; }}
 
 extern "C"

@@ -285,6 +285,9 @@ class ATTRIBUTE_HIDDEN CAddonBase
 public:
   CAddonBase()
   {
+    if (!CAddonBase::m_interface)
+      return;
+
     CAddonBase::m_interface->toAddon->destroy = ADDONBASE_Destroy;
     CAddonBase::m_interface->toAddon->get_status = ADDONBASE_GetStatus;
     CAddonBase::m_interface->toAddon->create_instance = ADDONBASE_CreateInstance;

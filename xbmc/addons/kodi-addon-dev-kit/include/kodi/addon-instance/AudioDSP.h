@@ -22,6 +22,8 @@
 
 #include "../AddonBase.h"
 
+#define ADDON_EXE_IGNORE_THIS
+
 #define AE_DSP_STREAM_MAX_STREAMS               8
 #define AE_DSP_STREAM_MAX_MODES                 32
 
