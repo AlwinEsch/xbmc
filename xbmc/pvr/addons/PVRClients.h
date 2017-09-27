@@ -707,6 +707,9 @@ namespace PVR
     void OnPowerSavingDeactivated();
 
   private:
+    void OnEvent(const ADDON::AddonEvent& event);
+    void UpdateAddon(const ADDON::AddonPtr& addon);
+
     /*!
      * @brief Get the instance of the client.
      * @param iClientId The id of the client to get.

@@ -211,12 +211,6 @@ namespace PVR
     explicit CPVRClient(ADDON::CAddonInfo addonInfo);
     ~CPVRClient(void) override;
 
-    void OnDisabled() override;
-    void OnEnabled() override;
-    void OnPreInstall() override;
-    void OnPostInstall(bool update, bool modal) override;
-    void OnPreUnInstall() override;
-    void OnPostUnInstall() override;
     ADDON::AddonPtr GetRunningInstance() const override;
 
     /** @name PVR add-on methods */
@@ -903,11 +897,6 @@ namespace PVR
      * @return True when it can be played, false otherwise.
      */
     bool CanPlayChannel(const CPVRChannelPtr &channel) const;
-
-    /*!
-     * @brief Stop this instance, if it is currently running.
-     */
-    void StopRunningInstance();
 
     /*!
      * @brief Write an error to the error log.

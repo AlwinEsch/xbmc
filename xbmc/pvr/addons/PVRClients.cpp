@@ -58,12 +58,66 @@ CPVRClients::CPVRClients(void) :
 CPVRClients::~CPVRClients(void)
 {
   CServiceBroker::GetAddonMgr().UnregisterAddonMgrCallback(ADDON_PVRDLL);
+  CServiceBroker::GetAddonMgr().UnloadEvents().Unsubscribe(this);
+  CServiceBroker::GetAddonMgr().Events().Unsubscribe(this);
   Unload();
+}
+
+void CPVRClients::OnEvent(const AddonEvent& event)
+{
+  ADDON::AddonPtr addon;
+
+  if (auto enableEvent = dynamic_cast<const AddonEvents::Enabled*>(&event))
+  {
+    if (CServiceBroker::GetAddonMgr().GetAddon(enableEvent->id, addon, ADDON_PVRDLL, false))
+    {
+      CServiceBroker::GetPVRManager().Stop();
+      UpdateAddon(addon);
+      CServiceBroker::GetPVRManager().Start();
+    }
+  }
+  else if (auto disableEvent = dynamic_cast<const AddonEvents::Disabled*>(&event))
+  {
+    int id = GetClientId(disableEvent->id);
+    if (id < 0)
+      return;
+
+    if (CServiceBroker::GetAddonMgr().GetAddon(disableEvent->id, addon, ADDON_PVRDLL, false))
+    {
+      CServiceBroker::GetPVRManager().Stop();
+      StopClient(addon, false);
+      CServiceBroker::GetPVRManager().Start();
+    }
+  }
+  else if (auto loadEvent = dynamic_cast<const AddonEvents::Load*>(&event))
+  {
+    if (CServiceBroker::GetAddonMgr().GetAddon(loadEvent->id, addon, ADDON_PVRDLL, false))
+    {
+      CServiceBroker::GetPVRManager().Stop();
+      UpdateAddon(addon);
+      CServiceBroker::GetPVRManager().Start();
+    }
+  }
+  else if (auto unloadEvent = dynamic_cast<const AddonEvents::Unload*>(&event))
+  {
+    int id = GetClientId(disableEvent->id);
+    if (id < 0)
+      return;
+
+    if (CServiceBroker::GetAddonMgr().GetAddon(unloadEvent->id, addon, ADDON_PVRDLL, false))
+    {
+      CServiceBroker::GetPVRManager().Stop();
+      StopClient(addon, false);
+      CServiceBroker::GetPVRManager().Start();
+    }
+  }
 }
 
 void CPVRClients::Start(void)
 {
   CServiceBroker::GetAddonMgr().RegisterAddonMgrCallback(ADDON_PVRDLL, this);
+  CServiceBroker::GetAddonMgr().Events().Subscribe(this, &CPVRClients::OnEvent);
+  CServiceBroker::GetAddonMgr().UnloadEvents().Subscribe(this, &CPVRClients::OnEvent);
 
   UpdateAddons();
 }
@@ -1038,58 +1092,61 @@ void CPVRClients::UpdateAddons(void)
     return;
 
   for (auto &addon : addons)
-  {
-    bool bEnabled = !CServiceBroker::GetAddonMgr().IsAddonDisabled(addon->ID());
-
-    if (bEnabled && (!IsKnownClient(addon) || !IsCreatedClient(addon)))
-    {
-      std::hash<std::string> hasher;
-      int iClientId = static_cast<int>(hasher(addon->ID()));
-      if (iClientId < 0)
-        iClientId = -iClientId;
-
-      ADDON_STATUS status;
-      if (IsKnownClient(addon))
-      {
-        PVR_CLIENT client;
-        GetClient(iClientId, client);
-        status = client->Create(iClientId);
-      }
-      else
-      {
-        PVR_CLIENT pvrclient = std::dynamic_pointer_cast<CPVRClient>(addon);
-        if (!pvrclient)
-        {
-          CLog::Log(LOGERROR, "CPVRClients - %s - severe error, incorrect add-on type", __FUNCTION__);
-          continue;
-        }
-        status = pvrclient.get()->Create(iClientId);
-        // register the add-on
-        if (m_clientMap.find(iClientId) == m_clientMap.end())
-        {
-          m_clientMap.insert(std::make_pair(iClientId, pvrclient));
-          m_addonNameIds.insert(make_pair(addon->ID(), iClientId));
-        }
-      }
-
-      if (status != ADDON_STATUS_OK)
-      {
-        CLog::Log(LOGERROR, "%s - failed to create add-on %s, status = %d", __FUNCTION__, addon->Name().c_str(), status);
-        if (status == ADDON_STATUS_PERMANENT_FAILURE)
-        {
-          CServiceBroker::GetAddonMgr().DisableAddon(addon->ID());
-          CJobManager::GetInstance().AddJob(new CPVREventlogJob(true, true, addon->Name(), g_localizeStrings.Get(24070), addon->Icon()), nullptr);
-        }
-      }
-    }
-    else if (IsCreatedClient(addon))
-    {
-      // stop add-on if it's no longer enabled, restart add-on if it's still enabled
-      StopClient(addon, bEnabled);
-    }
-  }
+    UpdateAddon(addon);
 
   CServiceBroker::GetPVRManager().Start();
+}
+
+void CPVRClients::UpdateAddon(const ADDON::AddonPtr& addon)
+{
+  bool bEnabled = !CServiceBroker::GetAddonMgr().IsAddonDisabled(addon->ID());
+
+  if (bEnabled && (!IsKnownClient(addon) || !IsCreatedClient(addon)))
+  {
+    std::hash<std::string> hasher;
+    int iClientId = static_cast<int>(hasher(addon->ID()));
+    if (iClientId < 0)
+      iClientId = -iClientId;
+
+    ADDON_STATUS status;
+    if (IsKnownClient(addon))
+    {
+      PVR_CLIENT client;
+      GetClient(iClientId, client);
+      status = client->Create(iClientId);
+    }
+    else
+    {
+      PVR_CLIENT pvrclient = std::dynamic_pointer_cast<CPVRClient>(addon);
+      if (!pvrclient)
+      {
+        CLog::Log(LOGERROR, "CPVRClients - %s - severe error, incorrect add-on type", __FUNCTION__);
+        return;
+      }
+      status = pvrclient.get()->Create(iClientId);
+      // register the add-on
+      if (m_clientMap.find(iClientId) == m_clientMap.end())
+      {
+        m_clientMap.insert(std::make_pair(iClientId, pvrclient));
+        m_addonNameIds.insert(make_pair(addon->ID(), iClientId));
+      }
+    }
+
+    if (status != ADDON_STATUS_OK)
+    {
+      CLog::Log(LOGERROR, "%s - failed to create add-on %s, status = %d", __FUNCTION__, addon->Name().c_str(), status);
+      if (status == ADDON_STATUS_PERMANENT_FAILURE)
+      {
+        CServiceBroker::GetAddonMgr().DisableAddon(addon->ID());
+        CJobManager::GetInstance().AddJob(new CPVREventlogJob(true, true, addon->Name(), g_localizeStrings.Get(24070), addon->Icon()), nullptr);
+      }
+    }
+  }
+  else if (IsCreatedClient(addon))
+  {
+    // stop add-on if it's no longer enabled, restart add-on if it's still enabled
+    StopClient(addon, bEnabled);
+  }
 }
 
 bool CPVRClients::GetClient(const std::string &strId, AddonPtr &addon) const
