@@ -71,10 +71,16 @@ VFSEntryPtr CVFSAddonCache::GetAddonInstance(const std::string& strId, TYPE type
 void CVFSAddonCache::OnEvent(const AddonEvent& event)
 {
   if (typeid(event) == typeid(AddonEvents::Initilized) ||
-      typeid(event) == typeid(AddonEvents::ReInstalled) ||
       typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     Update();
+  }
+  else if (typeid(event) == typeid(AddonEvents::Enabled) ||
+           typeid(event) == typeid(AddonEvents::Disabled) ||
+           typeid(event) == typeid(AddonEvents::ReInstalled))
+  {
+    if (CServiceBroker::GetAddonMgr().HasType(event.id, ADDON_VFS))
+      Update();
   }
 }
 
