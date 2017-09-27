@@ -687,7 +687,7 @@ bool CAddonMgr::FindAddons()
     m_database.GetBlacklisted(tmp);
     m_updateBlacklist = std::move(tmp);
 
-    m_events.Publish(AddonEvents::InstalledChanged());
+    m_events.Publish(AddonEvents::Initilized());
   }
 
   return result;
@@ -752,7 +752,6 @@ bool CAddonMgr::LoadAddon(const std::string& addonId)
   }
 
   m_events.Publish(AddonEvents::ReInstalled(addon->ID()));
-  m_events.Publish(AddonEvents::InstalledChanged());
   CLog::Log(LOGDEBUG, "CAddonMgr: %s successfully loaded", addon->ID().c_str());
   return true;
 }
@@ -762,7 +761,6 @@ void CAddonMgr::OnPostUnInstall(const std::string& id)
   CSingleLock lock(m_critSection);
   m_disabled.erase(id);
   m_updateBlacklist.erase(id);
-  m_events.Publish(AddonEvents::InstalledChanged());
   m_events.Publish(AddonEvents::UnInstalled(id));
 }
 

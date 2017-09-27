@@ -287,9 +287,11 @@ void CDirectoryProvider::OnAddonEvent(const ADDON::AddonEvent& event)
   CSingleLock lock(m_section);
   if (URIUtils::IsProtocol(m_currentUrl, "addons"))
   {
-    if (typeid(event) == typeid(ADDON::AddonEvents::Enabled) ||
+    if (typeid(event) == typeid(ADDON::AddonEvents::Initilized) ||
+        typeid(event) == typeid(ADDON::AddonEvents::Enabled) ||
         typeid(event) == typeid(ADDON::AddonEvents::Disabled) ||
-        typeid(event) == typeid(ADDON::AddonEvents::InstalledChanged) ||
+        typeid(event) == typeid(ADDON::AddonEvents::ReInstalled) ||
+        typeid(event) == typeid(ADDON::AddonEvents::UnInstalled) ||
         typeid(event) == typeid(ADDON::AddonEvents::MetadataChanged))
       m_updateState = INVALIDATED;
   }

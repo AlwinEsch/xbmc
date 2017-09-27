@@ -122,14 +122,16 @@ void CContextMenuManager::ReloadAddonItems()
 
 void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::InstalledChanged))
+  if (typeid(event) == typeid(AddonEvents::Initilized) ||
+      typeid(event) == typeid(AddonEvents::ReInstalled) ||
+      typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     ReloadAddonItems();
   }
-  else if (auto enableEvent = dynamic_cast<const AddonEvents::Enabled*>(&event))
+  else if (typeid(event) == typeid(AddonEvents::Enabled))
   {
     AddonPtr addon;
-    if (m_addonMgr.GetAddon(enableEvent->id, addon, ADDON_CONTEXT_ITEM))
+    if (m_addonMgr.GetAddon(event.id, addon, ADDON_CONTEXT_ITEM))
     {
       CSingleLock lock(m_criticalSection);
       auto items = std::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
@@ -139,7 +141,7 @@ void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
         if (it == m_addonItems.end())
           m_addonItems.push_back(item);
       }
-      CLog::Log(LOGDEBUG, "ContextMenuManager: loaded %s.", enableEvent->id.c_str());
+      CLog::Log(LOGDEBUG, "ContextMenuManager: loaded %s.", event.id.c_str());
     }
   }
   else if (auto disableEvent = dynamic_cast<const AddonEvents::Disabled*>(&event))
