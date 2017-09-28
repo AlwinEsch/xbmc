@@ -692,8 +692,6 @@ bool CAddonMgr::FindAddons()
     tmp.clear();
     m_database.GetBlacklisted(tmp);
     m_updateBlacklist = std::move(tmp);
-
-    m_events.Publish(AddonEvents::Initialized());
   }
 
   return result;

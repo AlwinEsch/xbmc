@@ -32,14 +32,6 @@ namespace ADDON
 
   namespace AddonEvents
   {
-    /**
-     * Emitted after initializing add-ons.
-     */
-    struct Initialized : AddonEvent
-    {
-      explicit Initialized() : AddonEvent("") {}
-    };
-
     struct Enabled : AddonEvent
     {
       explicit Enabled(std::string id) : AddonEvent(std::move(id)) {}
@@ -81,5 +73,5 @@ namespace ADDON
     {
       explicit Unload(std::string id) : AddonEvent(std::move(id)) {}
     };
-  };
-};
+  }
+}

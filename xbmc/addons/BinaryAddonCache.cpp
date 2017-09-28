@@ -101,8 +101,7 @@ AddonPtr CBinaryAddonCache::GetAddonInstance(const std::string& strId, TYPE type
 
 void CBinaryAddonCache::OnEvent(const AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::Initialized) ||
-      typeid(event) == typeid(AddonEvents::UnInstalled))
+  if (typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     Update();
   }
