@@ -122,8 +122,7 @@ void CContextMenuManager::ReloadAddonItems()
 
 void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::Initialized) ||
-      typeid(event) == typeid(AddonEvents::ReInstalled) ||
+  if (typeid(event) == typeid(AddonEvents::ReInstalled) ||
       typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     ReloadAddonItems();
@@ -144,10 +143,9 @@ void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
       CLog::Log(LOGDEBUG, "ContextMenuManager: loaded %s.", event.id.c_str());
     }
   }
-  else if (auto disableEvent = dynamic_cast<const AddonEvents::Disabled*>(&event))
+  else if (typeid(event) == typeid(AddonEvents::Disabled))
   {
-    AddonPtr addon;
-    if (m_addonMgr.GetAddon(disableEvent->id, addon, ADDON_CONTEXT_ITEM, false))
+    if (CServiceBroker::GetAddonMgr().HasType(event.id, ADDON_CONTEXT_ITEM))
     {
       ReloadAddonItems();
     }
