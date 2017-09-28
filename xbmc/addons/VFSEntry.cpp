@@ -70,7 +70,7 @@ VFSEntryPtr CVFSAddonCache::GetAddonInstance(const std::string& strId, TYPE type
 
 void CVFSAddonCache::OnEvent(const AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::Initilized) ||
+  if (typeid(event) == typeid(AddonEvents::Initialized) ||
       typeid(event) == typeid(AddonEvents::UnInstalled))
   {
     Update();

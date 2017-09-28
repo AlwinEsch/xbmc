@@ -33,11 +33,11 @@ namespace ADDON
   namespace AddonEvents
   {
     /**
-     * Emitted after initilizing add-ons.
+     * Emitted after initializing add-ons.
      */
-    struct Initilized : AddonEvent
+    struct Initialized : AddonEvent
     {
-      explicit Initilized() : AddonEvent("") {}
+      explicit Initialized() : AddonEvent("") {}
     };
 
     struct Enabled : AddonEvent

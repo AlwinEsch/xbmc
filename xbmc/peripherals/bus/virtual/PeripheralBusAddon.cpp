@@ -332,7 +332,7 @@ void CPeripheralBusAddon::GetDirectory(const std::string &strPath, CFileItemList
 
 void CPeripheralBusAddon::OnEvent(const ADDON::AddonEvent& event)
 {
-  if (typeid(event) == typeid(ADDON::AddonEvents::Initilized) ||
+  if (typeid(event) == typeid(ADDON::AddonEvents::Initialized) ||
       typeid(event) == typeid(ADDON::AddonEvents::Enabled) ||
       typeid(event) == typeid(ADDON::AddonEvents::Disabled) ||
       typeid(event) == typeid(ADDON::AddonEvents::ReInstalled) ||

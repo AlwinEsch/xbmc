@@ -183,7 +183,7 @@ void CBinaryAddonManager::OnEvent(const AddonEvent& event)
   {
     DisableEvent(event.id);
   }
-  else if (typeid(event) == typeid(AddonEvents::Initilized) ||
+  else if (typeid(event) == typeid(AddonEvents::Initialized) ||
            typeid(event) == typeid(AddonEvents::ReInstalled) ||
            typeid(event) == typeid(AddonEvents::UnInstalled))
   {

@@ -122,7 +122,7 @@ void CContextMenuManager::ReloadAddonItems()
 
 void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
 {
-  if (typeid(event) == typeid(AddonEvents::Initilized) ||
+  if (typeid(event) == typeid(AddonEvents::Initialized) ||
       typeid(event) == typeid(AddonEvents::ReInstalled) ||
       typeid(event) == typeid(AddonEvents::UnInstalled))
   {
