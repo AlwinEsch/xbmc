@@ -70,8 +70,7 @@ void CRepositoryUpdater::OnEvent(const ADDON::AddonEvent& event)
 {
   if (typeid(event) == typeid(ADDON::AddonEvents::Enabled))
   {
-    AddonPtr addon;
-    if (m_addonMgr.GetAddon(event.id, addon, ADDON_REPOSITORY))
+    if (m_addonMgr.HasType(event.id, ADDON_REPOSITORY))
       ScheduleUpdate();
   }
 }
