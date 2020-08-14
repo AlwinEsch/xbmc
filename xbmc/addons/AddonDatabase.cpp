@@ -131,7 +131,7 @@ int CAddonDatabase::GetMinSchemaVersion() const
 
 int CAddonDatabase::GetSchemaVersion() const
 {
-  return 28;
+  return 29;
 }
 
 void CAddonDatabase::CreateTables()
@@ -154,9 +154,6 @@ void CAddonDatabase::CreateTables()
   CLog::Log(LOGINFO, "create addonlinkrepo table");
   m_pDS->exec("CREATE TABLE addonlinkrepo (idRepo integer, idAddon integer)\n");
 
-  CLog::Log(LOGINFO, "create broken table");
-  m_pDS->exec("CREATE TABLE broken (id integer primary key, addonID text, reason text)\n");
-
   CLog::Log(LOGINFO, "create blacklist table");
   m_pDS->exec("CREATE TABLE blacklist (id integer primary key, addonID text)\n");
 
@@ -175,7 +172,6 @@ void CAddonDatabase::CreateAnalytics()
   m_pDS->exec("CREATE INDEX idxAddons ON addons(addonID)");
   m_pDS->exec("CREATE UNIQUE INDEX ix_addonlinkrepo_1 ON addonlinkrepo ( idAddon, idRepo )\n");
   m_pDS->exec("CREATE UNIQUE INDEX ix_addonlinkrepo_2 ON addonlinkrepo ( idRepo, idAddon )\n");
-  m_pDS->exec("CREATE UNIQUE INDEX idxBroken ON broken(addonID)");
   m_pDS->exec("CREATE UNIQUE INDEX idxBlack ON blacklist(addonID)");
   m_pDS->exec("CREATE UNIQUE INDEX idxPackage ON package(filename)");
 }
@@ -224,6 +220,10 @@ void CAddonDatabase::UpdateTables(int version)
     // On adding this field we will use user disabled as the default reason for any disabled addons
     m_pDS->exec("UPDATE installed SET disabledReason=1 WHERE enabled=0");
   }
+  if (version < 29)
+  {
+    m_pDS->exec("DROP TABLE broken");
+  }
 }
 
 void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
@@ -241,7 +241,7 @@ void CAddonDatabase::SyncInstalled(const std::set<std::string>& ids,
     m_pDS->query(PrepareSQL("SELECT addonID FROM installed"));
     while (!m_pDS->eof())
     {
-      db.insert(m_pDS->fv(0).get_asString());
+      db.insert(m_pDS->fv("addonID").get_asString());
       m_pDS->next();
     }
     m_pDS->close();
@@ -399,13 +399,13 @@ bool CAddonDatabase::FindByAddonId(const std::string& addonId, ADDON::VECADDONS&
     {
       CAddonInfoBuilder::CFromDB builder;
       builder.SetId(addonId);
-      builder.SetVersion(AddonVersion(m_pDS->fv(0).get_asString()));
-      builder.SetName(m_pDS->fv(1).get_asString());
-      builder.SetSummary(m_pDS->fv(2).get_asString());
-      builder.SetDescription(m_pDS->fv(3).get_asString());
-      DeserializeMetadata(m_pDS->fv(4).get_asString(), builder);
-      builder.SetChangelog(m_pDS->fv(5).get_asString());
-      builder.SetOrigin(m_pDS->fv(6).get_asString());
+      builder.SetVersion(AddonVersion(m_pDS->fv("version").get_asString()));
+      builder.SetName(m_pDS->fv("name").get_asString());
+      builder.SetSummary(m_pDS->fv("summary").get_asString());
+      builder.SetDescription(m_pDS->fv("description").get_asString());
+      DeserializeMetadata(m_pDS->fv("metadata").get_asString(), builder);
+      builder.SetChangelog(m_pDS->fv("news").get_asString());
+      builder.SetOrigin(m_pDS->fv("repoID").get_asString());
 
       auto addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN);
       if (addon)
@@ -447,8 +447,8 @@ bool CAddonDatabase::GetAvailableVersions(const std::string& addonId,
     m_pDS->query(sql.c_str());
     while (!m_pDS->eof())
     {
-      AddonVersion version(m_pDS->fv(0).get_asString());
-      std::string repo = m_pDS->fv(1).get_asString();
+      AddonVersion version(m_pDS->fv("version").get_asString());
+      std::string repo = m_pDS->fv("repoID").get_asString();
       versionsInfo.emplace_back(version, repo);
       m_pDS->next();
     }
@@ -481,7 +481,7 @@ bool CAddonDatabase::GetAddon(const std::string& addonID, const AddonVersion& ve
     if (m_pDS->eof())
       return false;
 
-    return GetAddon(m_pDS->fv(0).get_asInt(), addon);
+    return GetAddon(m_pDS->fv("id").get_asInt(), addon);
   }
   catch (...)
   {
@@ -513,10 +513,10 @@ bool CAddonDatabase::GetAddon(const std::string& id, AddonPtr& addon)
     int maxid = 0;
     while (!m_pDS2->eof())
     {
-      AddonVersion version(m_pDS2->fv(1).get_asString());
+      AddonVersion version(m_pDS2->fv("version").get_asString());
       if (version > maxversion)
       {
-        maxid = m_pDS2->fv(0).get_asInt();
+        maxid = m_pDS2->fv("id").get_asInt();
         maxversion = version;
       }
       m_pDS2->next();
@@ -594,7 +594,7 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
       m_pDS->query(sql);
       while (!m_pDS->eof())
       {
-        repoIds.emplace_back(m_pDS->fv(0).get_asString());
+        repoIds.emplace_back(m_pDS->fv("id").get_asString());
         m_pDS->next();
       }
     }
@@ -671,7 +671,7 @@ void CAddonDatabase::DeleteRepository(const std::string& id)
     if (m_pDS->eof())
       return;
 
-    int idRepo = m_pDS->fv(0).get_asInt();
+    int idRepo = m_pDS->fv("id").get_asInt();
 
     m_pDS->exec(PrepareSQL("DELETE FROM repo WHERE id=%i", idRepo));
     m_pDS->exec(PrepareSQL("DELETE FROM addons WHERE id IN (SELECT idAddon FROM addonlinkrepo WHERE idRepo=%i)", idRepo));
@@ -809,7 +809,7 @@ int CAddonDatabase::SetLastChecked(const std::string& id,
     }
     else
     {
-      retId = m_pDS->fv(0).get_asInt();
+      retId = m_pDS->fv("id").get_asInt();
       sql = PrepareSQL("UPDATE repo SET lastcheck='%s', version='%s' WHERE addonID='%s'",
           time.c_str(), version.asString().c_str(), id.c_str());
       m_pDS->exec(sql);
@@ -845,7 +845,7 @@ bool CAddonDatabase::Search(const std::string& search, VECADDONS& addons)
     while (!m_pDS->eof())
     {
       AddonPtr addon;
-      GetAddon(m_pDS->fv(0).get_asInt(), addon);
+      GetAddon(m_pDS->fv("id").get_asInt(), addon);
       if (addon->Type() >= ADDON_UNKNOWN+1 && addon->Type() < ADDON_SCRAPER_LIBRARY)
         addons.push_back(addon);
       m_pDS->next();
@@ -903,15 +903,6 @@ bool CAddonDatabase::EnableAddon(const std::string& addonID)
   return false;
 }
 
-bool CAddonDatabase::BreakAddon(const std::string &addonID, const std::string& reason)
-{
-  if (reason.empty())
-    return ExecuteQuery(PrepareSQL("DELETE FROM broken WHERE addonID='%s'", addonID.c_str()));
-  else
-    return ExecuteQuery(PrepareSQL("REPLACE INTO broken(addonID, reason) VALUES('%s', '%s')",
-                                   addonID.c_str(), reason.c_str()));
-}
-
 bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason>& addons)
 {
   try
@@ -926,8 +917,8 @@ bool CAddonDatabase::GetDisabled(std::map<std::string, AddonDisabledReason>& add
     m_pDS->query(sql);
     while (!m_pDS->eof())
     {
-      addons.insert({m_pDS->fv(0).get_asString(),
-                     static_cast<AddonDisabledReason>(m_pDS->fv(1).get_asInt())});
+      addons.insert({m_pDS->fv("addonID").get_asString(),
+                     static_cast<AddonDisabledReason>(m_pDS->fv("disabledReason").get_asInt())});
       m_pDS->next();
     }
     m_pDS->close();
@@ -953,7 +944,7 @@ bool CAddonDatabase::GetBlacklisted(std::set<std::string>& addons)
     m_pDS->query(sql);
     while (!m_pDS->eof())
     {
-      addons.insert(m_pDS->fv(0).get_asString());
+      addons.insert(m_pDS->fv("addonID").get_asString());
       m_pDS->next();
     }
     m_pDS->close();
@@ -964,11 +955,6 @@ bool CAddonDatabase::GetBlacklisted(std::set<std::string>& addons)
     CLog::Log(LOGERROR, "%s failed", __FUNCTION__);
   }
   return false;
-}
-
-bool CAddonDatabase::IsAddonBroken(const std::string &addonID)
-{
-  return !GetSingleValue(PrepareSQL("SELECT reason FROM broken WHERE addonID='%s'", addonID.c_str())).empty();
 }
 
 bool CAddonDatabase::BlacklistAddon(const std::string& addonID)
