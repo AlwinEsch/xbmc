@@ -26,7 +26,7 @@ Reviews are a great way to get familiar with the codebase. If you would like to 
 * **Follow our [code guidelines](CODE_GUIDELINES.md)**. New code should follow those guidelines even if existing code doesn't. If you're up to it, improve existing code and submit it in separate commits.
 * **Document the code**. You know you're brilliant, but maybe you'd like to understand what you did a year from now. Or, code God forbid, help others... Nope, `// Magic. Do not touch!` does not count as documentation.
 * **Separate code from cosmetics**. Code and cosmetic changes should be in separate commits. It's already hard to review code without added noise. Of course, deleting a **few** trailing spaces does not warrant a separate commit. Use your judgement.
-* **Test your changes**. Kodi's **[continuous integration system](http://jenkins.kodi.tv/)** builds every PR automatically. Nonetheless, you're expected to test the code on your development platform.
+* **Test your changes**. Kodi's **[continuous integration system](https://jenkins.kodi.tv/)** builds every PR automatically. Nonetheless, you're expected to test the code on your development platform.
 
 ## Updating your PR
 Making a *pull request* adhere to the standards above can be difficult. If the maintainers notice anything that they'd like changed, they'll ask you to edit your *pull request* before it gets merged. **There's no need to open a new *pull request*, just edit the existing one**. If you're not sure how to do that, our **[git guide](GIT-FU.md)** provides a step by step guide. If you're still not sure, ask us for guidance. We're all fairly proficient with *git* and happy to be of assistance.
