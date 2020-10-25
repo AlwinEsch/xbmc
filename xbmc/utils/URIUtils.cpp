@@ -1439,3 +1439,8 @@ bool URIUtils::UpdateUrlEncoding(std::string &strFilename)
   strFilename = newFilename;
   return true;
 }
+
+bool URIUtils::IsWeb(const std::string& strFile)
+{
+  return IsProtocol(strFile, "web");
+}

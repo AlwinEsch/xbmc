@@ -37,6 +37,7 @@ namespace PLAYLIST
 }
 
 class CContextMenuManager;
+
 class XBPython;
 class CDataCacheCore;
 class IAE;
@@ -61,6 +62,7 @@ class CLog;
 
 namespace KODI
 {
+
 namespace GAME
 {
   class CControllerManager;
@@ -71,7 +73,13 @@ namespace RETRO
 {
   class CGUIGameRenderManager;
 }
+
+namespace WEB
+{
+class CWebManager;
 }
+
+} /* namespace KODI */
 
 namespace PERIPHERALS
 {
@@ -109,6 +117,7 @@ public:
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   static CInputManager& GetInputManager();
   static CFileExtensionProvider &GetFileExtensionProvider();
+  static KODI::WEB::CWebManager& GetWEBManager();
   static bool IsBinaryAddonCacheUp();
   static bool IsServiceManagerUp();
   static CNetworkBase& GetNetwork();
