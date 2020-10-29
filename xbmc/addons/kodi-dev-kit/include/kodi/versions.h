@@ -38,7 +38,7 @@
 // check.
 // clang-format off
 #define ADDON_GLOBAL_VERSION_MAIN                     "1.3.0"
-#define ADDON_GLOBAL_VERSION_MAIN_MIN                 "1.3.0"
+#define ADDON_GLOBAL_VERSION_MAIN_MIN                 "1.4.0"
 #define ADDON_GLOBAL_VERSION_MAIN_XML_ID              "kodi.binary.global.main"
 #define ADDON_GLOBAL_VERSION_MAIN_DEPENDS             "AddonBase.h" \
                                                       "addon-instance/" \
