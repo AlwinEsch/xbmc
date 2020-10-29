@@ -17,8 +17,8 @@ jobs:
           echo ${{github.event.before}}
           echo $GITHUB_SHA
           export DIFF=$(git diff-tree --no-commit-id --patch-with-stat ${{ github.event.base_ref }} $GITHUB_SHA xbmc/addons/kodi-dev-kit/include/kodi/versions.h | grep +.*ADDON_.*_VERSION.*_MIN)
-          if [ ! -z $DIFF ]; then
-            echo " - Binary API changed"
+          if [[ ! -z $DIFF ]]; then
+            echo "- Binary API changed found"
             echo $DIFF
           else
             echo " - Binary not API changed"
