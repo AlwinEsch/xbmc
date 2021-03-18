@@ -17,7 +17,6 @@ class CAppParamParser;
 namespace ADDON
 {
   class CAddonMgr;
-  class CBinaryAddonManager;
   class CBinaryAddonCache;
   class CVFSAddonCache;
   class CServiceAddonManager;
@@ -47,6 +46,15 @@ class CWeatherManager;
 
 namespace KODI
 {
+
+namespace ADDONS
+{
+namespace INTERFACE
+{
+  class CController;
+} /* namespace INTERFACE */
+} /* namespace ADDONS */
+
 namespace GAME
 {
   class CControllerManager;
@@ -88,11 +96,11 @@ public:
   void DeinitStageOne();
 
   ADDON::CAddonMgr& GetAddonMgr();
-  ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   ADDON::CBinaryAddonCache& GetBinaryAddonCache();
   ADDON::CVFSAddonCache& GetVFSAddonCache();
   ADDON::CServiceAddonManager& GetServiceAddons();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
+  KODI::ADDONS::INTERFACE::CController& GetAddonIfcCtrl();
   CNetworkBase& GetNetwork();
 #ifdef HAS_PYTHON
   XBPython& GetXBPython();
@@ -142,11 +150,11 @@ protected:
   };
 
   std::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
-  std::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
   std::unique_ptr<ADDON::CBinaryAddonCache> m_binaryAddonCache;
   std::unique_ptr<ADDON::CVFSAddonCache> m_vfsAddonCache;
   std::unique_ptr<ADDON::CServiceAddonManager> m_serviceAddons;
   std::unique_ptr<ADDON::CRepositoryUpdater> m_repositoryUpdater;
+  std::unique_ptr<KODI::ADDONS::INTERFACE::CController> m_addonIfcCtrl;
 #ifdef HAS_PYTHON
   std::unique_ptr<XBPython> m_XBPython;
 #endif

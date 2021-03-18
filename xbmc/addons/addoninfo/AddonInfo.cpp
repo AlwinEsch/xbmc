@@ -153,7 +153,7 @@ CAddonInfo::CAddonInfo(std::string id, TYPE type)
 
 const CAddonType* CAddonInfo::Type(TYPE type) const
 {
-  static CAddonType dummy;
+  static CAddonType dummy(ADDON_UNKNOWN, AddonLanguage::Unknown);
 
   if (!m_types.empty())
   {

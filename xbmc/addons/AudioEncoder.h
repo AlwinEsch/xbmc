@@ -7,25 +7,30 @@
 
 #pragma once
 
-#include "addons/binary-addons/AddonInstanceHandler.h"
+#include "interface/api/addon-instance/audioencoder.h"
+#include "interface/InstanceHandler.h"
 #include "cdrip/IEncoder.h"
 
 namespace ADDON
 {
 
-  class CAudioEncoder : public IEncoder, public IAddonInstanceHandler
+  class CAudioEncoder : public IEncoder, public KODI::ADDONS::INTERFACE::IAddonInstanceHandler
   {
   public:
     explicit CAudioEncoder(const AddonInfoPtr& addonInfo);
-    ~CAudioEncoder() override;
+    ~CAudioEncoder() override = default;
 
     // Child functions related to IEncoder
-    bool Init(AddonToKodiFuncTable_AudioEncoder& callbacks) override;
+    bool Init(AudioEncoderCB& callbacks) override;
     int Encode(int nNumBytesRead, uint8_t* pbtStream) override;
     bool Close() override;
 
+    int Write(const uint8_t* data, int len); /*---AUTO_GEN_PARSE<CB:kodi_addon_audioencoder_write>---*/
+    int64_t Seek(int64_t pos, int whence); /*---AUTO_GEN_PARSE<CB:kodi_addon_audioencoder_seek>---*/
+
   private:
-    AddonInstance_AudioEncoder m_struct;
+    KODI_HANDLE m_addonInstance;
+    AudioEncoderCB m_callbacks;
   };
 
-} /*namespace ADDON*/
+} /* namespace ADDON */

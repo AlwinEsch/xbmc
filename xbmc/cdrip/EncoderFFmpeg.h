@@ -22,7 +22,7 @@ public:
   CEncoderFFmpeg();
   ~CEncoderFFmpeg() override = default;
 
-  bool Init(AddonToKodiFuncTable_AudioEncoder& callbacks) override;
+  bool Init(AudioEncoderCB& callbacks) override;
   int Encode(int nNumBytesRead, uint8_t *pbtStream) override;
   bool Close() override;
 private:
@@ -55,7 +55,7 @@ private:
   AVFrame          *m_ResampledFrame;
   bool              m_NeedConversion = false;
 
-  AddonToKodiFuncTable_AudioEncoder m_callbacks;
+  AudioEncoderCB m_callbacks;
 
   bool WriteFrame();
 };

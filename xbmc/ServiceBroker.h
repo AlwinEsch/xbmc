@@ -14,7 +14,6 @@
 
 namespace ADDON {
 class CAddonMgr;
-class CBinaryAddonManager;
 class CBinaryAddonCache;
 class CVFSAddonCache;
 class CServiceAddonManager;
@@ -61,6 +60,15 @@ class CLog;
 
 namespace KODI
 {
+
+namespace ADDONS
+{
+namespace INTERFACE
+{
+  class CController;
+} /* namespace INTERFACE */
+} /* namespace ADDONS */
+
 namespace GAME
 {
   class CControllerManager;
@@ -92,9 +100,9 @@ public:
   static void UnregisterAnnouncementManager();
 
   static ADDON::CAddonMgr &GetAddonMgr();
-  static ADDON::CBinaryAddonManager &GetBinaryAddonManager();
   static ADDON::CBinaryAddonCache &GetBinaryAddonCache();
   static ADDON::CVFSAddonCache &GetVFSAddonCache();
+  static KODI::ADDONS::INTERFACE::CController& GetAddonIfcCtrl();
   static XBPython &GetXBPython();
   static PVR::CPVRManager &GetPVRManager();
   static CContextMenuManager& GetContextMenuManager();

@@ -7,20 +7,20 @@
 
 #pragma once
 
-#include "addons/binary-addons/AddonInstanceHandler.h"
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/ImageDecoder.h"
+#include "interface/InstanceHandler.h"
 #include "guilib/iimage.h"
 
 namespace ADDON
 {
-  class CImageDecoder : public IAddonInstanceHandler,
+  class CImageDecoder : public KODI::ADDONS::INTERFACE::IAddonInstanceHandler,
                         public IImage
   {
   public:
-    explicit CImageDecoder(const AddonInfoPtr& addonInfo);
+    explicit CImageDecoder(const AddonInfoPtr& addonInfo, const std::string& mimetype);
     ~CImageDecoder() override;
 
-    bool Create(const std::string& mimetype);
+    bool Create();
+    const std::string& GetMimeType() const { return m_mimetype; } /*---AUTO_GEN_PARSE<CB:kodi_addon_imagedecoder_mimetype>---*/
 
     bool CreateThumbnailFromSurface(unsigned char*, unsigned int, unsigned int,
                                     unsigned int, unsigned int, const std::string&,
@@ -32,8 +32,9 @@ namespace ADDON
                 unsigned int height, unsigned int pitch,
                 unsigned int format) override;
 
-  protected:
-    AddonInstance_ImageDecoder m_struct = {};
+  private:
+    const std::string m_mimetype;
+    KODI_HANDLE m_addonInstance;
   };
 
 } /*namespace ADDON*/

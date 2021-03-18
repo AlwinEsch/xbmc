@@ -63,10 +63,11 @@ bool CEncoder::Init(const char* strFile, int iInChannels, int iInRate, int iInBi
     return false;
   }
 
-  AddonToKodiFuncTable_AudioEncoder callbacks;
+  AudioEncoderCB callbacks;
   callbacks.kodiInstance = this;
   callbacks.write = WriteCallback;
   callbacks.seek = SeekCallback;
+
   return m_impl->Init(callbacks);
 }
 

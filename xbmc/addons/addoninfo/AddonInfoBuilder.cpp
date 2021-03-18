@@ -145,6 +145,8 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon, const TiXmlElement* 
     return false;
   }
 
+  addon->m_profilePath = StringUtils::Format("special://profile/addon_data/{}/", addon->m_id);
+
   // Check addon identifier for forbidden characters
   // The identifier is used e.g. in URLs so we shouldn't allow just
   // any character to go through.
@@ -371,7 +373,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon, const TiXmlElement* 
         return false;
       }
 
-      CAddonType addonType(type);
+      CAddonType addonType(type, AddonLanguage::Unknown);
       if (ParseXMLTypes(addonType, addon, child))
         addon->m_types.push_back(std::move(addonType));
     }
@@ -383,7 +385,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon, const TiXmlElement* 
    */
   if (addon->m_types.empty())
   {
-    CAddonType addonType(ADDON_UNKNOWN);
+    CAddonType addonType(ADDON_UNKNOWN, AddonLanguage::Unknown);
     addon->m_types.push_back(std::move(addonType));
   }
 
@@ -433,6 +435,10 @@ bool CAddonInfoBuilder::ParseXMLTypes(CAddonType& addonType,
     if (library != nullptr)
     {
       addonType.m_libname = library;
+
+      const char* language = child->Attribute("language");
+      if (language)
+        addonType.SetLanguage(language);
 
       try
       {

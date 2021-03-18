@@ -8,16 +8,21 @@
 
 #pragma once
 
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/AudioEncoder.h"
-
 #include <stdint.h>
 #include <string>
+
+typedef struct AudioEncoderCB
+{
+  void* kodiInstance;
+  int (*write)(void* kodiInstance, const uint8_t* data, int len);
+  int64_t (*seek)(void* kodiInstance, int64_t pos, int whence);
+} AudioEncoderCB;
 
 class IEncoder
 {
 public:
   virtual ~IEncoder() = default;
-  virtual bool Init(AddonToKodiFuncTable_AudioEncoder& callbacks) = 0;
+  virtual bool Init(AudioEncoderCB& callbacks) = 0;
   virtual int Encode(int nNumBytesRead, uint8_t* pbtStream) = 0;
   virtual bool Close() = 0;
 

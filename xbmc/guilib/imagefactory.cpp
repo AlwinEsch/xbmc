@@ -9,6 +9,7 @@
 #include "imagefactory.h"
 
 #include "ServiceBroker.h"
+#include "addons/AddonManager.h"
 #include "addons/ImageDecoder.h"
 #include "guilib/FFmpegImage.h"
 #include "utils/Mime.h"
@@ -44,8 +45,12 @@ IImage* ImageFactory::CreateLoaderFromMimeType(const std::string& strMimeType)
     if (std::find(mime.begin(), mime.end(), strMimeType) != mime.end())
     {
       CSingleLock lock(m_createSec);
-      CImageDecoder* result = new CImageDecoder(addonInfo);
-      result->Create(strMimeType);
+      CImageDecoder* result = new CImageDecoder(addonInfo, strMimeType);
+      if (!result->Create())
+      {
+        delete result;
+        result = nullptr;
+      }
       return result;
     }
   }

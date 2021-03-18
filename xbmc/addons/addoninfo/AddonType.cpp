@@ -18,6 +18,22 @@ static const std::set<TYPE> dependencyTypes = {
     ADDON_SCRIPT_LIBRARY,
     ADDON_SCRIPT_MODULE,
 };
+
+typedef struct
+{
+  AddonLanguage language;
+  std::string name;
+} LanguageMapping;
+
+// clang-format off
+static const LanguageMapping languages[] =
+  {{ AddonLanguage::Unknown, "unknown" },
+   { AddonLanguage::C,       "C" },
+   { AddonLanguage::CPP,     "C++" },
+   { AddonLanguage::Python3, "Python3" }
+  };
+// clang-format on
+
 } /* namespace ADDON */
 
 using namespace ADDON;
@@ -27,6 +43,21 @@ std::string CAddonType::LibPath() const
   if (m_libname.empty())
     return "";
   return URIUtils::AddFileToFolder(m_path, m_libname);
+}
+
+const std::string& CAddonType::LanguageName() const
+{
+  for (const LanguageMapping& map : languages)
+  {
+    if (map.language == m_language)
+      return map.name;
+  }
+  return languages[0].name;
+}
+
+void CAddonType::SetType(TYPE type)
+{
+  m_type = type;
 }
 
 void CAddonType::SetProvides(const std::string& content)
@@ -50,6 +81,19 @@ void CAddonType::SetProvides(const std::string& content)
         m_providedSubContent.insert(content);
     }
   }
+}
+
+void CAddonType::SetLanguage(const std::string& name)
+{
+  for (const LanguageMapping& map : languages)
+  {
+    if (map.name == name)
+    {
+      m_language = map.language;
+      return;
+    }
+  }
+  m_language = AddonLanguage::Unknown;
 }
 
 bool CAddonType::IsDependencyType(TYPE type)

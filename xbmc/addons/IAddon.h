@@ -37,6 +37,7 @@ namespace ADDON
     virtual TYPE Type() const =0;
     virtual bool HasType(TYPE type) const = 0;
     virtual bool HasMainType(TYPE type) const = 0;
+    virtual const CAddonType* Type(TYPE type) const = 0;
     virtual std::string ID() const =0;
     virtual std::string Name() const =0;
     virtual bool IsInUse() const =0;

@@ -188,6 +188,7 @@ public:
   const std::string& Forum() const { return m_forum; }
   const std::string& EMail() const { return m_email; }
   const std::string& Path() const { return m_path; }
+  const std::string& Profile() const { return m_profilePath; }
   const std::string& ChangeLog() const { return GetTranslatedText(m_changelog); }
   const std::string& Icon() const { return m_icon; }
   const ArtMap& Art() const { return m_art; }
@@ -257,6 +258,7 @@ private:
   std::string m_libname;
   InfoMap m_extrainfo;
   std::vector<std::string> m_platforms;
+  std::string m_profilePath;
 
   const std::string& GetTranslatedText(const std::unordered_map<std::string, std::string>& locales) const;
 };

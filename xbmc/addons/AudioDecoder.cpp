@@ -7,11 +7,18 @@
 
 #include "AudioDecoder.h"
 
-#include "addons/interfaces/AudioEngine.h"
+// Devkit API interface
+#include "interface/api/addon-instance/audiodecoder.h"
+#include "interface/api/audio_engine.h"
+
+// Kodi
+#include "FileItem.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/TagLoaderTagLib.h"
 #include "utils/log.h"
+
+using namespace KODI::ADDONS::INTERFACE;
 
 namespace ADDON
 {
@@ -22,47 +29,34 @@ CAudioDecoder::CAudioDecoder(const AddonInfoPtr& addonInfo)
   m_CodecName = addonInfo->Type(ADDON_AUDIODECODER)->GetValue("@name").asString();
   m_strExt = m_CodecName + "stream";
   m_hasTags = addonInfo->Type(ADDON_AUDIODECODER)->GetValue("@tags").asBoolean();
-
-  // Create all interface parts independent to make API changes easier if
-  // something is added
-  m_struct.props = new AddonProps_AudioDecoder();
-  m_struct.toKodi = new AddonToKodiFuncTable_AudioDecoder();
-  m_struct.toAddon = new KodiToAddonFuncTable_AudioDecoder();
 }
 
 CAudioDecoder::~CAudioDecoder()
 {
-  DestroyInstance();
-
-  delete m_struct.props;
-  delete m_struct.toKodi;
-  delete m_struct.toAddon;
+  DestroyInstance(m_addonInstance);
 }
 
 bool CAudioDecoder::CreateDecoder()
 {
-  m_struct.toKodi->kodiInstance = this;
-  return CreateInstance(&m_struct) == ADDON_STATUS_OK;
+  return CreateInstance(this, m_addonInstance) == ADDON_STATUS_OK;
 }
 
 bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 {
-  if (!m_struct.toAddon->init)
-    return false;
-
   /// for replaygain
   /// @todo About audio decoder in most cases Kodi's one not work, add fallback
   /// to use addon if this fails. Need API change about addons music info tag!
   CTagLoaderTagLib tag;
-  tag.Load(file.GetDynPath(), XFILE::CMusicFileDirectory::m_tag, NULL);
+  tag.Load(file.GetDynPath(), XFILE::CMusicFileDirectory::m_tag, nullptr);
 
   int channels = -1;
   int sampleRate = -1;
   AudioEngineDataFormat addonFormat = AUDIOENGINE_FMT_INVALID;
 
-  bool ret = m_struct.toAddon->init(&m_struct, file.GetDynPath().c_str(), filecache, &channels,
-                                    &sampleRate, &m_bitsPerSample, &m_TotalTime, &m_bitRate,
-                                    &addonFormat, &m_channel);
+  AudioEngineChannel channelList[AUDIOENGINE_CH_MAX] = {AUDIOENGINE_CH_NULL};
+  bool ret = m_ifc->kodi_addoninstance_audiodecoder_h->kodi_addon_audiodecoder_init_v1(
+      m_addonInstance, file.GetDynPath().c_str(), filecache, &channels, &sampleRate, &m_bitsPerSample,
+      &m_TotalTime, &m_bitRate, &addonFormat, channelList);
   if (ret)
   {
     if (channels <= 0 || sampleRate <= 0 || addonFormat == AUDIOENGINE_FMT_INVALID)
@@ -73,16 +67,16 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
       return false;
     }
 
-    m_format.m_dataFormat = Interface_AudioEngine::TranslateAEFormatToKodi(addonFormat);
+    m_format.m_dataFormat = TranslateAEFormatToKodi(addonFormat);
     m_format.m_sampleRate = sampleRate;
-    if (m_channel)
+    if (channelList[0] != AUDIOENGINE_CH_NULL)
     {
       CAEChannelInfo layout;
-      for (unsigned int ch = 0; ch < AUDIOENGINE_CH_MAX; ++ch)
+      for (const auto& channel : channelList)
       {
-        if (m_channel[ch] == AUDIOENGINE_CH_NULL)
+        if (channel == AUDIOENGINE_CH_NULL)
           break;
-        layout += Interface_AudioEngine::TranslateAEChannelToKodi(m_channel[ch]);
+        layout += TranslateAEChannelToKodi(channel);
       }
 
       m_format.m_channelLayout = layout;
@@ -94,20 +88,14 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   return ret;
 }
 
-int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
+int CAudioDecoder::ReadPCM(uint8_t* buffer, size_t size, size_t* actualsize)
 {
-  if (!m_struct.toAddon->read_pcm)
-    return 0;
-
-  return m_struct.toAddon->read_pcm(&m_struct, buffer, size, actualsize);
+  return m_ifc->kodi_addoninstance_audiodecoder_h->kodi_addon_audiodecoder_read_pcm_v1(m_addonInstance, buffer, size, actualsize);
 }
 
 bool CAudioDecoder::Seek(int64_t time)
 {
-  if (!m_struct.toAddon->seek)
-    return false;
-
-  m_struct.toAddon->seek(&m_struct, time);
+  m_ifc->kodi_addoninstance_audiodecoder_h->kodi_addon_audiodecoder_seek_v1(m_addonInstance, time);
   return true;
 }
 
@@ -115,44 +103,75 @@ bool CAudioDecoder::Load(const std::string& fileName,
                          MUSIC_INFO::CMusicInfoTag& tag,
                          EmbeddedArt* art)
 {
-  if (!m_struct.toAddon->read_tag)
-    return false;
-
-  AUDIO_DECODER_INFO_TAG* cTag = new AUDIO_DECODER_INFO_TAG(); // allocate by his size
-  bool ret = m_struct.toAddon->read_tag(&m_struct, fileName.c_str(), cTag);
+  AUDIODECODER_INFO_TAG ifcTag = {0};
+  bool ret = m_ifc->kodi_addoninstance_audiodecoder_h->kodi_addon_audiodecoder_read_tag_v1(m_addonInstance, fileName.c_str(), &ifcTag);
   if (ret)
   {
-    tag.SetTitle(cTag->title);
-    tag.SetArtist(cTag->artist);
-    tag.SetAlbum(cTag->album);
-    tag.SetAlbumArtist(cTag->album_artist);
-    tag.SetType(cTag->media_type);
-    tag.SetGenre(cTag->genre);
-    tag.SetDuration(cTag->duration);
-    tag.SetTrackNumber(cTag->track);
-    tag.SetDiscNumber(cTag->disc);
-    tag.SetDiscSubtitle(cTag->disc_subtitle);
-    tag.SetTotalDiscs(cTag->disc_total);
-    tag.SetReleaseDate(cTag->release_date);
-    tag.SetLyrics(cTag->lyrics);
-    tag.SetSampleRate(cTag->samplerate);
-    tag.SetNoOfChannels(cTag->channels);
-    tag.SetBitRate(cTag->bitrate);
-    tag.SetComment(cTag->comment);
+    if (ifcTag.title)
+    {
+      tag.SetTitle(ifcTag.title);
+      free(ifcTag.title);
+    }
+    if (ifcTag.artist)
+    {
+      tag.SetArtist(ifcTag.artist);
+      free(ifcTag.artist);
+    }
+    if (ifcTag.album)
+    {
+      tag.SetAlbum(ifcTag.album);
+      free(ifcTag.album);
+    }
+    if (ifcTag.album_artist)
+    {
+      tag.SetAlbumArtist(ifcTag.album_artist);
+      free(ifcTag.album_artist);
+    }
+    if (ifcTag.media_type)
+    {
+      tag.SetType(ifcTag.media_type);
+      free(ifcTag.media_type);
+    }
+    if (ifcTag.genre)
+    {
+      tag.SetGenre(ifcTag.genre);
+      free(ifcTag.genre);
+    }
+    tag.SetDuration(ifcTag.duration);
+    tag.SetTrackNumber(ifcTag.track);
+    tag.SetDiscNumber(ifcTag.disc);
+    if (ifcTag.disc_subtitle)
+    {
+      tag.SetDiscSubtitle(ifcTag.disc_subtitle);
+      free(ifcTag.disc_subtitle);
+    }
+    tag.SetTotalDiscs(ifcTag.disc_total);
+    if (ifcTag.release_date)
+    {
+      tag.SetReleaseDate(ifcTag.release_date);
+      free(ifcTag.release_date);
+    }
+    if (ifcTag.lyrics)
+    {
+      tag.SetLyrics(ifcTag.lyrics);
+      free(ifcTag.lyrics);
+    }
+    tag.SetSampleRate(ifcTag.samplerate);
+    tag.SetNoOfChannels(ifcTag.channels);
+    tag.SetBitRate(ifcTag.bitrate);
+    if (ifcTag.comment)
+    {
+      tag.SetComment(ifcTag.comment);
+      free(ifcTag.comment);
+    }
   }
-
-  delete cTag;
 
   return ret;
 }
 
 int CAudioDecoder::GetTrackCount(const std::string& strPath)
 {
-  if (!m_struct.toAddon->track_count)
-    return 0;
-
-  int result = m_struct.toAddon->track_count(&m_struct, strPath.c_str());
-
+  int result = m_ifc->kodi_addoninstance_audiodecoder_h->kodi_addon_audiodecoder_track_count_v1(m_addonInstance, strPath.c_str());
   if (result > 1)
   {
     if (m_hasTags)

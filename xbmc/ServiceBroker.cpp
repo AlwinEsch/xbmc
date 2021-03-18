@@ -62,9 +62,9 @@ ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
   return g_application.m_ServiceManager->GetAddonMgr();
 }
 
-ADDON::CBinaryAddonManager &CServiceBroker::GetBinaryAddonManager()
+KODI::ADDONS::INTERFACE::CController& CServiceBroker::GetAddonIfcCtrl()
 {
-  return g_application.m_ServiceManager->GetBinaryAddonManager();
+  return g_application.m_ServiceManager->GetAddonIfcCtrl();
 }
 
 ADDON::CBinaryAddonCache &CServiceBroker::GetBinaryAddonCache()

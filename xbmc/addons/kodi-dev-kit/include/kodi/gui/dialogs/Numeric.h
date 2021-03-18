@@ -47,16 +47,14 @@ namespace Numeric
 /// @return true if successful display and user input entry/re-entry. false if
 ///         unsuccessful display, no user input, or canceled editing.
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndVerifyNewPassword(std::string& newPassword)
+inline bool ATTR_DLL_LOCAL ShowAndVerifyNewPassword(std::string& newPassword)
 {
-  using namespace ::kodi::addon;
   char* pw = nullptr;
-  bool ret = CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_verify_new_password(
-      CAddonBase::m_interface->toKodi->kodiBase, &pw);
+  bool ret = kodi::dl::api.kodi_gui_dialogs_numeric_show_and_verify_new_password(&pw);
   if (pw != nullptr)
   {
     newPassword = pw;
-    CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase, pw);
+    free(pw);
   }
   return ret;
 }
@@ -121,13 +119,12 @@ inline bool ATTRIBUTE_HIDDEN ShowAndVerifyNewPassword(std::string& newPassword)
 /// }
 /// ~~~~~~~~~~~~~
 ///
-inline int ATTRIBUTE_HIDDEN ShowAndVerifyPassword(const std::string& password,
-                                                  const std::string& heading,
-                                                  int retries)
+inline int ATTR_DLL_LOCAL ShowAndVerifyPassword(const std::string& password,
+                                                const std::string& heading,
+                                                int retries)
 {
-  using namespace ::kodi::addon;
-  return CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_verify_password(
-      CAddonBase::m_interface->toKodi->kodiBase, password.c_str(), heading.c_str(), retries);
+  return kodi::dl::api.kodi_gui_dialogs_numeric_show_and_verify_password(password.c_str(), heading.c_str(),
+                                                           retries);
 }
 //------------------------------------------------------------------------------
 
@@ -142,20 +139,17 @@ inline int ATTRIBUTE_HIDDEN ShowAndVerifyPassword(const std::string& password,
 /// @return true if successful display and user input. false if unsuccessful
 /// display, no user input, or canceled editing.
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndVerifyInput(std::string& toVerify,
-                                                const std::string& heading,
-                                                bool verifyInput)
+inline bool ATTR_DLL_LOCAL ShowAndVerifyInput(std::string& toVerify,
+                                              const std::string& heading,
+                                              bool verifyInput)
 {
-  using namespace ::kodi::addon;
   char* retString = nullptr;
-  bool ret = CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_verify_input(
-      CAddonBase::m_interface->toKodi->kodiBase, toVerify.c_str(), &retString, heading.c_str(),
-      verifyInput);
+  bool ret = kodi::dl::api.kodi_gui_dialogs_numeric_show_and_verify_input(toVerify.c_str(), &retString,
+                                                            heading.c_str(), verifyInput);
   if (retString != nullptr)
   {
     toVerify = retString;
-    CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                 retString);
+    free(retString);
   }
   return ret;
 }
@@ -191,11 +185,9 @@ inline bool ATTRIBUTE_HIDDEN ShowAndVerifyInput(std::string& toVerify,
 /// printf("Selected time it's %s and was on Dialog %s\n", buffer, bRet ? "OK" : "Canceled");
 /// ~~~~~~~~~~~~~
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndGetTime(tm& time, const std::string& heading)
+inline bool ATTR_DLL_LOCAL ShowAndGetTime(tm& time, const std::string& heading)
 {
-  using namespace ::kodi::addon;
-  return CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_get_time(
-      CAddonBase::m_interface->toKodi->kodiBase, &time, heading.c_str());
+  return kodi::dl::api.kodi_gui_dialogs_numeric_show_and_get_time(&time, heading.c_str());
 }
 //------------------------------------------------------------------------------
 
@@ -229,11 +221,9 @@ inline bool ATTRIBUTE_HIDDEN ShowAndGetTime(tm& time, const std::string& heading
 /// printf("Selected date it's %s and was on Dialog %s\n", buffer, bRet ? "OK" : "Canceled");
 /// ~~~~~~~~~~~~~
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndGetDate(tm& date, const std::string& heading)
+inline bool ATTR_DLL_LOCAL ShowAndGetDate(tm& date, const std::string& heading)
 {
-  using namespace ::kodi::addon;
-  return CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_get_date(
-      CAddonBase::m_interface->toKodi->kodiBase, &date, heading.c_str());
+  return kodi::dl::api.kodi_gui_dialogs_numeric_show_and_get_date(&date, heading.c_str());
 }
 //------------------------------------------------------------------------------
 
@@ -247,17 +237,15 @@ inline bool ATTRIBUTE_HIDDEN ShowAndGetDate(tm& date, const std::string& heading
 /// @return true if successful display and user input. false if unsuccessful
 ///         display, no user input, or canceled editing.
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndGetIPAddress(std::string& ipAddress, const std::string& heading)
+inline bool ATTR_DLL_LOCAL ShowAndGetIPAddress(std::string& ipAddress, const std::string& heading)
 {
-  using namespace ::kodi::addon;
   char* retString = nullptr;
-  bool ret = CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_get_ip_address(
-      CAddonBase::m_interface->toKodi->kodiBase, ipAddress.c_str(), &retString, heading.c_str());
+  bool ret = kodi::dl::api.kodi_gui_dialogs_numeric_show_and_get_ip_address(ipAddress.c_str(), &retString,
+                                                              heading.c_str());
   if (retString != nullptr)
   {
     ipAddress = retString;
-    CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                 retString);
+    free(retString);
   }
   return ret;
 }
@@ -292,20 +280,17 @@ inline bool ATTRIBUTE_HIDDEN ShowAndGetIPAddress(std::string& ipAddress, const s
 ///                  strtoull(number.c_str(), nullptr, 0), bRet ? "OK" : "Canceled");
 /// ~~~~~~~~~~~~~
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndGetNumber(std::string& input,
-                                              const std::string& heading,
-                                              unsigned int autoCloseTimeoutMs = 0)
+inline bool ATTR_DLL_LOCAL ShowAndGetNumber(std::string& input,
+                                            const std::string& heading,
+                                            unsigned int autoCloseTimeoutMs = 0)
 {
-  using namespace ::kodi::addon;
   char* retString = nullptr;
-  bool ret = CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_get_number(
-      CAddonBase::m_interface->toKodi->kodiBase, input.c_str(), &retString, heading.c_str(),
-      autoCloseTimeoutMs);
+  bool ret = kodi::dl::api.kodi_gui_dialogs_numeric_show_and_get_number(input.c_str(), &retString,
+                                                          heading.c_str(), autoCloseTimeoutMs);
   if (retString != nullptr)
   {
     input = retString;
-    CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                 retString);
+    free(retString);
   }
   return ret;
 }
@@ -321,17 +306,15 @@ inline bool ATTRIBUTE_HIDDEN ShowAndGetNumber(std::string& input,
 /// @return true if successful display and user input. false if unsuccessful
 ///         display, no user input, or canceled editing.
 ///
-inline bool ATTRIBUTE_HIDDEN ShowAndGetSeconds(std::string& time, const std::string& heading)
+inline bool ATTR_DLL_LOCAL ShowAndGetSeconds(std::string& time, const std::string& heading)
 {
-  using namespace ::kodi::addon;
   char* retString = nullptr;
-  bool ret = CAddonBase::m_interface->toKodi->kodi_gui->dialogNumeric->show_and_get_seconds(
-      CAddonBase::m_interface->toKodi->kodiBase, time.c_str(), &retString, heading.c_str());
+  bool ret =
+      kodi::dl::api.kodi_gui_dialogs_numeric_show_and_get_seconds(time.c_str(), &retString, heading.c_str());
   if (retString != nullptr)
   {
     time = retString;
-    CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                 retString);
+    free(retString);
   }
   return ret;
 }

@@ -14,6 +14,7 @@
 #include "GUIUserMessages.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
+#include "addons/AddonManager.h"
 #include "cores/AudioEngine/Engines/ActiveAE/ActiveAE.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
@@ -438,8 +439,8 @@ void CGUIVisualisationControl::CreateBuffers()
   if (m_instance)
     m_instance->GetInfo(&info);
 
-  m_numBuffers = info.iSyncDelay + 1;
-  m_wantsFreq = info.bWantsFreq;
+  m_numBuffers = info.sync_delay + 1;
+  m_wantsFreq = info.wants_freq;
   if (m_numBuffers > MAX_AUDIO_BUFFERS)
     m_numBuffers = MAX_AUDIO_BUFFERS;
   if (m_numBuffers < 1)

@@ -6482,7 +6482,37 @@ msgctxt "#13253"
 msgid "Cancel move"
 msgstr ""
 
-#empty strings from id 13254 to 13269
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13254"
+msgid "CPU usage:"
+msgstr ""
+
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13255"
+msgid "Physical memory usage:"
+msgstr ""
+
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13256"
+msgid "Virtual memory usage:"
+msgstr ""
+
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13257"
+msgid "Shared memory usage:"
+msgstr ""
+
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13258"
+msgid "Threads:"
+msgstr ""
+
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13259"
+msgid "Process ID:"
+msgstr ""
+
+#empty strings from id 13260 to 13269
 
 msgctxt "#13270"
 msgid "Hardware:"
@@ -6532,7 +6562,10 @@ msgctxt "#13281"
 msgid "Hardware"
 msgstr ""
 
-#empty string with id 13282
+#: addons/skin.estuary/xml/SettingsSystemInfo.xml
+msgctxt "#13282"
+msgid "Addons"
+msgstr ""
 
 #: xbmc/windows/GUIWindowSystemInfo.cpp
 msgctxt "#13283"

@@ -50,6 +50,7 @@
 #define GLYPH_STRENGTH_BOLD 24
 #define GLYPH_STRENGTH_LIGHT -48
 
+#define TAB_SPACE_LENGTH 4
 
 class CFreeTypeLibrary
 {
@@ -491,6 +492,16 @@ void CGUIFontTTF::DrawTextInternal(float x,
       Character *ch = &characters.front();
       if (ch->letterAndStyle == 0)
       {
+        characters.pop();
+        continue;
+      }
+
+      if ((pos & 0xffff) == L'\t')
+      {
+        Character *space = GetCharacter(L'X');
+        float tabwidth = space ? space->advance * TAB_SPACE_LENGTH : 28.0f * TAB_SPACE_LENGTH;
+        float a = cursorX / tabwidth;
+        cursorX += tabwidth - ((a - floorf(a)) * tabwidth);
         characters.pop();
         continue;
       }

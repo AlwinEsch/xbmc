@@ -13,6 +13,8 @@
 
 #ifdef __cplusplus
 
+#include <cstring>
+
 namespace kodi
 {
 namespace gui
@@ -55,7 +57,7 @@ namespace dialogs
 /// delete ext_progress;
 /// ~~~~~~~~~~~~~
 ///
-class ATTRIBUTE_HIDDEN CExtendedProgress
+class ATTR_DLL_LOCAL CExtendedProgress
 {
 public:
   //============================================================================
@@ -66,9 +68,7 @@ public:
   ///
   explicit CExtendedProgress(const std::string& title = "")
   {
-    using namespace ::kodi::addon;
-    m_DialogHandle = CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->new_dialog(
-        CAddonBase::m_interface->toKodi->kodiBase, title.c_str());
+    m_DialogHandle = kodi::dl::api.kodi_gui_dialogs_extended_progress_new_dialog(title.c_str());
     if (!m_DialogHandle)
       kodi::Log(ADDON_LOG_FATAL,
                 "kodi::gui::CDialogExtendedProgress can't create window class from Kodi !!!");
@@ -81,10 +81,8 @@ public:
   ///
   ~CExtendedProgress()
   {
-    using namespace ::kodi::addon;
     if (m_DialogHandle)
-      CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->delete_dialog(
-          CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
+      kodi::dl::api.kodi_gui_dialogs_extended_progress_delete_dialog(m_DialogHandle);
   }
   //----------------------------------------------------------------------------
 
@@ -96,16 +94,13 @@ public:
   ///
   std::string Title() const
   {
-    using namespace ::kodi::addon;
     std::string text;
-    char* strMsg = CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->get_title(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
+    char* strMsg = kodi::dl::api.kodi_gui_dialogs_extended_progress_get_title(m_DialogHandle);
     if (strMsg != nullptr)
     {
       if (std::strlen(strMsg))
         text = strMsg;
-      CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                   strMsg);
+      free(strMsg);
     }
     return text;
   }
@@ -119,9 +114,7 @@ public:
   ///
   void SetTitle(const std::string& title)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->set_title(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, title.c_str());
+    kodi::dl::api.kodi_gui_dialogs_extended_progress_set_title(m_DialogHandle, title.c_str());
   }
   //----------------------------------------------------------------------------
 
@@ -133,16 +126,13 @@ public:
   ///
   std::string Text() const
   {
-    using namespace ::kodi::addon;
     std::string text;
-    char* strMsg = CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->get_text(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
+    char* strMsg = kodi::dl::api.kodi_gui_dialogs_extended_progress_get_text(m_DialogHandle);
     if (strMsg != nullptr)
     {
       if (std::strlen(strMsg))
         text = strMsg;
-      CAddonBase::m_interface->toKodi->free_string(CAddonBase::m_interface->toKodi->kodiBase,
-                                                   strMsg);
+      free(strMsg);
     }
     return text;
   }
@@ -156,9 +146,7 @@ public:
   ///
   void SetText(const std::string& text)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->set_text(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, text.c_str());
+    kodi::dl::api.kodi_gui_dialogs_extended_progress_set_text(m_DialogHandle, text.c_str());
   }
   //----------------------------------------------------------------------------
 
@@ -168,24 +156,14 @@ public:
   ///
   /// @return True if on end
   ///
-  bool IsFinished() const
-  {
-    using namespace ::kodi::addon;
-    return CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->is_finished(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  bool IsFinished() const { return kodi::dl::api.kodi_gui_dialogs_extended_progress_is_finished(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
   //============================================================================
   /// @ingroup cpp_kodi_gui_dialogs_CExtendedProgress
   /// @brief Mark progress finished.
   ///
-  void MarkFinished()
-  {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->mark_finished(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  void MarkFinished() { kodi::dl::api.kodi_gui_dialogs_extended_progress_mark_finished(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -196,9 +174,7 @@ public:
   ///
   float Percentage() const
   {
-    using namespace ::kodi::addon;
-    return CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->get_percentage(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
+    return kodi::dl::api.kodi_gui_dialogs_extended_progress_get_percentage(m_DialogHandle);
   }
   //----------------------------------------------------------------------------
 
@@ -210,9 +186,7 @@ public:
   ///
   void SetPercentage(float percentage)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->set_percentage(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, percentage);
+    kodi::dl::api.kodi_gui_dialogs_extended_progress_set_percentage(m_DialogHandle, percentage);
   }
   //----------------------------------------------------------------------------
 
@@ -225,9 +199,7 @@ public:
   ///
   void SetProgress(int currentItem, int itemCount)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogExtendedProgress->set_progress(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, currentItem, itemCount);
+    kodi::dl::api.kodi_gui_dialogs_extended_progress_set_progress(m_DialogHandle, currentItem, itemCount);
   }
   //----------------------------------------------------------------------------
 
