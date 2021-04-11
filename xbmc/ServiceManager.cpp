@@ -14,7 +14,7 @@
 #include "addons/BinaryAddonCache.h"
 #include "addons/RepositoryUpdater.h"
 #include "addons/VFSEntry.h"
-#include "addons/binary-addons/BinaryAddonManager.h"
+#include "addons/interface/Controller.h"
 #include "cores/DataCacheCore.h"
 #include "cores/RetroPlayer/guibridge/GUIGameRenderManager.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
@@ -54,11 +54,16 @@ bool CServiceManager::InitForTesting()
 
   m_databaseManager.reset(new CDatabaseManager);
 
-  m_binaryAddonManager.reset(new ADDON::CBinaryAddonManager());
   m_addonMgr.reset(new ADDON::CAddonMgr());
   if (!m_addonMgr->Init())
   {
     CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start CAddonMgr", __FUNCTION__);
+    return false;
+  }
+  m_addonIfcCtrl.reset(new KODI::ADDONS::INTERFACE::CController(*m_addonMgr));
+  if (!m_addonIfcCtrl->Init())
+  {
+    CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start KODI::ADDONS::INTERFACE::CController", __func__);
     return false;
   }
 
@@ -72,7 +77,6 @@ void CServiceManager::DeinitTesting()
 {
   init_level = 0;
   m_fileExtensionProvider.reset();
-  m_binaryAddonManager.reset();
   m_addonMgr.reset();
   m_databaseManager.reset();
   m_network.reset();
@@ -102,11 +106,17 @@ bool CServiceManager::InitStageTwo(const CAppParamParser &params, const std::str
   // Initialize the addon database (must be before the addon manager is init'd)
   m_databaseManager.reset(new CDatabaseManager);
 
-  m_binaryAddonManager.reset(new ADDON::CBinaryAddonManager()); /* Need to constructed before, GetRunningInstance() of binary CAddonDll need to call them */
   m_addonMgr.reset(new ADDON::CAddonMgr());
   if (!m_addonMgr->Init())
   {
     CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start CAddonMgr", __FUNCTION__);
+    return false;
+  }
+
+  m_addonIfcCtrl.reset(new KODI::ADDONS::INTERFACE::CController(*m_addonMgr));
+  if (!m_addonIfcCtrl->Init())
+  {
+    CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start KODI::ADDONS::INTERFACE::CController", __func__);
     return false;
   }
 
@@ -205,7 +215,7 @@ void CServiceManager::DeinitStageTwo()
   m_PVRManager.reset();
   m_vfsAddonCache.reset();
   m_repositoryUpdater.reset();
-  m_binaryAddonManager.reset();
+  m_addonIfcCtrl.reset();
   m_addonMgr.reset();
   m_Platform.reset();
   m_databaseManager.reset();
@@ -236,11 +246,6 @@ ADDON::CBinaryAddonCache &CServiceManager::GetBinaryAddonCache()
   return *m_binaryAddonCache;
 }
 
-ADDON::CBinaryAddonManager &CServiceManager::GetBinaryAddonManager()
-{
-  return *m_binaryAddonManager;
-}
-
 ADDON::CVFSAddonCache &CServiceManager::GetVFSAddonCache()
 {
   return *m_vfsAddonCache;
@@ -254,6 +259,11 @@ ADDON::CServiceAddonManager &CServiceManager::GetServiceAddons()
 ADDON::CRepositoryUpdater &CServiceManager::GetRepositoryUpdater()
 {
   return *m_repositoryUpdater;
+}
+
+KODI::ADDONS::INTERFACE::CController& CServiceManager::GetAddonIfcCtrl()
+{
+  return *m_addonIfcCtrl;
 }
 
 #ifdef HAS_PYTHON

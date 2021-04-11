@@ -16,7 +16,6 @@
 #if defined(HAVE_LIBBLURAY)
 #include "DVDInputStreams/DVDInputStreamBluray.h"
 #endif
-#include "DVDInputStreams/InputStreamPVRBase.h"
 
 #include "DVDDemuxers/DVDDemux.h"
 #include "DVDDemuxers/DVDDemuxUtils.h"
@@ -2824,12 +2823,6 @@ void CVideoPlayer::HandleMessages()
         // notify GUI, skins may want to show the seekbar
         CServiceBroker::GetGUI()->
           GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
-      }
-
-      if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_PVRMANAGER) && speed != m_playSpeed)
-      {
-        std::shared_ptr<CInputStreamPVRBase> pvrinputstream = std::static_pointer_cast<CInputStreamPVRBase>(m_pInputStream);
-        pvrinputstream->Pause(speed == 0);
       }
 
       // do a seek after rewind, clock is not in sync with current pts

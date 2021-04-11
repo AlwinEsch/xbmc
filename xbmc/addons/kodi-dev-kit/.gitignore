@@ -30,4 +30,5 @@
 /docs
 /build
 
-include/groups.dox
+/include/groups.dox
+/tools/code-generator/tmp

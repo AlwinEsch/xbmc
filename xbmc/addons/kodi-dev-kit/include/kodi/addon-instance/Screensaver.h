@@ -13,6 +13,9 @@
 #include "../gui/renderHelper.h"
 
 #ifdef __cplusplus
+
+#include <stdexcept>
+
 namespace kodi
 {
 namespace addon
@@ -190,7 +193,7 @@ namespace addon
 /// The destruction of the example class `CMyScreenSaver` is called from
 /// Kodi's header. Manually deleting the add-on instance is not required.
 ///
-class ATTRIBUTE_HIDDEN CInstanceScreensaver : public IAddonInstance
+class ATTR_DLL_LOCAL CInstanceScreensaver : public IAddonInstance
 {
 public:
   //============================================================================
@@ -200,16 +203,17 @@ public:
   /// Used by an add-on that only supports screensavers.
   ///
   CInstanceScreensaver()
-    : IAddonInstance(ADDON_INSTANCE_SCREENSAVER, GetKodiTypeVersion(ADDON_INSTANCE_SCREENSAVER))
+    : IAddonInstance(ADDON_INSTANCE_SCREENSAVER)
   {
-    if (CAddonBase::m_interface->globalSingleInstance != nullptr)
+    if (CAddonBase::ifc.m_globalSingleInstance != nullptr)
       throw std::logic_error("kodi::addon::CInstanceScreensaver: Creation of more as one in single "
                              "instance way is not allowed!");
 
-    SetAddonStruct(CAddonBase::m_interface->firstKodiInstance);
-    CAddonBase::m_interface->globalSingleInstance = this;
+    m_kodi = CAddonBase::ifc.m_firstInstance;
+    CAddonBase::ifc.m_globalSingleInstance = this;
   }
   //----------------------------------------------------------------------------
+
 
   //============================================================================
   /// @ingroup cpp_kodi_addon_screensaver
@@ -252,12 +256,10 @@ public:
   /// }
   /// ~~~~~~~~~~~~~
   ///
-  explicit CInstanceScreensaver(KODI_HANDLE instance, const std::string& kodiVersion = "")
-    : IAddonInstance(ADDON_INSTANCE_SCREENSAVER,
-                     !kodiVersion.empty() ? kodiVersion
-                                          : GetKodiTypeVersion(ADDON_INSTANCE_SCREENSAVER))
+  explicit CInstanceScreensaver(KODI_HANDLE instance)
+    : IAddonInstance(ADDON_INSTANCE_SCREENSAVER)
   {
-    if (CAddonBase::m_interface->globalSingleInstance != nullptr)
+    if (CAddonBase::ifc.m_globalSingleInstance != nullptr)
       throw std::logic_error("kodi::addon::CInstanceScreensaver: Creation of multiple together "
                              "with single instance way is not allowed!");
 
@@ -327,7 +329,7 @@ public:
   /// ..
   /// ~~~~~~~~~~~~~
   ///
-  inline kodi::HardwareContext Device() { return m_instanceData->props->device; }
+  inline kodi::HardwareContext Device() { return m_device; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -336,7 +338,7 @@ public:
   ///
   /// @return The X position, in pixels
   ///
-  inline int X() { return m_instanceData->props->x; }
+  inline int X() { return m_x; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -345,7 +347,7 @@ public:
   ///
   /// @return The Y position, in pixels
   ///
-  inline int Y() { return m_instanceData->props->y; }
+  inline int Y() { return m_y; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -354,7 +356,7 @@ public:
   ///
   /// @return The width, in pixels
   ///
-  inline int Width() { return m_instanceData->props->width; }
+  inline int Width() { return m_width; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -363,7 +365,7 @@ public:
   ///
   /// @return The height, in pixels
   ///
-  inline int Height() { return m_instanceData->props->height; }
+  inline int Height() { return m_height; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -373,7 +375,7 @@ public:
   ///
   /// @return The pixel aspect ratio used by the display
   ///
-  inline float PixelRatio() { return m_instanceData->props->pixelRatio; }
+  inline float PixelRatio() { return m_pixelRatio; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -382,7 +384,7 @@ public:
   ///
   /// @return The add-on name
   ///
-  inline std::string Name() { return m_instanceData->props->name; }
+  inline std::string Name() { return m_name; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -392,7 +394,7 @@ public:
   ///
   /// @return The add-on installation path
   ///
-  inline std::string Presets() { return m_instanceData->props->presets; }
+  inline std::string Presets() { return m_presets; }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -405,45 +407,68 @@ public:
   ///
   /// @return Path to the user profile
   ///
-  inline std::string Profile() { return m_instanceData->props->profile; }
+  inline std::string Profile() { return m_profile; }
   //----------------------------------------------------------------------------
 
   ///@}
 
 private:
-  void SetAddonStruct(KODI_HANDLE instance)
+  void SetAddonStruct(KODI_HANDLE instance) override
   {
     if (instance == nullptr)
       throw std::logic_error("kodi::addon::CInstanceScreensaver: Creation with empty addon "
                              "structure not allowed, table must be given from Kodi!");
 
-    m_instanceData = static_cast<AddonInstance_Screensaver*>(instance);
-    m_instanceData->toAddon->addonInstance = this;
-    m_instanceData->toAddon->Start = ADDON_Start;
-    m_instanceData->toAddon->Stop = ADDON_Stop;
-    m_instanceData->toAddon->Render = ADDON_Render;
+    KODI_INSTANCE_HDL* instanceKodi = static_cast<KODI_INSTANCE_HDL*>(instance);
+    instanceKodi->type = ADDON_INSTANCE_SCREENSAVER;
+    instanceKodi->instance = this;
+    instanceKodi->screensaver->start = ADDON_Start;
+    instanceKodi->screensaver->stop = ADDON_Stop;
+    instanceKodi->screensaver->render = ADDON_Render;
+    m_kodi = instanceKodi->kodi;
+
+    SCREENSAVER_PROPS props = {};
+    kodi_addon_screensaver_get_properties(m_kodi, &props);
+    m_device = props.device;
+    m_x = props.x;
+    m_y = props.y;
+    m_width = props.width;
+    m_height = props.height;
+    m_pixelRatio = props.pixelRatio;
+    if (props.name)
+    {
+      m_name = props.name;
+      free(props.name);
+    }
+    if (props.presets)
+    {
+      m_presets = props.presets;
+      free(props.presets);
+    }
+    if (props.profile)
+    {
+      m_profile = props.profile;
+      free(props.profile);
+    }
   }
 
-  inline static bool ADDON_Start(AddonInstance_Screensaver* instance)
+  inline static bool ADDON_Start(KODI_ADDON_SCREENSAVER_HDL hdl)
   {
-    CInstanceScreensaver* thisClass =
-        static_cast<CInstanceScreensaver*>(instance->toAddon->addonInstance);
+    CInstanceScreensaver* thisClass = static_cast<CInstanceScreensaver*>(hdl);
     thisClass->m_renderHelper = kodi::gui::GetRenderHelper();
     return thisClass->Start();
   }
 
-  inline static void ADDON_Stop(AddonInstance_Screensaver* instance)
+  inline static void ADDON_Stop(KODI_ADDON_SCREENSAVER_HDL hdl)
   {
-    CInstanceScreensaver* thisClass =
-        static_cast<CInstanceScreensaver*>(instance->toAddon->addonInstance);
+    CInstanceScreensaver* thisClass = static_cast<CInstanceScreensaver*>(hdl);
     thisClass->Stop();
     thisClass->m_renderHelper = nullptr;
   }
 
-  inline static void ADDON_Render(AddonInstance_Screensaver* instance)
+  inline static void ADDON_Render(KODI_ADDON_SCREENSAVER_HDL hdl)
   {
-    CInstanceScreensaver* thisClass =
-        static_cast<CInstanceScreensaver*>(instance->toAddon->addonInstance);
+    CInstanceScreensaver* thisClass = static_cast<CInstanceScreensaver*>(hdl);
 
     if (!thisClass->m_renderHelper)
       return;
@@ -462,7 +487,18 @@ private:
    * On Kodi with Direct X where angle is present becomes this used.
    */
   std::shared_ptr<kodi::gui::IRenderHelper> m_renderHelper;
-  AddonInstance_Screensaver* m_instanceData;
+
+  ADDON_HARDWARE_CONTEXT2 m_device;
+  int m_x;
+  int m_y;
+  int m_width;
+  int m_height;
+  float m_pixelRatio;
+  std::string m_name;
+  std::string m_presets;
+  std::string m_profile;
+
+  KODI_OWN_HDL m_kodi;
 };
 
 } /* namespace addon */

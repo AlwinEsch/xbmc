@@ -130,3 +130,6 @@ endif()
 if(ENABLE_VDPAU)
   set(ENABLE_GLX ON CACHE BOOL "Enabling GLX" FORCE)
 endif()
+
+# Additional libraries
+list(APPEND DEPLIBS rt) # Shared dev kit interface

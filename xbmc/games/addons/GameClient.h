@@ -9,8 +9,8 @@
 #pragma once
 
 #include "GameClientSubsystem.h"
-#include "addons/binary-addons/AddonDll.h"
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/Game.h"
+#include "addons/Addon.h"
+#include "addons/kodi-dev-kit/include/kodi/c-api/addon-instance/game.h"
 #include "threads/CriticalSection.h"
 
 #include <atomic>
@@ -40,26 +40,26 @@ class IGameInputCallback;
  * \ingroup games
  * \brief Helper class to have "C" struct created before other parts becomes his pointer.
  */
-class CGameClientStruct
-{
-public:
-  CGameClientStruct()
-  {
-    // Create "C" interface structures, used as own parts to prevent API problems on update
-    m_struct.props = new AddonProps_Game();
-    m_struct.toKodi = new AddonToKodiFuncTable_Game();
-    m_struct.toAddon = new KodiToAddonFuncTable_Game();
-  }
-
-  ~CGameClientStruct()
-  {
-    delete m_struct.toAddon;
-    delete m_struct.toKodi;
-    delete m_struct.props;
-  }
-
-  AddonInstance_Game m_struct;
-};
+// class CGameClientStruct
+// {
+// public:
+//   CGameClientStruct()
+//   {
+//     // Create "C" interface structures, used as own parts to prevent API problems on update
+//     m_struct.props = new AddonProps_Game();
+//     m_struct.toKodi = new AddonToKodiFuncTable_Game();
+//     m_struct.toAddon = new KodiToAddonFuncTable_Game();
+//   }
+//
+//   ~CGameClientStruct()
+//   {
+//     delete m_struct.toAddon;
+//     delete m_struct.toKodi;
+//     delete m_struct.props;
+//   }
+//
+//   AddonInstance_Game m_struct;
+// };
 
 /*!
  * \ingroup games
@@ -90,12 +90,14 @@ public:
  * from 1,200 lines to just over 600. Reducing this further is the challenge.
  * You must now choose whether to accept.
  */
-class CGameClient : public ADDON::CAddonDll, private CGameClientStruct
+class CGameClient : public ADDON::CAddon
 {
 public:
   explicit CGameClient(const ADDON::AddonInfoPtr& addonInfo);
 
   ~CGameClient() override;
+
+  bool Initialized();
 
   // Game subsystems (const)
   const CGameClientInput& Input() const { return *m_subsystems.Input; }
@@ -143,16 +145,44 @@ public:
   bool Serialize(uint8_t* data, size_t size);
   bool Deserialize(const uint8_t* data, size_t size);
 
-  /*!
-   * @brief To get the interface table used between addon and kodi
-   * @todo This function becomes removed after old callback library system
-   * is removed.
-   */
-  AddonInstance_Game* GetInstanceInterface() { return &m_struct; }
-
   // Helper functions
   bool LogError(GAME_ERROR error, const char* strMethod) const;
   void LogException(const char* strFunctionName) const;
+
+  /*!
+   * @brief Callback functions from addon to kodi
+   */
+  //@{
+  void cb_close_game();
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_close>---*/
+
+  KODI_GAME_STREAM_HANDLE cb_open_stream(const game_stream_properties* properties);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_open_stream>---*/
+
+  bool cb_get_stream_buffer(KODI_GAME_STREAM_HANDLE stream,
+                                   unsigned int width,
+                                   unsigned int height,
+                                   game_stream_buffer* buffer);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_get_stream_buffer>---*/
+
+  void cb_add_stream_data(KODI_GAME_STREAM_HANDLE stream,
+                                 const game_stream_packet* packet);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_add_stream_data>---*/
+
+  void cb_release_stream_buffer(KODI_GAME_STREAM_HANDLE stream,
+                                       game_stream_buffer* buffer);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_release_stream_buffer>---*/
+
+  void cb_close_stream(KODI_GAME_STREAM_HANDLE stream);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_close_stream>---*/
+
+  game_proc_address_t cb_hw_get_proc_address(const char* sym);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_hw_get_proc_address>---*/
+
+  bool cb_input_event(const game_input_event* event);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_game_input_event>---*/
+
+  //@}
 
 private:
   // Private gameplay functions
@@ -165,29 +195,6 @@ private:
 
   // Helper functions
   void LogAddonProperties(void) const;
-
-  /*!
-   * @brief Callback functions from addon to kodi
-   */
-  //@{
-  static void cb_close_game(KODI_HANDLE kodiInstance);
-  static KODI_GAME_STREAM_HANDLE cb_open_stream(KODI_HANDLE kodiInstance,
-                                                const game_stream_properties* properties);
-  static bool cb_get_stream_buffer(KODI_HANDLE kodiInstance,
-                                   KODI_GAME_STREAM_HANDLE stream,
-                                   unsigned int width,
-                                   unsigned int height,
-                                   game_stream_buffer* buffer);
-  static void cb_add_stream_data(KODI_HANDLE kodiInstance,
-                                 KODI_GAME_STREAM_HANDLE stream,
-                                 const game_stream_packet* packet);
-  static void cb_release_stream_buffer(KODI_HANDLE kodiInstance,
-                                       KODI_GAME_STREAM_HANDLE stream,
-                                       game_stream_buffer* buffer);
-  static void cb_close_stream(KODI_HANDLE kodiInstance, KODI_GAME_STREAM_HANDLE stream);
-  static game_proc_address_t cb_hw_get_proc_address(KODI_HANDLE kodiInstance, const char* sym);
-  static bool cb_input_event(KODI_HANDLE kodiInstance, const game_input_event* event);
-  //@}
 
   // Game subsystems
   GameClientSubsystems m_subsystems;
@@ -213,6 +220,8 @@ private:
   std::unique_ptr<CGameClientInGameSaves> m_inGameSaves;
 
   CCriticalSection m_critSection;
+
+  KODI_HANDLE m_addonInstance;
 };
 
 } // namespace GAME

@@ -7,22 +7,21 @@
 
 #pragma once
 
-#include "addons/binary-addons/AddonInstanceHandler.h"
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/AudioDecoder.h"
 #include "cores/paplayer/ICodec.h"
 #include "filesystem/MusicFileDirectory.h"
+#include "interface/InstanceHandler.h"
 #include "music/tags/ImusicInfoTagLoader.h"
 
 namespace MUSIC_INFO
 {
 class CMusicInfoTag;
 class EmbeddedArt;
-}
+} // namespace MUSIC_INFO
 
 namespace ADDON
 {
 
-class CAudioDecoder : public IAddonInstanceHandler,
+class CAudioDecoder : public KODI::ADDONS::INTERFACE::IAddonInstanceHandler,
                       public ICodec,
                       public MUSIC_INFO::IMusicInfoTagLoader,
                       public XFILE::CMusicFileDirectory
@@ -34,7 +33,7 @@ public:
   // Things that MUST be supplied by the child classes
   bool CreateDecoder();
   bool Init(const CFileItem& file, unsigned int filecache) override;
-  int ReadPCM(uint8_t* buffer, int size, int* actualsize) override;
+  int ReadPCM(uint8_t* buffer, size_t size, size_t* actualsize) override;
   bool Seek(int64_t time) override;
   bool CanInit() override { return true; }
   bool Load(const std::string& strFileName,
@@ -63,8 +62,7 @@ public:
   }
 
 private:
-  const AudioEngineChannel* m_channel;
-  AddonInstance_AudioDecoder m_struct;
+  KODI_HANDLE m_addonInstance;
   bool m_hasTags;
 };
 

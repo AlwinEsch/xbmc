@@ -16,7 +16,7 @@
 #include "GUITexture.h"
 #include "addons/Skin.h"
 #include "addons/gui/GUIWindowAddonBrowser.h"
-#include "addons/interfaces/gui/Window.h"
+#include "addons/interface/api/gui/window.h"
 #include "events/windows/GUIWindowEventLog.h"
 #include "favourites/GUIDialogFavourites.h"
 #include "input/Key.h"
@@ -924,7 +924,7 @@ void CGUIWindowManager::OnApplicationMessage(ThreadMessage* pMsg)
   {
     if (pMsg->lpVoid)
     {
-      static_cast<ADDON::CGUIAddonWindowDialog*>(pMsg->lpVoid)->Show_Internal(pMsg->param2 > 0);
+      static_cast<KODI::ADDONS::INTERFACE::CGUIAddonWindowDialog*>(pMsg->lpVoid)->Show_Internal(pMsg->param2 > 0);
     }
   }
   break;

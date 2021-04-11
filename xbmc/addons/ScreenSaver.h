@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "addons/binary-addons/AddonInstanceHandler.h"
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/Screensaver.h"
+#include "addons/kodi-dev-kit/include/kodi/c-api/addon-instance/screensaver.h"
+#include "interface/InstanceHandler.h"
 
 namespace ADDON
 {
 
-class CScreenSaver : public IAddonInstanceHandler
+class CScreenSaver : public KODI::ADDONS::INTERFACE::IAddonInstanceHandler
 {
 public:
   explicit CScreenSaver(const AddonInfoPtr& addonInfo);
@@ -24,12 +24,11 @@ public:
   void Stop();
   void Render();
 
-private:
-  std::string m_name; /*!< To add-on sended name */
-  std::string m_presets; /*!< To add-on sended preset path */
-  std::string m_profile; /*!< To add-on sended profile path */
+  void GetProperties(struct SCREENSAVER_PROPS* props);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_screensaver_get_properties>---*/
 
-  AddonInstance_Screensaver m_struct;
+private:
+  KODI_HANDLE m_addonInstance;
 };
 
 } /* namespace ADDON */

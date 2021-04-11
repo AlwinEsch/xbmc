@@ -30,8 +30,8 @@ using namespace XFILE;
 
 #define GAME_CLIENT_RESOURCES_DIRECTORY "resources"
 
-CGameClientProperties::CGameClientProperties(const CGameClient& parent, AddonProps_Game& props)
-  : m_parent(parent), m_properties(props)
+CGameClientProperties::CGameClientProperties(const CGameClient& parent)
+  : m_parent(parent)
 {
 }
 
@@ -76,7 +76,7 @@ const char* CGameClientProperties::GetLibraryPath(void)
   if (m_strLibraryPath.empty())
   {
     // Get the parent add-on's real path
-    std::string strLibPath = m_parent.CAddonDll::LibPath();
+    std::string strLibPath = m_parent.CAddon::LibPath();
     m_strLibraryPath = CSpecialProtocol::TranslatePath(strLibPath);
     URIUtils::RemoveSlashAtEnd(m_strLibraryPath);
   }

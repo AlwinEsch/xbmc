@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "addons/binary-addons/AddonInstanceHandler.h"
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/Visualization.h"
+#include "addons/kodi-dev-kit/include/kodi/c-api/addon-instance/visualization.h"
+#include "interface/InstanceHandler.h"
 
 namespace ADDON
 {
 
-class CVisualization : public IAddonInstanceHandler
+class CVisualization : public KODI::ADDONS::INTERFACE::IAddonInstanceHandler
 {
 public:
   CVisualization(const AddonInfoPtr& addonInfo, float x, float y, float w, float h);
@@ -40,17 +40,17 @@ public:
   std::string GetActivePresetName();
   bool IsLocked();
 
+  void get_properties(struct VIS_PROPS* props);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_visualization_get_properties>---*/
+  void transfer_preset(const char* preset);
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_visualization_transfer_preset>---*/
+  void clear_presets();
+  /*---AUTO_GEN_PARSE<CB:kodi_addon_visualization_clear_presets>---*/
+
 private:
-  std::string m_name; /*!< To add-on sended name */
-  std::string m_presetsPath; /*!< To add-on sended preset path */
-  std::string m_profilePath; /*!< To add-on sended profile path */
   std::vector<std::string> m_presets; /*!< cached preset list */
 
-  AddonInstance_Visualization m_struct; /*!< Interface table who contains function addresses and fixed values */
-
-  // Static function to transfer data from add-on to kodi
-  static void transfer_preset(void* kodiInstance, const char* preset);
-  static void clear_presets(void* kodiInstance);
+  KODI_HANDLE m_addonInstance;
 };
 
 } /* namespace ADDON */

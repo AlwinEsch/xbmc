@@ -8,7 +8,8 @@
 
 #include "InputStreamAddon.h"
 
-#include "addons/kodi-dev-kit/include/kodi/addon-instance/VideoCodec.h"
+#include "addons/interface/api/addon-instance/inputstream.h"
+#include "addons/kodi-dev-kit/include/kodi/c-api/addon-instance/videocodec.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemux.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "cores/VideoPlayer/Interface/DemuxCrypto.h"
@@ -58,7 +59,6 @@ CInputStreamAddon::CInputStreamAddon(const AddonInfoPtr& addonInfo,
     StringUtils::Trim(key);
     key = name + "." + key;
   }
-  m_struct = { 0 };
   m_caps = { 0 };
 }
 
@@ -121,23 +121,7 @@ bool CInputStreamAddon::Supports(const AddonInfoPtr& addonInfo, const CFileItem&
 
 bool CInputStreamAddon::Open()
 {
-  // Create "C" interface structures, used as own parts to prevent API problems on update
-  m_struct.props = new AddonProps_InputStream();
-  m_struct.toAddon = new KodiToAddonFuncTable_InputStream();
-  m_struct.toKodi = new AddonToKodiFuncTable_InputStream();
-
-  m_struct.toKodi->kodiInstance = this;
-  m_struct.toKodi->free_demux_packet = cb_free_demux_packet;
-  m_struct.toKodi->allocate_demux_packet = cb_allocate_demux_packet;
-  m_struct.toKodi->allocate_encrypted_demux_packet = cb_allocate_encrypted_demux_packet;
-  /*
-  // Way to include part on new API version
-  if (Addon()->GetTypeVersionDll(ADDON_TYPE::ADDON_INSTANCE_INPUTSTREAM) >= AddonVersion("3.0.0")) // Set the version to your new
-  {
-
-  }
-  */
-  if (CreateInstance(&m_struct) != ADDON_STATUS_OK || !m_struct.toAddon->open)
+  if (CreateInstance(this, m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   INPUTSTREAM_PROPERTY props = {0};
@@ -182,29 +166,22 @@ bool CInputStreamAddon::Open()
     m_player->GetVideoResolution(videoWidth, videoHeight);
   SetVideoResolution(videoWidth, videoHeight);
 
-  bool ret = m_struct.toAddon->open(&m_struct, &props);
+  bool ret = m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_open_v1(m_addonInstance, &props);
   if (ret)
   {
     m_caps = { 0 };
-    m_struct.toAddon->get_capabilities(&m_struct, &m_caps);
+    m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_capabilities_v1(m_addonInstance, &m_caps);
 
     m_subAddonProvider = std::shared_ptr<CInputStreamProvider>(
-        new CInputStreamProvider(GetAddonInfo(), m_struct.toAddon->addonInstance));
+        new CInputStreamProvider(GetAddonInfo(), m_addonInstance));
   }
   return ret;
 }
 
 void CInputStreamAddon::Close()
 {
-  if (m_struct.toAddon->close)
-    m_struct.toAddon->close(&m_struct);
-  DestroyInstance();
-
-  // Delete "C" interface structures
-  delete m_struct.toAddon;
-  delete m_struct.toKodi;
-  delete m_struct.props;
-  m_struct = { 0 };
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_close_v1(m_addonInstance);
+  DestroyInstance(m_addonInstance);
 }
 
 bool CInputStreamAddon::IsEOF()
@@ -214,34 +191,22 @@ bool CInputStreamAddon::IsEOF()
 
 int CInputStreamAddon::Read(uint8_t* buf, int buf_size)
 {
-  if (!m_struct.toAddon->read_stream)
-    return -1;
-
-  return m_struct.toAddon->read_stream(&m_struct, buf, buf_size);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_read_stream_v1(m_addonInstance, buf, buf_size);
 }
 
 int64_t CInputStreamAddon::Seek(int64_t offset, int whence)
 {
-  if (!m_struct.toAddon->seek_stream)
-    return -1;
-
-  return m_struct.toAddon->seek_stream(&m_struct, offset, whence);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_seek_stream_v1(m_addonInstance, offset, whence);
 }
 
 int64_t CInputStreamAddon::GetLength()
 {
-  if (!m_struct.toAddon->length_stream)
-    return -1;
-
-  return m_struct.toAddon->length_stream(&m_struct);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_length_stream_v1(m_addonInstance);
 }
 
 int CInputStreamAddon::GetBlockSize()
 {
-  if (!m_struct.toAddon->block_size_stream)
-    return 0;
-
-  return m_struct.toAddon->block_size_stream(&m_struct);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_block_size_stream_v1(m_addonInstance);
 }
 
 bool CInputStreamAddon::CanSeek()
@@ -265,18 +230,12 @@ CDVDInputStream::IDisplayTime* CInputStreamAddon::GetIDisplayTime()
 
 int CInputStreamAddon::GetTotalTime()
 {
-  if (!m_struct.toAddon->get_total_time)
-    return 0;
-
-  return m_struct.toAddon->get_total_time(&m_struct);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_total_time_v1(m_addonInstance);
 }
 
 int CInputStreamAddon::GetTime()
 {
-  if (!m_struct.toAddon->get_time)
-    return 0;
-
-  return m_struct.toAddon->get_time(&m_struct);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_time_v1(m_addonInstance);
 }
 
 // ITime
@@ -290,12 +249,9 @@ CDVDInputStream::ITimes* CInputStreamAddon::GetITimes()
 
 bool CInputStreamAddon::GetTimes(Times &times)
 {
-  if (!m_struct.toAddon->get_times)
-    return false;
-
   INPUTSTREAM_TIMES i_times;
 
-  if (m_struct.toAddon->get_times(&m_struct, &i_times))
+  if (m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_times_v1(m_addonInstance, &i_times))
   {
     times.ptsBegin = i_times.ptsBegin;
     times.ptsEnd = i_times.ptsEnd;
@@ -317,10 +273,7 @@ CDVDInputStream::IPosTime* CInputStreamAddon::GetIPosTime()
 
 bool CInputStreamAddon::PosTime(int ms)
 {
-  if (!m_struct.toAddon->pos_time)
-    return false;
-
-  return m_struct.toAddon->pos_time(&m_struct, ms);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_pos_time_v1(m_addonInstance, ms);
 }
 
 // IDemux
@@ -342,10 +295,7 @@ bool CInputStreamAddon::OpenDemux()
 
 DemuxPacket* CInputStreamAddon::ReadDemux()
 {
-  if (!m_struct.toAddon->demux_read)
-    return nullptr;
-
-  return static_cast<DemuxPacket*>(m_struct.toAddon->demux_read(&m_struct));
+  return static_cast<DemuxPacket*>(m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_demux_read_v1(m_addonInstance));
 }
 
 std::vector<CDemuxStream*> CInputStreamAddon::GetStreams() const
@@ -353,7 +303,7 @@ std::vector<CDemuxStream*> CInputStreamAddon::GetStreams() const
   std::vector<CDemuxStream*> streams;
 
   INPUTSTREAM_IDS streamIDs = {0};
-  bool ret = m_struct.toAddon->get_stream_ids(&m_struct, &streamIDs);
+  bool ret = m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_stream_ids_v1(m_addonInstance, &streamIDs);
   if (!ret || streamIDs.m_streamCount > INPUTSTREAM_MAX_STREAM_COUNT)
     return streams;
 
@@ -368,7 +318,7 @@ CDemuxStream* CInputStreamAddon::GetStream(int streamId) const
 {
   INPUTSTREAM_INFO stream{};
   KODI_HANDLE demuxStream = nullptr;
-  bool ret = m_struct.toAddon->get_stream(&m_struct, streamId, &stream, &demuxStream,
+  bool ret = m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_stream_v1(m_addonInstance, streamId, &stream, &demuxStream,
                                           cb_get_stream_transfer);
   if (!ret || stream.m_streamType == INPUTSTREAM_TYPE_NONE)
     return nullptr;
@@ -509,12 +459,7 @@ KODI_HANDLE CInputStreamAddon::cb_get_stream_transfer(KODI_HANDLE handle,
   demuxStream->uniqueId = streamId;
   demuxStream->flags = static_cast<StreamFlags>(stream->m_flags);
   demuxStream->language = stream->m_language;
-
-  if (thisClass->GetAddonInfo()->DependencyVersion(ADDON_INSTANCE_VERSION_INPUTSTREAM_XML_ID) >=
-      AddonVersion("2.0.8"))
-  {
-    demuxStream->codec_fourcc = stream->m_codecFourCC;
-  }
+  demuxStream->codec_fourcc = stream->m_codecFourCC;
 
   if (stream->m_ExtraData && stream->m_ExtraSize)
   {
@@ -545,18 +490,12 @@ KODI_HANDLE CInputStreamAddon::cb_get_stream_transfer(KODI_HANDLE handle,
 
 void CInputStreamAddon::EnableStream(int streamId, bool enable)
 {
-  if (!m_struct.toAddon->enable_stream)
-    return;
-
-  m_struct.toAddon->enable_stream(&m_struct, streamId, enable);
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_enable_stream_v1(m_addonInstance, streamId, enable);
 }
 
 bool CInputStreamAddon::OpenStream(int streamId)
 {
-  if (!m_struct.toAddon->open_stream)
-    return false;
-
-  return m_struct.toAddon->open_stream(&m_struct, streamId);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_open_stream_v1(m_addonInstance, streamId);
 }
 
 int CInputStreamAddon::GetNrOfStreams() const
@@ -566,17 +505,11 @@ int CInputStreamAddon::GetNrOfStreams() const
 
 void CInputStreamAddon::SetSpeed(int speed)
 {
-  if (!m_struct.toAddon->demux_set_speed)
-    return;
-
-  m_struct.toAddon->demux_set_speed(&m_struct, speed);
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_demux_set_speed_v1(m_addonInstance, speed);
 }
 
 bool CInputStreamAddon::SeekTime(double time, bool backward, double* startpts)
 {
-  if (!m_struct.toAddon->demux_seek_time)
-    return false;
-
   if ((m_caps.m_mask & INPUTSTREAM_SUPPORTS_IPOSTIME) != 0)
   {
     if (!PosTime(static_cast<int>(time)))
@@ -589,32 +522,27 @@ bool CInputStreamAddon::SeekTime(double time, bool backward, double* startpts)
     return true;
   }
 
-  return m_struct.toAddon->demux_seek_time(&m_struct, time, backward, startpts);
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_demux_seek_time_v1(m_addonInstance, time, backward, startpts);
 }
 
 void CInputStreamAddon::AbortDemux()
 {
-  if (m_struct.toAddon->demux_abort)
-    m_struct.toAddon->demux_abort(&m_struct);
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_demux_abort_v1(m_addonInstance);
 }
 
 void CInputStreamAddon::FlushDemux()
 {
-  if (m_struct.toAddon->demux_flush)
-    m_struct.toAddon->demux_flush(&m_struct);
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_demux_flush_v1(m_addonInstance);
 }
 
 void CInputStreamAddon::SetVideoResolution(int width, int height)
 {
-  if (m_struct.toAddon->set_video_resolution)
-    m_struct.toAddon->set_video_resolution(&m_struct, width, height);
+  m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_set_video_resolution_v1(m_addonInstance, width, height);
 }
 
 bool CInputStreamAddon::IsRealtime()
 {
-  if (m_struct.toAddon->is_real_time_stream)
-    return m_struct.toAddon->is_real_time_stream(&m_struct);
-  return false;
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_is_real_time_stream_v1(m_addonInstance);
 }
 
 
@@ -629,45 +557,30 @@ CDVDInputStream::IChapter* CInputStreamAddon::GetIChapter()
 
 int CInputStreamAddon::GetChapter()
 {
-  if (m_struct.toAddon->get_chapter)
-    return m_struct.toAddon->get_chapter(&m_struct);
-
-  return -1;
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_chapter_v1(m_addonInstance);
 }
 
 int CInputStreamAddon::GetChapterCount()
 {
-  if (m_struct.toAddon->get_chapter_count)
-    return m_struct.toAddon->get_chapter_count(&m_struct);
-
-  return 0;
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_chapter_count_v1(m_addonInstance);
 }
 
 void CInputStreamAddon::GetChapterName(std::string& name, int ch)
 {
   name.clear();
-  if (m_struct.toAddon->get_chapter_name)
-  {
-    const char* res = m_struct.toAddon->get_chapter_name(&m_struct, ch);
-    if (res)
-      name = res;
-  }
+  const char* res = m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_chapter_name_v1(m_addonInstance, ch);
+  if (res)
+    name = res;
 }
 
 int64_t CInputStreamAddon::GetChapterPos(int ch)
 {
-  if (m_struct.toAddon->get_chapter_pos)
-    return m_struct.toAddon->get_chapter_pos(&m_struct, ch);
-
-  return 0;
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_get_chapter_pos_v1(m_addonInstance, ch);
 }
 
 bool CInputStreamAddon::SeekChapter(int ch)
 {
-  if (m_struct.toAddon->seek_chapter)
-    return m_struct.toAddon->seek_chapter(&m_struct, ch);
-
-  return false;
+  return m_ifc->kodi_addoninstance_inputstream_h->kodi_addon_inputstream_seek_chapter_v1(m_addonInstance, ch);
 }
 
 int CInputStreamAddon::ConvertVideoCodecProfile(STREAMCODEC_PROFILE profile)
@@ -705,18 +618,18 @@ int CInputStreamAddon::ConvertVideoCodecProfile(STREAMCODEC_PROFILE profile)
  * Callbacks from add-on to kodi
  */
 //@{
-DEMUX_PACKET* CInputStreamAddon::cb_allocate_demux_packet(void* kodiInstance, int data_size)
+DEMUX_PACKET* CInputStreamAddon::cb_allocate_demux_packet(int data_size)
 {
   return CDVDDemuxUtils::AllocateDemuxPacket(data_size);
 }
 
 DEMUX_PACKET* CInputStreamAddon::cb_allocate_encrypted_demux_packet(
-    void* kodiInstance, unsigned int dataSize, unsigned int encryptedSubsampleCount)
+    unsigned int dataSize, unsigned int encryptedSubsampleCount)
 {
   return CDVDDemuxUtils::AllocateDemuxPacket(dataSize, encryptedSubsampleCount);
 }
 
-void CInputStreamAddon::cb_free_demux_packet(void* kodiInstance, DEMUX_PACKET* packet)
+void CInputStreamAddon::cb_free_demux_packet(DEMUX_PACKET* packet)
 {
   CDVDDemuxUtils::FreeDemuxPacket(static_cast<DemuxPacket*>(packet));
 }

@@ -96,6 +96,7 @@ set(INCLUDES ${CMAKE_SOURCE_DIR}
              ${CMAKE_SOURCE_DIR}/lib
              ${CMAKE_SOURCE_DIR}/xbmc
              ${CMAKE_SOURCE_DIR}/xbmc/${PLATFORM_DIR}
+             ${CMAKE_SOURCE_DIR}/xbmc/addons/kodi-dev-kit
              ${CMAKE_SOURCE_DIR}/xbmc/cores/VideoPlayer
              ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}
              ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/include)
@@ -218,6 +219,8 @@ if(CORE_SYSTEM_NAME STREQUAL osx)
   core_require_dep(Sdl)
 endif()
 
+list(APPEND DEP_DEFINES -DDEVKIT_LIBRARY="${DEVKIT_LIBRARY}")
+
 # find all folders containing addon.xml.in
 # used to define ADDON_XML_OUTPUTS, ADDON_XML_DEPENDS and ADDON_INSTALL_DATA
 # Function defined in ./cmake/scripts/common/Macros.cmake
@@ -305,7 +308,7 @@ endif()
 set(GLOBAL_TARGET_DEPS ffmpeg dvdnav crossguid fmt Spdlog::Spdlog fstrcmp flatbuffers ${PLATFORM_GLOBAL_TARGET_DEPS})
 
 # main library (used for main binary and tests)
-add_library(lib${APP_NAME_LC} STATIC $<TARGET_OBJECTS:compileinfo>)
+add_library(lib${APP_NAME_LC} STATIC $<TARGET_OBJECTS:compileinfo> $<TARGET_OBJECTS:devkit_shared>)
 add_dependencies(lib${APP_NAME_LC} ${GLOBAL_TARGET_DEPS})
 set_target_properties(lib${APP_NAME_LC} PROPERTIES PREFIX "")
 

@@ -49,7 +49,7 @@ namespace dialogs
 /// delete progress;
 /// ~~~~~~~~~~~~~
 ///
-class ATTRIBUTE_HIDDEN CProgress
+class ATTR_DLL_LOCAL CProgress
 {
 public:
   //============================================================================
@@ -58,9 +58,7 @@ public:
   ///
   CProgress()
   {
-    using namespace ::kodi::addon;
-    m_DialogHandle = CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->new_dialog(
-        CAddonBase::m_interface->toKodi->kodiBase);
+    m_DialogHandle = kodi::dl::api.kodi_gui_dialogs_progress_new_dialog();
     if (!m_DialogHandle)
       kodi::Log(ADDON_LOG_FATAL,
                 "kodi::gui::dialogs::CProgress can't create window class from Kodi !!!");
@@ -73,10 +71,8 @@ public:
   ///
   ~CProgress()
   {
-    using namespace ::kodi::addon;
     if (m_DialogHandle)
-      CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->delete_dialog(
-          CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
+      kodi::dl::api.kodi_gui_dialogs_progress_delete_dialog(m_DialogHandle);
   }
   //----------------------------------------------------------------------------
 
@@ -84,12 +80,7 @@ public:
   /// @ingroup cpp_kodi_gui_dialogs_CProgress
   /// @brief To open the dialog
   ///
-  void Open()
-  {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->open(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  void Open() { kodi::dl::api.kodi_gui_dialogs_progress_open(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -100,9 +91,7 @@ public:
   ///
   void SetHeading(const std::string& heading)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_heading(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, heading.c_str());
+    kodi::dl::api.kodi_gui_dialogs_progress_set_heading(m_DialogHandle, heading.c_str());
   }
   //----------------------------------------------------------------------------
 
@@ -115,9 +104,7 @@ public:
   ///
   void SetLine(unsigned int iLine, const std::string& line)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_line(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, iLine, line.c_str());
+    kodi::dl::api.kodi_gui_dialogs_progress_set_line(m_DialogHandle, iLine, line.c_str());
   }
   //----------------------------------------------------------------------------
 
@@ -129,9 +116,7 @@ public:
   ///
   void SetCanCancel(bool canCancel)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_can_cancel(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, canCancel);
+    kodi::dl::api.kodi_gui_dialogs_progress_set_can_cancel(m_DialogHandle, canCancel);
   }
   //----------------------------------------------------------------------------
 
@@ -141,12 +126,7 @@ public:
   ///
   /// @return True if canceled
   ///
-  bool IsCanceled() const
-  {
-    using namespace ::kodi::addon;
-    return CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->is_canceled(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  bool IsCanceled() const { return kodi::dl::api.kodi_gui_dialogs_progress_is_canceled(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -157,9 +137,7 @@ public:
   ///
   void SetPercentage(int percentage)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_percentage(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, percentage);
+    kodi::dl::api.kodi_gui_dialogs_progress_set_percentage(m_DialogHandle, percentage);
   }
   //----------------------------------------------------------------------------
 
@@ -169,12 +147,7 @@ public:
   ///
   /// @return Current Position used from 0 to 100
   ///
-  int GetPercentage() const
-  {
-    using namespace ::kodi::addon;
-    return CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->get_percentage(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  int GetPercentage() const { return kodi::dl::api.kodi_gui_dialogs_progress_get_percentage(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -185,9 +158,7 @@ public:
   ///
   void ShowProgressBar(bool onOff)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->show_progress_bar(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, onOff);
+    kodi::dl::api.kodi_gui_dialogs_progress_show_progress_bar(m_DialogHandle, onOff);
   }
   //----------------------------------------------------------------------------
 
@@ -197,12 +168,7 @@ public:
   ///
   /// @param[in] max Biggest usable position to use
   ///
-  void SetProgressMax(int max)
-  {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_progress_max(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, max);
-  }
+  void SetProgressMax(int max) { kodi::dl::api.kodi_gui_dialogs_progress_set_progress_max(m_DialogHandle, max); }
   //----------------------------------------------------------------------------
 
   //============================================================================
@@ -213,9 +179,7 @@ public:
   ///
   void SetProgressAdvance(int steps = 1)
   {
-    using namespace ::kodi::addon;
-    CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->set_progress_advance(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle, steps);
+    kodi::dl::api.kodi_gui_dialogs_progress_set_progress_advance(m_DialogHandle, steps);
   }
   //----------------------------------------------------------------------------
 
@@ -225,12 +189,7 @@ public:
   ///
   /// @return True if aborted
   ///
-  bool Abort()
-  {
-    using namespace ::kodi::addon;
-    return CAddonBase::m_interface->toKodi->kodi_gui->dialogProgress->abort(
-        CAddonBase::m_interface->toKodi->kodiBase, m_DialogHandle);
-  }
+  bool Abort() { return kodi::dl::api.kodi_gui_dialogs_progress_abort(m_DialogHandle); }
   //----------------------------------------------------------------------------
 
 private:
